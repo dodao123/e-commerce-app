@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../auth/presentation/pages/login_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 
 /// Custom app bar with settings, search, and login button.
@@ -40,7 +41,8 @@ class HomeAppBar extends StatelessWidget {
           const SizedBox(width: 8),
           // Log In button (when not authenticated)
           GestureDetector(
-            onTap: () {},
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (_) => const LoginPage())),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
               decoration: BoxDecoration(

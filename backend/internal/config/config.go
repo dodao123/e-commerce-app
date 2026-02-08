@@ -4,12 +4,14 @@ package config
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 // Config holds all application configuration values.
 type Config struct {
 	ServerPort string
 	Database   DatabaseConfig
+	Auth       AuthConfig
 }
 
 // DatabaseConfig holds PostgreSQL connection parameters.
@@ -22,8 +24,19 @@ type DatabaseConfig struct {
 	SSLMode  string
 }
 
+// AuthConfig holds authentication-related configuration.
+type AuthConfig struct {
+	JWTSecret      string
+	JWTExpiryHours int
+	GoogleClientID string
+	FacebookAppID  string
+	FacebookSecret string
+}
+
 // Load reads configuration from environment variables.
 func Load() *Config {
+	jwtExpiry, _ := strconv.Atoi(getEnv("JWT_EXPIRY_HOURS", "24"))
+
 	return &Config{
 		ServerPort: getEnv("SERVER_PORT", "8080"),
 		Database: DatabaseConfig{
@@ -33,6 +46,13 @@ func Load() *Config {
 			Password: getEnv("DB_PASSWORD", ""),
 			DBName:   getEnv("DB_NAME", "delivery"),
 			SSLMode:  getEnv("DB_SSLMODE", "disable"),
+		},
+		Auth: AuthConfig{
+			JWTSecret:      getEnv("JWT_SECRET", ""),
+			JWTExpiryHours: jwtExpiry,
+			GoogleClientID: getEnv("GOOGLE_CLIENT_ID", ""),
+			FacebookAppID:  getEnv("FB_APP_ID", ""),
+			FacebookSecret: getEnv("FB_APP_SECRET", ""),
 		},
 	}
 }

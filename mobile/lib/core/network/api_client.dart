@@ -19,18 +19,50 @@ class ApiClient {
   Future<Map<String, dynamic>> get(String endpoint) async {
     final uri = Uri.parse('$_baseUrl$endpoint');
     final response = await _httpClient
-        .get(uri)
+        .get(uri, headers: _defaultHeaders())
         .timeout(
           const Duration(seconds: ApiConstants.timeoutSeconds),
         );
 
-    if (response.statusCode == 200) {
+    return _handleResponse(response);
+  }
+
+  /// Performs a POST request with a JSON body.
+  /// Returns decoded JSON response as a Map.
+  Future<Map<String, dynamic>> post(
+    String endpoint,
+    Map<String, dynamic> body, {
+    String? authToken,
+  }) async {
+    final uri = Uri.parse('$_baseUrl$endpoint');
+    final headers = _defaultHeaders();
+    if (authToken != null) {
+      headers['Authorization'] = 'Bearer $authToken';
+    }
+
+    final response = await _httpClient
+        .post(uri, headers: headers, body: jsonEncode(body))
+        .timeout(
+          const Duration(seconds: ApiConstants.timeoutSeconds),
+        );
+
+    return _handleResponse(response);
+  }
+
+  /// Default headers for all requests.
+  Map<String, String> _defaultHeaders() {
+    return {'Content-Type': 'application/json'};
+  }
+
+  /// Handles the HTTP response and returns decoded JSON.
+  Map<String, dynamic> _handleResponse(http.Response response) {
+    if (response.statusCode >= 200 && response.statusCode < 300) {
       return jsonDecode(response.body) as Map<String, dynamic>;
     }
 
     throw ApiException(
       statusCode: response.statusCode,
-      message: 'Request failed: ${response.reasonPhrase}',
+      message: response.body,
     );
   }
 
