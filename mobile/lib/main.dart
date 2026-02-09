@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'core/animation/fly_to_cart_animator.dart';
 import 'core/providers/app_provider.dart';
+import 'core/providers/cart_icon_key_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
-import 'features/home/presentation/pages/home_page.dart';
+import 'features/shell/main_shell.dart';
 
 /// Entry point of the Delivery App.
 void main() {
@@ -12,6 +14,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AppProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CartIconKeyProvider()),
       ],
       child: const DeliveryApp(),
     ),
@@ -19,9 +22,22 @@ void main() {
 }
 
 /// Root widget for the Delivery application.
-class DeliveryApp extends StatelessWidget {
-  /// Creates the DeliveryApp widget.
+class DeliveryApp extends StatefulWidget {
   const DeliveryApp({super.key});
+
+  @override
+  State<DeliveryApp> createState() => _DeliveryAppState();
+}
+
+class _DeliveryAppState extends State<DeliveryApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Restore auth session from secure storage on startup
+    Future.microtask(() {
+      context.read<AuthProvider>().checkAuthStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +48,8 @@ class DeliveryApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: appProvider.themeMode,
-      home: const HomePage(),
+      builder: (ctx, child) => FlyToCartOverlay(child: child!),
+      home: const MainShell(),
     );
   }
 }

@@ -11,6 +11,7 @@ import (
 // NewRouter creates and configures the HTTP router with all API routes.
 func NewRouter(
 	authHandler *handler.AuthHandler,
+	emailAuthHandler *handler.EmailAuthHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -20,11 +21,15 @@ func NewRouter(
 	// Health check
 	mux.HandleFunc("/api/v1/health", healthHandler.Handle)
 
-	// Auth routes (public)
+	// Social auth routes (public)
 	mux.HandleFunc("/api/v1/auth/google", authHandler.HandleGoogleLogin)
 	mux.HandleFunc("/api/v1/auth/facebook", authHandler.HandleFacebookLogin)
 
-	// Auth routes (protected — requires JWT)
+	// Email auth routes (public)
+	mux.HandleFunc("/api/v1/auth/register", emailAuthHandler.HandleRegister)
+	mux.HandleFunc("/api/v1/auth/login", emailAuthHandler.HandleLogin)
+
+	// Protected routes (requires JWT)
 	authGuard := middleware.AuthGuard(jwtService)
 	mux.Handle("/api/v1/auth/role",
 		authGuard(http.HandlerFunc(authHandler.HandleUpdateRole)),

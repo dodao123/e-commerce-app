@@ -4,7 +4,6 @@ import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/datasources/product_local_datasource.dart';
 import '../../data/models/product_model.dart';
-import '../widgets/home_app_bar.dart';
 import '../widgets/hero_banner.dart';
 import '../widgets/product_filter_tabs.dart';
 import '../widgets/product_card.dart';
@@ -40,46 +39,33 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: isDark
-              ? DarkColors.backgroundGradient
-              : AppColors.backgroundGradient,
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const HomeAppBar(),
-                const SizedBox(height: 8),
-                HeroBanner(
-                  product: _products.first,
-                  onBuyNow: () => _navigateToDetail(_products.first),
-                ),
-                const SizedBox(height: 24),
-                _buildSectionHeader(),
-                const SizedBox(height: 14),
-                ProductFilterTabs(
-                  tabs: context.watch<AppProvider>().locale.languageCode == 'vi'
-                      ? _tabsVi : _tabs,
-                  selectedIndex: _selectedTab,
-                  onTabSelected: (i) => setState(() => _selectedTab = i),
-                ),
-                const SizedBox(height: 16),
-                _buildProductGrid(),
-                const SizedBox(height: 24),
-                SpecialSection(
-                  products: _products.where((p) => p.price <= 300).toList(),
-                  onProductTap: _navigateToDetail,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 8),
+          HeroBanner(
+            product: _products.first,
+            onBuyNow: () => _navigateToDetail(_products.first),
           ),
-        ),
+          const SizedBox(height: 24),
+          _buildSectionHeader(),
+          const SizedBox(height: 14),
+          ProductFilterTabs(
+            tabs: context.watch<AppProvider>().locale.languageCode == 'vi'
+                ? _tabsVi : _tabs,
+            selectedIndex: _selectedTab,
+            onTabSelected: (i) => setState(() => _selectedTab = i),
+          ),
+          const SizedBox(height: 16),
+          _buildProductGrid(),
+          const SizedBox(height: 24),
+          SpecialSection(
+            products: _products.where((p) => p.price <= 300).toList(),
+            onProductTap: _navigateToDetail,
+          ),
+          const SizedBox(height: 24),
+        ],
       ),
     );
   }

@@ -18,6 +18,7 @@ func allMigrations() []migrationEntry {
 	return []migrationEntry{
 		{Name: "001_create_users", SQL: CreateUsersTableSQL},
 		{Name: "002_create_auth_providers", SQL: CreateAuthProvidersTableSQL},
+		{Name: "003_add_password_hash", SQL: AddPasswordHashSQL},
 	}
 }
 

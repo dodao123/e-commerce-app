@@ -24,6 +24,12 @@ type UserRepository interface {
 
 	// UpdateRole sets the user's role.
 	UpdateRole(userID string, role model.UserRole) error
+
+	// CreateWithPassword inserts a new user with password hash.
+	CreateWithPassword(user *model.User) (*model.User, error)
+
+	// FindByEmailWithPassword finds user including password hash.
+	FindByEmailWithPassword(email string) (*model.User, error)
 }
 
 // AuthProviderRepository defines the contract for auth provider data access.

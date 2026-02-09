@@ -42,13 +42,16 @@ func main() {
 
 	// Initialize services
 	jwtService := service.NewJWTService(&cfg.Auth)
+	bcryptService := service.NewBcryptService()
 	googleVerifier := service.NewGoogleVerifier(cfg.Auth.GoogleClientID)
 	facebookVerifier := service.NewFacebookVerifier(
 		cfg.Auth.FacebookAppID, cfg.Auth.FacebookSecret,
 	)
 
-	// Initialize repositories
+	// Initialize handlers
 	var authHandler *handler.AuthHandler
+	var emailAuthHandler *handler.EmailAuthHandler
+
 	if db != nil {
 		userRepo := repository.NewPostgresUserRepository(db.Pool)
 		authProviderRepo := repository.NewPostgresAuthProviderRepository(db.Pool)
@@ -57,21 +60,33 @@ func main() {
 			userRepo, authProviderRepo,
 			jwtService, googleVerifier, facebookVerifier,
 		)
+
+		emailAuthHandler = handler.NewEmailAuthHandler(
+			userRepo, jwtService, bcryptService,
+		)
 	}
 
 	// Setup router and middleware
-	mux := router.NewRouter(authHandler, jwtService)
+	mux := router.NewRouter(authHandler, emailAuthHandler, jwtService)
 	httpHandler := middleware.ApplyCORS(middleware.ApplyLogger(mux))
 
 	// Start HTTP server
 	addr := fmt.Sprintf(":%s", cfg.ServerPort)
 	fmt.Printf("🚀 Delivery API Server starting on port %s\n", addr)
-	fmt.Println("📍 Health: http://localhost:" + cfg.ServerPort + "/api/v1/health")
-	fmt.Println("🔐 Auth:   POST /api/v1/auth/google")
-	fmt.Println("🔐 Auth:   POST /api/v1/auth/facebook")
-	fmt.Println("🔐 Auth:   POST /api/v1/auth/role (protected)")
+	printRoutes(cfg.ServerPort)
 
 	if err := http.ListenAndServe(addr, httpHandler); err != nil {
 		log.Fatalf("❌ Server failed: %v", err)
 	}
+}
+
+// printRoutes lists all available API endpoints.
+func printRoutes(port string) {
+	base := "http://localhost:" + port
+	fmt.Println("📍 Health:    " + base + "/api/v1/health")
+	fmt.Println("🔐 Register: POST " + base + "/api/v1/auth/register")
+	fmt.Println("🔐 Login:    POST " + base + "/api/v1/auth/login")
+	fmt.Println("🔐 Google:   POST " + base + "/api/v1/auth/google")
+	fmt.Println("🔐 Facebook: POST " + base + "/api/v1/auth/facebook")
+	fmt.Println("🔐 Role:     POST " + base + "/api/v1/auth/role (JWT)")
 }

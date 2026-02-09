@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../widgets/role_card.dart';
-import '../../../home/presentation/pages/home_page.dart';
+import '../../../shell/main_shell.dart';
 
 /// Page for selecting user role after successful social login.
 /// Displays buyer, seller, and shipper options.
@@ -34,7 +34,7 @@ class RoleSelectionPage extends StatelessWidget {
 
   /// Builds the greeting header with user name.
   Widget _buildHeader(bool isVi, AuthProvider authProvider) {
-    final userName = authProvider.user?['full_name'] ?? '';
+    final userName = authProvider.userName;
     return Column(
       children: [
         Text(
@@ -101,7 +101,7 @@ class RoleSelectionPage extends StatelessWidget {
     if (success && context.mounted) {
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => const HomePage()),
+        MaterialPageRoute(builder: (_) => const MainShell()),
         (route) => false,
       );
     }

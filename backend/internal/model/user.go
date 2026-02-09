@@ -44,6 +44,9 @@ type User struct {
 	// Role is the user's role in the platform.
 	Role UserRole `json:"role"`
 
+	// PasswordHash stores the bcrypt-hashed password (never exposed in JSON).
+	PasswordHash string `json:"-"`
+
 	// IsActive indicates whether the account is enabled.
 	IsActive bool `json:"is_active"`
 

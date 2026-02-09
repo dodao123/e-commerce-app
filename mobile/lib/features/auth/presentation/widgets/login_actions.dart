@@ -6,7 +6,7 @@ class LoginActions {
   LoginActions._();
 
   /// Builds the primary login button.
-  static Widget buildLoginButton(bool isVi, VoidCallback onTap) {
+  static Widget buildLoginButton(bool isVi, VoidCallback? onTap) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
