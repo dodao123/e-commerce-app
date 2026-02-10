@@ -3,6 +3,7 @@ import '../widgets/seller_profile_header.dart';
 import '../widgets/seller_order_stats.dart';
 import '../widgets/seller_tools.dart';
 import '../widgets/seller_suggestions.dart';
+import '../widgets/menu_role_upgrade.dart';
 
 /// Seller menu layout with shop profile, order stats,
 /// seller tools, and promotional suggestions.
@@ -47,9 +48,13 @@ class SellerMenuContent extends StatelessWidget {
 
         // 3. Seller tools
         SellerTools(isVi: isVi),
+        const SizedBox(height: 16),
+
+        // 4. Role switching
+        MenuRoleUpgrade(isVi: isVi),
         const SizedBox(height: 20),
 
-        // 4. Suggestions
+        // 5. Suggestions
         SellerSuggestions(isVi: isVi),
       ]),
     );

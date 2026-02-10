@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
+import '../../../../core/storage/token_manager.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../data/shop_remote_datasource.dart';
 import '../widgets/shop_info_step.dart';
 import '../widgets/shop_identity_step.dart';
-import '../widgets/shop_tax_step.dart';
+import 'shop_dashboard_page.dart';
 
 /// Multi-step shop registration page.
-/// Steps: Shop Info → Identity → Tax.
+/// Steps: Shop Info → Identity.
 class ShopRegistrationPage extends StatefulWidget {
   /// Creates the ShopRegistrationPage widget.
   const ShopRegistrationPage({super.key});
@@ -20,7 +22,11 @@ class ShopRegistrationPage extends StatefulWidget {
 class _ShopRegistrationPageState
     extends State<ShopRegistrationPage> {
   int _currentStep = 0;
-  static const _lastStep = 2;
+  static const _lastStep = 1;
+  final _shopInfoKey = GlobalKey<ShopInfoStepState>();
+  final _identityKey = GlobalKey<ShopIdentityStepState>();
+  final _datasource = ShopRemoteDatasource();
+  bool _isSaving = false;
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +37,6 @@ class _ShopRegistrationPageState
     final labels = [
       isVi ? 'Thông tin\nShop' : 'Shop\nInfo',
       isVi ? 'Thông tin\nđịnh danh' : 'Identity\nInfo',
-      isVi ? 'Thông tin\nthuế' : 'Tax\nInfo',
-    ];
-    final steps = const [
-      ShopInfoStep(), ShopIdentityStep(), ShopTaxStep(),
     ];
     return Scaffold(
       backgroundColor: isDark
@@ -42,7 +44,12 @@ class _ShopRegistrationPageState
       appBar: _appBar(isDark, isVi, labels),
       body: Column(children: [
         _stepIndicator(isDark, labels),
-        Expanded(child: steps[_currentStep]),
+        Expanded(child: IndexedStack(
+          index: _currentStep,
+          children: [
+            ShopInfoStep(key: _shopInfoKey),
+            ShopIdentityStep(key: _identityKey),
+          ])),
       ]),
       bottomNavigationBar: _bottomBtns(isDark, isVi),
     );
@@ -77,7 +84,7 @@ class _ShopRegistrationPageState
   Widget _stepIndicator(bool isDark, List<String> labels) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
-      child: Row(children: List.generate(3,
+      child: Row(children: List.generate(2,
           (i) => Expanded(child: _dot(i, isDark, labels)))));
   }
 
@@ -91,7 +98,7 @@ class _ShopRegistrationPageState
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Row(children: [
         if (i > 0) Expanded(child: Container(height: 2,
-            color: done ? color : (isDark
+            color: (done || active) ? color : (isDark
                 ? DarkColors.textSecondary.withOpacity(0.3)
                 : Colors.grey.shade300))),
         _circle(i, done, color),
@@ -158,6 +165,10 @@ class _ShopRegistrationPageState
   }
 
   void _next() {
+    if (_currentStep == 0) {
+      final isValid = _shopInfoKey.currentState?.validate() ?? false;
+      if (!isValid) return;
+    }
     if (_currentStep < _lastStep) {
       setState(() => _currentStep++);
     }
@@ -168,13 +179,48 @@ class _ShopRegistrationPageState
     else Navigator.pop(context);
   }
 
-  void _save() {
-    Navigator.pop(context);
-    Navigator.pop(context);
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(context.read<AppProvider>()
-                .locale.languageCode == 'vi'
-            ? 'Thông tin Shop đã được lưu!'
-            : 'Shop info saved!')));
+  Future<void> _save() async {
+    // Validate identity step
+    final identityValid =
+        _identityKey.currentState?.validate() ?? false;
+    if (!identityValid) {
+      final isVi = context.read<AppProvider>()
+          .locale.languageCode == 'vi';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(isVi
+            ? 'Vui lòng nhập số CCCD'
+            : 'Please enter national ID'),
+        backgroundColor: Colors.red.shade400));
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      final shopData = {
+        ..._shopInfoKey.currentState!.getData(),
+        ..._identityKey.currentState!.getData(),
+        'category': 'other',
+      };
+
+      final token = await TokenManager().getToken();
+      if (token == null) throw Exception('Not authenticated');
+
+      final result = await _datasource.createShop(
+          token: token, shopData: shopData);
+
+      if (!mounted) return;
+
+      // Navigate to dashboard with the created shop data
+      Navigator.pushReplacement(context, MaterialPageRoute(
+        builder: (_) => ShopDashboardPage(shopData: result)));
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $error'),
+        backgroundColor: Colors.red.shade400));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 }

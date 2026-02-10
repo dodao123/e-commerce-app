@@ -11,11 +11,50 @@ class ShopInfoStep extends StatefulWidget {
   const ShopInfoStep({super.key});
 
   @override
-  State<ShopInfoStep> createState() => _ShopInfoStepState();
+  ShopInfoStepState createState() => ShopInfoStepState();
 }
 
-class _ShopInfoStepState extends State<ShopInfoStep> {
+class ShopInfoStepState extends State<ShopInfoStep> {
+  final _formKey = GlobalKey<FormState>();
+  final _shopNameCtrl = TextEditingController();
+  final _emailCtrl = TextEditingController();
+  final _phoneCtrl = TextEditingController();
   String _addressDisplay = '';
+  Map<String, dynamic> _addressData = {};
+
+  @override
+  void dispose() {
+    _shopNameCtrl.dispose();
+    _emailCtrl.dispose();
+    _phoneCtrl.dispose();
+    super.dispose();
+  }
+
+  /// Returns the form data as a map for the API request.
+  Map<String, dynamic> getData() => {
+    'shop_name': _shopNameCtrl.text.trim(),
+    'email': _emailCtrl.text.trim(),
+    'phone': _phoneCtrl.text.trim(),
+    'province': _addressData['province'] ?? '',
+    'district': _addressData['district'] ?? '',
+    'ward': _addressData['ward'] ?? '',
+    'detail_address': _addressData['street'] ?? '',
+  };
+
+  /// Validates all fields in step 1.
+  bool validate() {
+    final formValid = _formKey.currentState?.validate() ?? false;
+    if (_addressDisplay.isEmpty) {
+      final isVi = context.read<AppProvider>().locale.languageCode == 'vi';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(isVi
+            ? 'Vui lòng thiết lập địa chỉ lấy hàng'
+            : 'Please set up pickup address'),
+        backgroundColor: Colors.red.shade400));
+      return false;
+    }
+    return formValid;
+  }
 
   Future<void> _openAddressPicker() async {
     final result = await Navigator.push<Map<String, dynamic>>(
@@ -23,6 +62,7 @@ class _ShopInfoStepState extends State<ShopInfoStep> {
             builder: (_) => const AddressPickerPage()));
     if (result != null && mounted) {
       setState(() {
+        _addressData = result;
         _addressDisplay = [
           result['area'] ?? '',
           result['street'] ?? '',
@@ -37,39 +77,58 @@ class _ShopInfoStepState extends State<ShopInfoStep> {
         Theme.of(context).brightness == Brightness.dark;
     final isVi = context.watch<AppProvider>()
         .locale.languageCode == 'vi';
-    return ListView(
-      padding: const EdgeInsets.all(20), children: [
-        _field(isVi ? 'Tên Shop' : 'Shop Name',
-            isVi ? 'Nhập tên Shop của bạn' : 'Enter shop name',
-            Icons.storefront_outlined, isDark, maxLen: 30),
-        const SizedBox(height: 20),
-        _tapField(
-            isVi ? 'Địa chỉ lấy hàng' : 'Pickup Address',
-            _addressDisplay,
-            isVi ? 'Thiết lập' : 'Set up',
-            Icons.location_on_outlined, isDark,
-            onTap: _openAddressPicker),
-        const SizedBox(height: 20),
-        _field('Email', isVi ? 'Nhập email' : 'Enter email',
-            Icons.email_outlined, isDark,
-            keyboard: TextInputType.emailAddress),
-        const SizedBox(height: 20),
-        _field(isVi ? 'Số điện thoại' : 'Phone',
-            isVi ? 'Nhập số điện thoại' : 'Enter phone',
-            Icons.phone_outlined, isDark,
-            keyboard: TextInputType.phone),
-      ]);
+    return Form(
+      key: _formKey,
+      child: ListView(
+        padding: const EdgeInsets.all(20), children: [
+          _field(isVi ? 'Tên Shop' : 'Shop Name',
+              isVi ? 'Nhập tên Shop của bạn' : 'Enter shop name',
+              Icons.storefront_outlined, isDark,
+              controller: _shopNameCtrl,
+              maxLen: 30,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? (isVi ? 'Vui lòng nhập tên Shop' : 'Shop name required')
+                  : null),
+          const SizedBox(height: 20),
+          _tapField(
+              isVi ? 'Địa chỉ lấy hàng' : 'Pickup Address',
+              _addressDisplay,
+              isVi ? 'Thiết lập' : 'Set up',
+              Icons.location_on_outlined, isDark,
+              onTap: _openAddressPicker),
+          const SizedBox(height: 20),
+          _field('Email', isVi ? 'Nhập email' : 'Enter email',
+              Icons.email_outlined, isDark,
+              controller: _emailCtrl,
+              keyboard: TextInputType.emailAddress,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? (isVi ? 'Vui lòng nhập email' : 'Email required')
+                  : null),
+          const SizedBox(height: 20),
+          _field(isVi ? 'Số điện thoại' : 'Phone',
+              isVi ? 'Nhập số điện thoại' : 'Enter phone',
+              Icons.phone_outlined, isDark,
+              controller: _phoneCtrl,
+              keyboard: TextInputType.phone,
+              validator: (v) => (v == null || v.trim().isEmpty)
+                  ? (isVi ? 'Vui lòng nhập SĐT' : 'Phone required')
+                  : null),
+        ]));
   }
 
   Widget _field(String label, String hint,
       IconData icon, bool isDark,
-      {int? maxLen, TextInputType? keyboard}) {
+      {int? maxLen, TextInputType? keyboard,
+       TextEditingController? controller,
+       String? Function(String?)? validator}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _label(label, isDark),
         const SizedBox(height: 8),
-        TextField(maxLength: maxLen, keyboardType: keyboard,
+        TextFormField(maxLength: maxLen, keyboardType: keyboard,
+          controller: controller,
+          validator: validator,
           style: TextStyle(color: isDark
               ? DarkColors.textPrimary : Colors.black87),
           decoration: InputDecoration(

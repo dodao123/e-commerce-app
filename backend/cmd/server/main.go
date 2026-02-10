@@ -51,10 +51,14 @@ func main() {
 	// Initialize handlers
 	var authHandler *handler.AuthHandler
 	var emailAuthHandler *handler.EmailAuthHandler
+	var shopHandler *handler.ShopHandler
 
 	if db != nil {
 		userRepo := repository.NewPostgresUserRepository(db.Pool)
 		authProviderRepo := repository.NewPostgresAuthProviderRepository(db.Pool)
+		shopRepo := repository.NewPostgresShopRepository(db.Pool)
+
+		shopService := service.NewShopService(shopRepo, userRepo)
 
 		authHandler = handler.NewAuthHandler(
 			userRepo, authProviderRepo,
@@ -64,10 +68,12 @@ func main() {
 		emailAuthHandler = handler.NewEmailAuthHandler(
 			userRepo, jwtService, bcryptService,
 		)
+
+		shopHandler = handler.NewShopHandler(shopService)
 	}
 
 	// Setup router and middleware
-	mux := router.NewRouter(authHandler, emailAuthHandler, jwtService)
+	mux := router.NewRouter(authHandler, emailAuthHandler, shopHandler, jwtService)
 	httpHandler := middleware.ApplyCORS(middleware.ApplyLogger(mux))
 
 	// Start HTTP server
@@ -89,4 +95,7 @@ func printRoutes(port string) {
 	fmt.Println("🔐 Google:   POST " + base + "/api/v1/auth/google")
 	fmt.Println("🔐 Facebook: POST " + base + "/api/v1/auth/facebook")
 	fmt.Println("🔐 Role:     POST " + base + "/api/v1/auth/role (JWT)")
+	fmt.Println("🏪 Shop:     POST " + base + "/api/v1/shops (JWT)")
+	fmt.Println("🏪 My Shop:  GET  " + base + "/api/v1/shops/me (JWT)")
+	fmt.Println("🏪 Update:   PUT  " + base + "/api/v1/shops/{id} (JWT)")
 }

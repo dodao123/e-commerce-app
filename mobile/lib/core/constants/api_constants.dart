@@ -27,6 +27,15 @@ class ApiConstants {
   /// Email login endpoint.
   static const String loginEndpoint = '/api/v1/auth/login';
 
+  /// Create shop endpoint (POST).
+  static const String createShopEndpoint = '/api/v1/shops';
+
+  /// Get my shop endpoint (GET).
+  static const String getMyShopEndpoint = '/api/v1/shops/me';
+
+  /// Update shop endpoint prefix (PUT /api/v1/shops/{id}).
+  static const String updateShopEndpoint = '/api/v1/shops';
+
   /// Default request timeout in seconds.
   static const int timeoutSeconds = 10;
 

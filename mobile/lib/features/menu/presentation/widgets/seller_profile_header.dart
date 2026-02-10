@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../seller/presentation/pages/shop_welcome_page.dart';
+import '../../../seller/presentation/pages/shop_router_page.dart';
 
 /// Premium seller profile header with gradient and shop stats.
 class SellerProfileHeader extends StatelessWidget {
@@ -85,7 +85,7 @@ class SellerProfileHeader extends StatelessWidget {
   Widget _viewShopButton(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(
-          builder: (_) => const ShopWelcomePage())),
+          builder: (_) => const ShopRouterPage())),
       child: Container(
         padding: const EdgeInsets.symmetric(
             horizontal: 14, vertical: 7),

@@ -53,3 +53,13 @@ flutter run
 ## License
 
 MIT
+
+Cách 1: Xóa app data trên thiết bị (Nhanh nhất)
+# Trên Android device/emulator
+adb shell pm clear com.delivery.delivery_app
+
+Cách 2: Uninstall và reinstall
+bash
+flutter clean
+flutter pub get
+flutter run

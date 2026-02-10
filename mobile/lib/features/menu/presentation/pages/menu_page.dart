@@ -7,6 +7,7 @@ import '../widgets/menu_profile_header.dart';
 import '../widgets/menu_order_tracking.dart';
 import '../widgets/menu_utilities.dart';
 import '../widgets/menu_support.dart';
+import '../widgets/menu_role_upgrade.dart';
 import '../widgets/menu_product_suggestions.dart';
 import 'seller_menu_content.dart';
 
@@ -51,6 +52,8 @@ class MenuPage extends StatelessWidget {
         MenuUtilities(isVi: isVi),
         const SizedBox(height: 16),
         MenuSupport(isVi: isVi),
+        const SizedBox(height: 16),
+        MenuRoleUpgrade(isVi: isVi),
         const SizedBox(height: 20),
         MenuProductSuggestions(isVi: isVi),
       ]),

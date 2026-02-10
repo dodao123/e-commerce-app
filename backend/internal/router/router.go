@@ -12,6 +12,7 @@ import (
 func NewRouter(
 	authHandler *handler.AuthHandler,
 	emailAuthHandler *handler.EmailAuthHandler,
+	shopHandler *handler.ShopHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -34,6 +35,19 @@ func NewRouter(
 	mux.Handle("/api/v1/auth/role",
 		authGuard(http.HandlerFunc(authHandler.HandleUpdateRole)),
 	)
+
+	// Shop routes (protected, requires JWT)
+	if shopHandler != nil {
+		mux.Handle("/api/v1/shops",
+			authGuard(http.HandlerFunc(shopHandler.HandleCreateShop)),
+		)
+		mux.Handle("/api/v1/shops/me",
+			authGuard(http.HandlerFunc(shopHandler.HandleGetMyShop)),
+		)
+		mux.Handle("/api/v1/shops/{id}",
+			authGuard(http.HandlerFunc(shopHandler.HandleUpdateShop)),
+		)
+	}
 
 	// Root route for quick check
 	mux.HandleFunc("/", handleRoot)
