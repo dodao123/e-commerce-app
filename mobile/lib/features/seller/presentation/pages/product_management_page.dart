@@ -121,7 +121,11 @@ class _ProductManagementPageState
               .map((s) => ProductTabContent(
                 key: ValueKey('${s}_$_refreshKey'),
                 isVi: isVi, isDark: isDark,
-                status: s)).toList())),
+                status: s,
+                onProductChanged: () {
+                  setState(() => _refreshKey++);
+                  _loadTabCounts();
+                })).toList())),
       ]),
       bottomNavigationBar: _addProductButton(isDark, isVi),
     );

@@ -82,6 +82,10 @@ func NewRouter(
 			authGuard(http.HandlerFunc(
 				productHandler.HandleUploadImages)),
 		)
+		mux.Handle("/api/v1/products/{id}/images/delete",
+			authGuard(http.HandlerFunc(
+				productHandler.HandleDeleteImages)),
+		)
 	}
 
 	// Static file server for product images

@@ -15,6 +15,14 @@ func (service *ProductService) GetProduct(
 	return service.productRepository.GetProductByID(ctx, productID)
 }
 
+// GetShopBySellerID retrieves a shop by seller user ID.
+func (service *ProductService) GetShopBySellerID(
+	ctx context.Context,
+	sellerID string,
+) (*model.Shop, error) {
+	return service.shopRepository.GetShopBySellerID(ctx, sellerID)
+}
+
 // ListProducts retrieves products for a seller's shop.
 func (service *ProductService) ListProducts(
 	ctx context.Context,
@@ -37,6 +45,7 @@ func (service *ProductService) ListProducts(
 }
 
 // DeleteProduct deletes a product owned by the seller.
+// Also removes the product's image folder from disk.
 func (service *ProductService) DeleteProduct(
 	ctx context.Context,
 	sellerID string,
@@ -55,7 +64,16 @@ func (service *ProductService) DeleteProduct(
 		return fmt.Errorf("unauthorized: not product owner")
 	}
 
-	return service.productRepository.DeleteProduct(ctx, productID)
+	// Delete from database first
+	if err := service.productRepository.DeleteProduct(
+		ctx, productID); err != nil {
+		return err
+	}
+
+	// Clean up image folder from disk
+	_ = service.DeleteProductFolder(shop.ID, productID)
+
+	return nil
 }
 
 // UpdateProductImages saves updated image URLs to the database.
