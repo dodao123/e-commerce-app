@@ -13,6 +13,7 @@ func NewRouter(
 	authHandler *handler.AuthHandler,
 	emailAuthHandler *handler.EmailAuthHandler,
 	shopHandler *handler.ShopHandler,
+	productHandler *handler.ProductHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -48,6 +49,45 @@ func NewRouter(
 			authGuard(http.HandlerFunc(shopHandler.HandleUpdateShop)),
 		)
 	}
+
+	// Product routes (protected, requires JWT)
+	if productHandler != nil {
+		mux.Handle("/api/v1/products",
+			authGuard(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case http.MethodPost:
+					productHandler.HandleCreateProduct(w, r)
+				case http.MethodGet:
+					productHandler.HandleListProducts(w, r)
+				default:
+					http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				}
+			})),
+		)
+		mux.Handle("/api/v1/products/{id}",
+			authGuard(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				switch r.Method {
+				case http.MethodGet:
+					productHandler.HandleGetProduct(w, r)
+				case http.MethodPut:
+					productHandler.HandleUpdateProduct(w, r)
+				case http.MethodDelete:
+					productHandler.HandleDeleteProduct(w, r)
+				default:
+					http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+				}
+			})),
+		)
+		mux.Handle("/api/v1/products/{id}/images",
+			authGuard(http.HandlerFunc(
+				productHandler.HandleUploadImages)),
+		)
+	}
+
+	// Static file server for product images
+	mux.Handle("/uploads/",
+		http.StripPrefix("/uploads/",
+			http.FileServer(http.Dir("uploads"))))
 
 	// Root route for quick check
 	mux.HandleFunc("/", handleRoot)

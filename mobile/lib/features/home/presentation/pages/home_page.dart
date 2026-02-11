@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../data/datasources/product_local_datasource.dart';
+import '../../data/datasources/product_home_datasource.dart';
 import '../../data/models/product_model.dart';
 import '../widgets/hero_banner.dart';
 import '../widgets/product_filter_tabs.dart';
@@ -10,7 +10,7 @@ import '../widgets/product_card.dart';
 import '../widgets/special_section.dart';
 import 'product_detail_page.dart';
 
-/// Home page displaying featured products, grid, and special section.
+/// Home page displaying real products from API.
 class HomePage extends StatefulWidget {
   /// Creates the HomePage widget.
   const HomePage({super.key});
@@ -20,15 +20,36 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _products = ProductLocalDatasource.getMockProducts();
+  final _datasource = ProductHomeDatasource();
+  List<ProductModel> _products = [];
+  bool _loading = true;
   final _tabs = ['All Product', 'Recommended', 'New Product', 'Popular'];
   final _tabsVi = ['Tất Cả', 'Đề Xuất', 'Sản Phẩm Mới', 'Phổ Biến'];
   int _selectedTab = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      final products = await _datasource.fetchProducts();
+      debugPrint('🏠 Home loaded ${products.length} products');
+      if (!mounted) return;
+      setState(() { _products = products; _loading = false; });
+    } catch (e) {
+      debugPrint('🏠 Home load error: $e');
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
   List<ProductModel> get _filteredProducts {
     if (_selectedTab == 0) return _products;
-    final category = _tabs[_selectedTab];
-    return _products.where((p) => p.category == category).toList();
+    final isNewTab = _selectedTab == 2;
+    if (isNewTab) return _products.where((p) => p.isNew).toList();
+    return _products;
   }
 
   void _navigateToDetail(ProductModel product) {
@@ -39,8 +60,29 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_products.isEmpty) {
+      return Center(child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.inventory_2_outlined, size: 48,
+              color: Colors.grey),
+          const SizedBox(height: 12),
+          const Text('No products found'),
+          const SizedBox(height: 8),
+          TextButton(onPressed: () {
+            setState(() => _loading = true);
+            _loadProducts();
+          }, child: const Text('Retry')),
+        ]));
+    }
+    return RefreshIndicator(
+      onRefresh: _loadProducts,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 8),
@@ -61,36 +103,19 @@ class _HomePageState extends State<HomePage> {
           _buildProductGrid(),
           const SizedBox(height: 24),
           SpecialSection(
-            products: _products.where((p) => p.price <= 300).toList(),
+            products: _products.length > 4
+                ? _products.sublist(4) : _products,
             onProductTap: _navigateToDetail,
           ),
           const SizedBox(height: 24),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildSectionHeader() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-              context.watch<AppProvider>().locale.languageCode == 'vi'
-                  ? 'Sản Phẩm' : 'Our Products',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.tune, color: Colors.white, size: 18),
-          ),
-        ],
-      ),
-    );
+    return _SectionHeader(isVi:
+        context.watch<AppProvider>().locale.languageCode == 'vi');
   }
 
   Widget _buildProductGrid() {
@@ -107,6 +132,36 @@ class _HomePageState extends State<HomePage> {
       itemBuilder: (_, i) => ProductCard(
         product: items[i],
         onTap: () => _navigateToDetail(items[i]),
+      ),
+    );
+  }
+}
+
+/// Section header with filter icon.
+class _SectionHeader extends StatelessWidget {
+  final bool isVi;
+  const _SectionHeader({required this.isVi});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(isVi ? 'Sản Phẩm' : 'Our Products',
+              style: const TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold)),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.black87,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(
+                Icons.tune, color: Colors.white, size: 18),
+          ),
+        ],
       ),
     );
   }

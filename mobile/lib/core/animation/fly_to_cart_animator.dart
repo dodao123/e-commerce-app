@@ -15,9 +15,10 @@ class FlyToCartOverlay extends StatefulWidget {
     required Offset start,
     required Offset end,
     required String imageAsset,
+    bool isNetwork = false,
   }) {
     context.findAncestorStateOfType<FlyToCartOverlayState>()
-        ?._startAnimation(start, end, imageAsset);
+        ?._startAnimation(start, end, imageAsset, isNetwork);
   }
 
   @override
@@ -34,6 +35,7 @@ class FlyToCartOverlayState extends State<FlyToCartOverlay>
   Offset _end = Offset.zero;
   Offset _control = Offset.zero;
   String _imageAsset = '';
+  bool _isNetwork = false;
   final _random = Random();
 
   @override
@@ -50,10 +52,12 @@ class FlyToCartOverlayState extends State<FlyToCartOverlay>
     });
   }
 
-  void _startAnimation(Offset start, Offset end, String asset) {
+  void _startAnimation(
+      Offset start, Offset end, String asset, bool isNet) {
     _start = start;
     _end = end;
     _imageAsset = asset;
+    _isNetwork = isNet;
     _control = _randomControlPoint(start, end);
     setState(() => _isAnimating = true);
     _controller.forward(from: 0);
@@ -103,9 +107,14 @@ class FlyToCartOverlayState extends State<FlyToCartOverlay>
         child: SizedBox(width: size, height: size,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.asset(_imageAsset, fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(
-                    Icons.shopping_cart, size: 14,
-                    color: Colors.orange))))));
+            child: _isNetwork
+                ? Image.network(_imageAsset, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Icon(
+                        Icons.shopping_cart, size: 14,
+                        color: Colors.orange))
+                : Image.asset(_imageAsset, fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const Icon(
+                        Icons.shopping_cart, size: 14,
+                        color: Colors.orange))))));
   }
 }

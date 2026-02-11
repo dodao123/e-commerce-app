@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../seller/presentation/pages/product_management_page.dart';
 
 /// Seller tools grid: My Products, Sales Performance,
 /// Advertising, Marketing, Support Center.
@@ -32,7 +33,10 @@ class SellerTools extends StatelessWidget {
             children: [
               _toolItem(Icons.storefront_outlined,
                   isVi ? 'Sản phẩm\ncủa tôi' : 'My\nProducts',
-                  const Color(0xFF3A7BD5)),
+                  const Color(0xFF3A7BD5),
+                  onTap: () => Navigator.push(context,
+                    MaterialPageRoute(builder: (_) =>
+                        const ProductManagementPage()))),
               _toolItem(Icons.trending_up_rounded,
                   isVi ? 'Hiệu quả\nbán hàng' : 'Sales\nPerformance',
                   const Color(0xFFFF6D00)),
@@ -55,9 +59,10 @@ class SellerTools extends StatelessWidget {
     );
   }
 
-  Widget _toolItem(IconData icon, String label, Color color) {
+  Widget _toolItem(IconData icon, String label, Color color,
+      {VoidCallback? onTap}) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: SizedBox(width: 90,
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Container(

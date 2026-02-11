@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/price_formatter.dart';
 import '../../data/models/product_model.dart';
 
 /// Info section displayed below the image on the product detail page.
@@ -49,7 +50,7 @@ class DetailInfoSection extends StatelessWidget {
               style: const TextStyle(
                   fontSize: 24, fontWeight: FontWeight.bold)),
         ),
-        Text('\$ ${product.price.toInt()}',
+        Text(PriceFormatter.format(product.price),
             style: const TextStyle(
                 fontSize: 22, fontWeight: FontWeight.bold)),
       ],

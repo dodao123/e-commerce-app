@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../pages/product_management_page.dart';
 
 /// Grid of quick action buttons for the shop dashboard.
 class ShopQuickActions extends StatelessWidget {
@@ -18,7 +19,9 @@ class ShopQuickActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final actions = [
       _Action(Icons.inventory_2_outlined,
-          isVi ? 'Sản phẩm' : 'Products', const Color(0xFF4A3ADB)),
+          isVi ? 'Sản phẩm' : 'Products', const Color(0xFF4A3ADB),
+          onTap: () => Navigator.push(context, MaterialPageRoute(
+              builder: (_) => const ProductManagementPage()))),
       _Action(Icons.receipt_long_outlined,
           isVi ? 'Đơn hàng' : 'Orders', const Color(0xFFEF6C4A)),
       _Action(Icons.bar_chart_outlined,
@@ -36,7 +39,9 @@ class ShopQuickActions extends StatelessWidget {
   }
 
   Widget _tile(_Action action) {
-    return Container(
+    return GestureDetector(
+      onTap: action.onTap,
+      child: Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isDark ? DarkColors.surface : Colors.white,
@@ -58,7 +63,7 @@ class ShopQuickActions extends StatelessWidget {
           Text(action.label, style: TextStyle(fontSize: 13,
             fontWeight: FontWeight.w600,
             color: isDark ? DarkColors.textPrimary : Colors.black87)),
-        ]));
+        ])));
   }
 }
 
@@ -67,5 +72,6 @@ class _Action {
   final IconData icon;
   final String label;
   final Color color;
-  const _Action(this.icon, this.label, this.color);
+  final VoidCallback? onTap;
+  const _Action(this.icon, this.label, this.color, {this.onTap});
 }

@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
 )
 
 // main initializes configuration, database, router, and starts the server.
@@ -52,13 +53,22 @@ func main() {
 	var authHandler *handler.AuthHandler
 	var emailAuthHandler *handler.EmailAuthHandler
 	var shopHandler *handler.ShopHandler
+	var productHandler *handler.ProductHandler
+
+	// Image service (for bg removal + uploads)
+	uploadRoot := filepath.Join(".", "uploads")
+	imageService := service.NewImageService(
+		uploadRoot, "http://localhost:5050")
 
 	if db != nil {
 		userRepo := repository.NewPostgresUserRepository(db.Pool)
 		authProviderRepo := repository.NewPostgresAuthProviderRepository(db.Pool)
 		shopRepo := repository.NewPostgresShopRepository(db.Pool)
+		productRepo := repository.NewPostgresProductRepository(db.Pool)
 
 		shopService := service.NewShopService(shopRepo, userRepo)
+		productService := service.NewProductService(
+			productRepo, shopRepo, imageService)
 
 		authHandler = handler.NewAuthHandler(
 			userRepo, authProviderRepo,
@@ -70,10 +80,14 @@ func main() {
 		)
 
 		shopHandler = handler.NewShopHandler(shopService)
+		productHandler = handler.NewProductHandler(
+			productService, imageService)
 	}
 
 	// Setup router and middleware
-	mux := router.NewRouter(authHandler, emailAuthHandler, shopHandler, jwtService)
+	mux := router.NewRouter(
+		authHandler, emailAuthHandler,
+		shopHandler, productHandler, jwtService)
 	httpHandler := middleware.ApplyCORS(middleware.ApplyLogger(mux))
 
 	// Start HTTP server
@@ -97,5 +111,8 @@ func printRoutes(port string) {
 	fmt.Println("🔐 Role:     POST " + base + "/api/v1/auth/role (JWT)")
 	fmt.Println("🏪 Shop:     POST " + base + "/api/v1/shops (JWT)")
 	fmt.Println("🏪 My Shop:  GET  " + base + "/api/v1/shops/me (JWT)")
-	fmt.Println("🏪 Update:   PUT  " + base + "/api/v1/shops/{id} (JWT)")
+	fmt.Println("📦 Products: POST " + base + "/api/v1/products (JWT)")
+	fmt.Println("📦 List:     GET  " + base + "/api/v1/products (JWT)")
+	fmt.Println("📦 Detail:   GET  " + base + "/api/v1/products/{id}")
+	fmt.Println("📦 Upload:   POST " + base + "/api/v1/products/{id}/images")
 }

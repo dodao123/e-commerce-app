@@ -1,3 +1,5 @@
+import '../../../../core/constants/api_constants.dart';
+
 /// Product model representing an item in the store.
 class ProductModel {
   /// Unique product identifier.
@@ -9,11 +11,14 @@ class ProductModel {
   /// Display name of the product (Vietnamese).
   final String nameVi;
 
-  /// Price in USD.
+  /// Price in VND.
   final double price;
 
   /// URL or asset path for the product image.
   final String imageUrl;
+
+  /// Whether imageUrl is a network URL (true) or asset (false).
+  final bool isNetworkImage;
 
   /// List of detail image URLs for product gallery.
   final List<String> imageDetail;
@@ -43,6 +48,7 @@ class ProductModel {
     this.nameVi = '',
     required this.price,
     required this.imageUrl,
+    this.isNetworkImage = false,
     this.imageDetail = const [],
     this.category = 'All',
     this.description = '',
@@ -52,6 +58,28 @@ class ProductModel {
     this.isNew = false,
   });
 
+  /// Creates a ProductModel from API JSON response.
+  factory ProductModel.fromApiJson(Map<String, dynamic> json) {
+    final images = (json['images'] as List<dynamic>?) ?? [];
+    final firstImage = images.isNotEmpty
+        ? '${ApiConstants.baseUrl}/${images.first}'
+        : '';
+
+    return ProductModel(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0,
+      imageUrl: firstImage,
+      isNetworkImage: firstImage.isNotEmpty,
+      imageDetail: images
+          .map((i) => '${ApiConstants.baseUrl}/$i')
+          .toList(),
+      category: json['category'] ?? 'All',
+      description: json['description'] ?? '',
+      isNew: json['condition'] == 'new',
+    );
+  }
+
   /// Returns localized product name based on language code.
   String localizedName(String languageCode) {
     if (languageCode == 'vi' && nameVi.isNotEmpty) return nameVi;
@@ -60,7 +88,9 @@ class ProductModel {
 
   /// Returns localized description based on language code.
   String localizedDescription(String languageCode) {
-    if (languageCode == 'vi' && descriptionVi.isNotEmpty) return descriptionVi;
+    if (languageCode == 'vi' && descriptionVi.isNotEmpty) {
+      return descriptionVi;
+    }
     return description;
   }
 }

@@ -1,13 +1,23 @@
 /// Centralized API configuration constants.
+///
+/// [baseUrl] is resolved from the `API_HOST` dart-define at build time.
+/// Usage: `flutter run --dart-define=API_HOST=192.168.x.x`
+/// Or use the `scripts/run_dev.ps1` script for automatic IP detection.
 class ApiConstants {
   ApiConstants._();
 
-  /// Base URL for the backend API server.
-  /// Uses PC's WiFi IP for physical device testing.
-  static const String baseUrl = 'http://192.168.1.5:8080';
+  /// Backend server port.
+  static const String _serverPort = '8080';
 
-  /// Base URL for physical device (use your PC's local IP).
-  static const String physicalDeviceUrl = 'http://192.168.1.100:8080';
+  /// Host injected via `--dart-define=API_HOST=<ip>`.
+  /// Falls back to `10.0.2.2` (Android emulator alias for localhost).
+  static const String _apiHost = String.fromEnvironment(
+    'API_HOST',
+    defaultValue: '10.0.2.2',
+  );
+
+  /// Base URL for the backend API server (auto-resolved).
+  static const String baseUrl = 'http://$_apiHost:$_serverPort';
 
   /// Health check endpoint path.
   static const String healthEndpoint = '/api/v1/health';
@@ -36,11 +46,23 @@ class ApiConstants {
   /// Update shop endpoint prefix (PUT /api/v1/shops/{id}).
   static const String updateShopEndpoint = '/api/v1/shops';
 
+  /// Create product endpoint (POST).
+  static const String createProductEndpoint = '/api/v1/products';
+
+  /// List my products endpoint (GET).
+  static const String listProductsEndpoint = '/api/v1/products';
+
+  /// Product detail endpoint prefix (GET /api/v1/products/{id}).
+  static const String productDetailEndpoint = '/api/v1/products';
+
+  /// Upload product images (POST /api/v1/products/{id}/images).
+  static const String uploadImagesEndpoint = '/api/v1/products';
+
   /// Default request timeout in seconds.
   static const int timeoutSeconds = 10;
 
   /// Google Web Client ID (for serverClientId on mobile).
-  /// This is the Web client ID from Google Cloud Console.
   static const String googleWebClientId =
-      '978444193774-2p00rh9qapfuh96c9smuic7aiuh9krrq.apps.googleusercontent.com';
+      '978444193774-2p00rh9qapfuh96c9smuic7aiuh9krrq'
+      '.apps.googleusercontent.com';
 }

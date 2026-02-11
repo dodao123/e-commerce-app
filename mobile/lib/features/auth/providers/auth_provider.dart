@@ -108,6 +108,7 @@ class AuthProvider extends ChangeNotifier {
       final res = await call();
       _accessToken = res['access_token'] as String;
       await _tokenManager.saveToken(_accessToken!);
+      debugPrint('🔑 JWT TOKEN: $_accessToken');
       final u = res['user'] as Map<String, dynamic>;
       await _tokenManager.saveUserProfile(
         userId: u['id'] ?? '', email: u['email'] ?? '',

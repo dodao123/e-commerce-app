@@ -80,3 +80,8 @@ logs/
 *.ps1
 !delete_port.ps1
 node_modules/
+
+# ========================
+# Python
+# ========================
+/bg_remover/venv
