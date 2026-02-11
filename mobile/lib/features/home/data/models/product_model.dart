@@ -2,95 +2,71 @@ import '../../../../core/constants/api_constants.dart';
 
 /// Product model representing an item in the store.
 class ProductModel {
-  /// Unique product identifier.
   final String id;
-
-  /// Display name of the product (English).
+  final String shopId;
   final String name;
-
-  /// Display name of the product (Vietnamese).
   final String nameVi;
-
-  /// Price in VND.
   final double price;
-
-  /// URL or asset path for the product image.
   final String imageUrl;
-
-  /// Whether imageUrl is a network URL (true) or asset (false).
   final bool isNetworkImage;
-
-  /// List of detail image URLs for product gallery.
   final List<String> imageDetail;
-
-  /// Product category for filtering.
   final String category;
-
-  /// Product description text (English).
   final String description;
-
-  /// Product description text (Vietnamese).
   final String descriptionVi;
-
-  /// Average star rating (0-5).
   final double rating;
-
-  /// Number of customer reviews.
   final int reviewCount;
-
-  /// Whether this product is marked as new.
   final bool isNew;
+  final String shopName;
+  final String shopProvince;
+
+  /// Seller's avatar URL.
+  final String shopAvatar;
 
   /// Creates a ProductModel instance.
   const ProductModel({
-    required this.id,
-    required this.name,
-    this.nameVi = '',
-    required this.price,
-    required this.imageUrl,
+    required this.id, this.shopId = '',
+    required this.name, this.nameVi = '',
+    required this.price, required this.imageUrl,
     this.isNetworkImage = false,
-    this.imageDetail = const [],
-    this.category = 'All',
-    this.description = '',
-    this.descriptionVi = '',
-    this.rating = 0.0,
-    this.reviewCount = 0,
+    this.imageDetail = const [], this.category = 'All',
+    this.description = '', this.descriptionVi = '',
+    this.rating = 0.0, this.reviewCount = 0,
     this.isNew = false,
+    this.shopName = '', this.shopProvince = '',
+    this.shopAvatar = '',
   });
 
-  /// Creates a ProductModel from API JSON response.
+  /// Creates a ProductModel from public API JSON response.
   factory ProductModel.fromApiJson(Map<String, dynamic> json) {
     final images = (json['images'] as List<dynamic>?) ?? [];
-    final firstImage = images.isNotEmpty
-        ? '${ApiConstants.baseUrl}/${images.first}'
-        : '';
-
+    final first = images.isNotEmpty
+        ? '${ApiConstants.baseUrl}/${images.first}' : '';
     return ProductModel(
       id: json['id'] ?? '',
+      shopId: json['shop_id'] ?? '',
       name: json['name'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0,
-      imageUrl: firstImage,
-      isNetworkImage: firstImage.isNotEmpty,
+      imageUrl: first, isNetworkImage: first.isNotEmpty,
       imageDetail: images
-          .map((i) => '${ApiConstants.baseUrl}/$i')
-          .toList(),
+          .map((i) => '${ApiConstants.baseUrl}/$i').toList(),
       category: json['category'] ?? 'All',
       description: json['description'] ?? '',
       isNew: json['condition'] == 'new',
+      shopName: json['shop_name'] ?? '',
+      shopProvince: json['shop_province'] ?? '',
+      shopAvatar: json['shop_avatar'] ?? '',
     );
   }
 
-  /// Returns localized product name based on language code.
-  String localizedName(String languageCode) {
-    if (languageCode == 'vi' && nameVi.isNotEmpty) return nameVi;
+  /// Returns localized product name.
+  String localizedName(String lang) {
+    if (lang == 'vi' && nameVi.isNotEmpty) return nameVi;
     return name;
   }
 
-  /// Returns localized description based on language code.
-  String localizedDescription(String languageCode) {
-    if (languageCode == 'vi' && descriptionVi.isNotEmpty) {
-      return descriptionVi;
-    }
+  /// Returns localized description.
+  String localizedDescription(String lang) {
+    if (lang == 'vi' && descriptionVi.isNotEmpty) return descriptionVi;
     return description;
   }
 }

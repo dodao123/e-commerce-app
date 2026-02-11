@@ -20,3 +20,8 @@ RUN FE
 
 # Hoặc chỉ định device
 .\scripts\run_dev.ps1 -Device "emulator"
+
+#down sv
+netstat -ano | findstr :8080
+taskkill /PID 5868 /F
+

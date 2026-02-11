@@ -3,22 +3,24 @@ import 'package:http/http.dart' as http;
 import '../../../../core/constants/api_constants.dart';
 import '../models/product_model.dart';
 
-/// Fetches public products from backend for the home page feed.
-/// Uses the public endpoint (no auth required).
-class ProductHomeDatasource {
+/// Fetches products from a specific shop (public endpoint).
+class ShopProductsDatasource {
   final http.Client _client = http.Client();
 
-  /// Fetches public products with pagination support.
-  /// [limit] controls how many products per page.
-  /// [offset] controls where to start fetching.
-  Future<List<ProductModel>> fetchProducts({
+  /// Fetches other products from the same shop.
+  /// [shopId] is the shop identifier.
+  /// [excludeId] excludes the current product from results.
+  /// [limit] controls how many products to load.
+  Future<List<ProductModel>> fetchShopProducts({
+    required String shopId,
+    String excludeId = '',
     int limit = 10,
-    int offset = 0,
   }) async {
     final url = Uri.parse(
         '${ApiConstants.baseUrl}'
-        '${ApiConstants.publicProductsEndpoint}'
-        '?limit=$limit&offset=$offset');
+        '${ApiConstants.shopProductsEndpoint}'
+        '/$shopId/products'
+        '?exclude=$excludeId&limit=$limit');
 
     final response = await _client.get(url, headers: {
       'Content-Type': 'application/json',

@@ -29,6 +29,21 @@ type ProductRepository interface {
 		offset int,
 	) ([]*model.Product, error)
 
+	// ListAllPublicProducts retrieves active products from all shops.
+	ListAllPublicProducts(
+		ctx context.Context,
+		limit int,
+		offset int,
+	) ([]*model.PublicProduct, error)
+
+	// ListProductsByShopPublic retrieves active products by shop ID.
+	ListProductsByShopPublic(
+		ctx context.Context,
+		shopID string,
+		excludeID string,
+		limit int,
+	) ([]*model.PublicProduct, error)
+
 	// UpdateProduct updates product information.
 	UpdateProduct(
 		ctx context.Context,

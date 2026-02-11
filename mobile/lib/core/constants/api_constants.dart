@@ -49,8 +49,14 @@ class ApiConstants {
   /// Create product endpoint (POST).
   static const String createProductEndpoint = '/api/v1/products';
 
-  /// List my products endpoint (GET).
+  /// List my products endpoint (GET, auth required).
   static const String listProductsEndpoint = '/api/v1/products';
+
+  /// Public products feed endpoint (GET, no auth).
+  static const String publicProductsEndpoint = '/api/v1/products/public';
+
+  /// Shop products endpoint (GET /api/v1/shops/{shopId}/products).
+  static const String shopProductsEndpoint = '/api/v1/shops';
 
   /// Product detail endpoint prefix (GET /api/v1/products/{id}).
   static const String productDetailEndpoint = '/api/v1/products';

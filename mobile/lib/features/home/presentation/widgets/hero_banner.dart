@@ -25,7 +25,7 @@ class HeroBanner extends StatelessWidget {
         context.watch<AppProvider>().locale.languageCode;
 
     return Container(
-      margin: const EdgeInsets.only(left: 20, right: 20, top: 20),
+      margin: const EdgeInsets.only(left: 20, right: 20, top: 35),
       height: 180,
       child: Stack(
         clipBehavior: Clip.none,
