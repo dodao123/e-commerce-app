@@ -64,6 +64,15 @@ class ApiConstants {
   /// Upload product images (POST /api/v1/products/{id}/images).
   static const String uploadImagesEndpoint = '/api/v1/products';
 
+  /// Cart endpoint (GET /api/v1/cart — list items).
+  static const String cartEndpoint = '/api/v1/cart';
+
+  /// Cart items endpoint (POST add, PUT/DELETE by id).
+  static const String cartItemsEndpoint = '/api/v1/cart/items';
+
+  /// Cart count endpoint (GET /api/v1/cart/count).
+  static const String cartCountEndpoint = '/api/v1/cart/count';
+
   /// Default request timeout in seconds.
   static const int timeoutSeconds = 10;
 

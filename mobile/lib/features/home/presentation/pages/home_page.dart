@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/role_guard.dart';
 import '../../data/datasources/product_home_datasource.dart';
 import '../../data/models/product_model.dart';
 import 'home_page_content.dart';
@@ -70,6 +71,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _openDetail(ProductModel p) {
+    if (!RoleGuard.checkBuyerRole(context)) return;
     Navigator.push(context, MaterialPageRoute(
         builder: (_) => ProductDetailPage(product: p)));
   }

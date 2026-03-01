@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/providers/app_provider.dart';
+import '../../../../core/providers/cart_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/role_guard.dart';
 import '../../data/models/product_model.dart';
 import '../widgets/detail_image_carousel.dart';
 
@@ -48,11 +52,32 @@ Widget _navButton(
 }
 
 /// Builds the "Add to cart" bottom button.
-Widget buildDetailCartButton(String lang) {
+Widget buildDetailCartButton(
+    BuildContext context, String lang, String productId) {
+  final isVi = context.read<AppProvider>()
+      .locale.languageCode == 'vi';
   return Padding(
     padding: const EdgeInsets.fromLTRB(40, 0, 40, 30),
     child: ElevatedButton(
-      onPressed: () {},
+      onPressed: () async {
+        if (!RoleGuard.checkBuyerRole(context)) return;
+        final cart = context.read<CartProvider>();
+        final ok = await cart.addToCart(productId, 1);
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(ok
+              ? (isVi ? 'Đã thêm vào giỏ hàng'
+                  : 'Added to cart')
+              : (isVi ? 'Không thể thêm vào giỏ'
+                  : 'Failed to add to cart')),
+          backgroundColor: ok ? AppColors.primary : Colors.red,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 2),
+        ));
+      },
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

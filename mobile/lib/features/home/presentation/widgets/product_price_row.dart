@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/animation/fly_to_cart_animator.dart';
 import '../../../../core/providers/cart_icon_key_provider.dart';
+import '../../../../core/providers/cart_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/price_formatter.dart';
+import '../../../../core/utils/role_guard.dart';
 import '../../data/models/product_model.dart';
 
 /// Price row with fly-to-cart animation button.
@@ -16,6 +18,9 @@ class ProductPriceRow extends StatelessWidget {
     super.key, required this.product, required this.isDark});
 
   void _handleAddToCart(BuildContext ctx, GlobalKey key) {
+    if (!RoleGuard.checkBuyerRole(ctx)) return;
+
+    // Play fly animation
     final cartKey =
         ctx.read<CartIconKeyProvider>().cartIconKey;
     final cartBox = cartKey.currentContext?.findRenderObject()
@@ -30,6 +35,9 @@ class ProductPriceRow extends StatelessWidget {
     FlyToCartOverlay.fly(ctx, start: start, end: end,
         imageAsset: product.imageUrl,
         isNetwork: product.isNetworkImage);
+
+    // Call add-to-cart API
+    ctx.read<CartProvider>().addToCart(product.id, 1);
   }
 
   @override

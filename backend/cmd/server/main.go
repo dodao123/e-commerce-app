@@ -54,6 +54,7 @@ func main() {
 	var emailAuthHandler *handler.EmailAuthHandler
 	var shopHandler *handler.ShopHandler
 	var productHandler *handler.ProductHandler
+	var cartHandler *handler.CartHandler
 
 	// Image service (for bg removal + uploads)
 	uploadRoot := filepath.Join(".", "uploads")
@@ -82,12 +83,17 @@ func main() {
 		shopHandler = handler.NewShopHandler(shopService)
 		productHandler = handler.NewProductHandler(
 			productService, imageService)
+
+		// Cart DI chain
+		cartRepo := repository.NewPostgresCartRepository(db.Pool)
+		cartService := service.NewCartService(cartRepo, productRepo)
+		cartHandler = handler.NewCartHandler(cartService)
 	}
 
 	// Setup router and middleware
 	mux := router.NewRouter(
 		authHandler, emailAuthHandler,
-		shopHandler, productHandler, jwtService)
+		shopHandler, productHandler, cartHandler, jwtService)
 	httpHandler := middleware.ApplyCORS(middleware.ApplyLogger(mux))
 
 	// Start HTTP server
@@ -115,4 +121,9 @@ func printRoutes(port string) {
 	fmt.Println("📦 List:     GET  " + base + "/api/v1/products (JWT)")
 	fmt.Println("📦 Detail:   GET  " + base + "/api/v1/products/{id}")
 	fmt.Println("📦 Upload:   POST " + base + "/api/v1/products/{id}/images")
+	fmt.Println("🛒 Cart:     GET  " + base + "/api/v1/cart (JWT)")
+	fmt.Println("🛒 Add:      POST " + base + "/api/v1/cart/items (JWT)")
+	fmt.Println("🛒 Update:   PUT  " + base + "/api/v1/cart/items/{id} (JWT)")
+	fmt.Println("🛒 Remove:   DEL  " + base + "/api/v1/cart/items/{id} (JWT)")
+	fmt.Println("🛒 Count:    GET  " + base + "/api/v1/cart/count (JWT)")
 }

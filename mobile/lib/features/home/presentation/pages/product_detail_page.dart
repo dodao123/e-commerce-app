@@ -71,6 +71,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
               const SizedBox(height: 24),
             ]))),
       ]),
-      bottomNavigationBar: buildDetailCartButton(lang));
+      bottomNavigationBar: buildDetailCartButton(
+          context, lang, widget.product.id));
   }
 }

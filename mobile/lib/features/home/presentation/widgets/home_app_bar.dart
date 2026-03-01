@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/providers/cart_icon_key_provider.dart';
+import '../../../../core/providers/cart_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/role_guard.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../../../auth/providers/auth_provider.dart';
+import '../../../cart/presentation/pages/cart_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 
 /// Custom app bar with settings, search, cart, and login/profile.
@@ -43,18 +46,14 @@ class HomeAppBar extends StatelessWidget {
             icon: const Icon(Icons.search, size: 26)),
         // Cart — GlobalKey for fly-to-cart animation target
         Stack(key: cartKey, children: [
-          IconButton(onPressed: () {},
+          IconButton(onPressed: () {
+              if (!RoleGuard.checkBuyerRole(context)) return;
+              Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => const CartPage()));
+            },
               icon: const Icon(Icons.shopping_cart_outlined, size: 24)),
           Positioned(right: 6, top: 6,
-            child: Container(
-              width: 16, height: 16,
-              decoration: const BoxDecoration(
-                color: AppColors.primary, shape: BoxShape.circle),
-              child: const Center(
-                child: Text('0', style: TextStyle(
-                    color: Colors.white, fontSize: 10,
-                    fontWeight: FontWeight.bold))),
-            )),
+            child: _buildCartBadge(context)),
         ]),
         const SizedBox(width: 4),
         // Avatar or Login
@@ -106,5 +105,20 @@ class HomeAppBar extends StatelessWidget {
           child: const Text('Logout',
               style: TextStyle(color: Colors.red))),
       ]));
+  }
+
+  /// Builds the cart badge with live count from CartProvider.
+  Widget _buildCartBadge(BuildContext context) {
+    final count = context.watch<CartProvider>().totalCount;
+    if (count <= 0) return const SizedBox.shrink();
+    return Container(
+      width: 16, height: 16,
+      decoration: const BoxDecoration(
+        color: AppColors.primary, shape: BoxShape.circle),
+      child: Center(
+        child: Text('$count', style: const TextStyle(
+            color: Colors.white, fontSize: 10,
+            fontWeight: FontWeight.bold))),
+    );
   }
 }
