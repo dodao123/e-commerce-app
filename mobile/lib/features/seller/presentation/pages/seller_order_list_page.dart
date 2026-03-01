@@ -4,6 +4,7 @@ import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/price_formatter.dart';
 import '../../data/shop_order_datasource.dart';
+import 'seller_order_detail_page.dart';
 
 /// Seller's order list with status tabs.
 class SellerOrderListPage extends StatefulWidget {
@@ -121,7 +122,7 @@ class _SellerOrderListPageState
     final name = o['receiver_name'] ?? '';
     final orderId = o['id']?.toString() ?? '';
     return GestureDetector(
-      onTap: () => _showActions(o, isVi),
+      onTap: () => _viewDetail(o),
       child: Container(
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
@@ -191,33 +192,12 @@ class _SellerOrderListPageState
               color: colors[status] ?? Colors.grey)));
   }
 
-  void _showActions(
-      Map<String, dynamic> o, bool isVi) {
-    final status = o['status'] ?? '';
-    if (status == 'delivered' || status == 'cancelled') {
-      return;
-    }
-    final next = status == 'pending'
-        ? 'shipping' : 'delivered';
-    final label = status == 'pending'
-        ? (isVi ? 'Xác nhận đơn' : 'Confirm')
-        : (isVi ? 'Đã giao' : 'Mark delivered');
-    showModalBottomSheet(
-      context: context,
-      builder: (_) => SafeArea(child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: ElevatedButton(
-          onPressed: () async {
-            Navigator.pop(context);
-            await _ds.updateStatus(o['id'], next);
-            _fetchOrders();
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10))),
-          child: Text(label)))));
+  void _viewDetail(Map<String, dynamic> o) async {
+    final orderId = o['id']?.toString() ?? '';
+    if (orderId.isEmpty) return;
+    await Navigator.push(context, MaterialPageRoute(
+        builder: (_) => SellerOrderDetailPage(
+            orderId: orderId)));
+    _fetchOrders(); // refresh on return
   }
 }

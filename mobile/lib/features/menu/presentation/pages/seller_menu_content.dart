@@ -20,6 +20,9 @@ class SellerMenuContent extends StatelessWidget {
   /// Avatar URL.
   final String avatarUrl;
 
+  /// Shop ID for order queries.
+  final String shopId;
+
   /// Creates the SellerMenuContent widget.
   const SellerMenuContent({
     super.key,
@@ -27,6 +30,7 @@ class SellerMenuContent extends StatelessWidget {
     required this.shopName,
     required this.shopEmail,
     required this.avatarUrl,
+    required this.shopId,
   });
 
   @override
@@ -43,7 +47,7 @@ class SellerMenuContent extends StatelessWidget {
         const SizedBox(height: 16),
 
         // 2. Order stats
-        SellerOrderStats(isVi: isVi),
+        SellerOrderStats(isVi: isVi, shopId: shopId),
         const SizedBox(height: 16),
 
         // 3. Seller tools

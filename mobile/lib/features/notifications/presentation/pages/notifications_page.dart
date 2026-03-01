@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/services/notification_polling_service.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../orders/presentation/pages/buyer_order_list_page.dart';
+import '../../../seller/presentation/pages/seller_order_detail_page.dart';
 import '../../data/notification_datasource.dart';
 
 /// Notifications page — fetches from backend API.
@@ -155,9 +155,11 @@ class _NotificationsPageState
       await _ds.markRead(id);
       _polling.refresh();
     }
-    if (mounted) {
-      Navigator.push(context, MaterialPageRoute(
-          builder: (_) => const BuyerOrderListPage()));
+    final refId = n['ref_id']?.toString() ?? '';
+    if (mounted && refId.isNotEmpty) {
+      await Navigator.push(context, MaterialPageRoute(
+          builder: (_) => SellerOrderDetailPage(
+              orderId: refId)));
       _fetch();
     }
   }
