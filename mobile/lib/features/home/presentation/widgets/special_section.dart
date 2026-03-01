@@ -25,12 +25,11 @@ class SpecialSection extends StatelessWidget {
     final lang =
         context.watch<AppProvider>().locale.languageCode;
 
+    // TODO: Replace with algorithm-based product recommendations.
     return Column(
       children: [
         _buildHeader(isDark, lang),
         const SizedBox(height: 14),
-        ...products.map(
-            (p) => _buildItem(p, isDark, lang)),
       ],
     );
   }

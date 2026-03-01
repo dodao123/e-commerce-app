@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/animation/fly_to_cart_animator.dart';
 import 'core/providers/app_provider.dart';
@@ -9,6 +10,10 @@ import 'features/shell/main_shell.dart';
 
 /// Entry point of the Delivery App.
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
   runApp(
     MultiProvider(
       providers: [
