@@ -5,6 +5,7 @@ import 'core/animation/fly_to_cart_animator.dart';
 import 'core/providers/app_provider.dart';
 import 'core/providers/cart_icon_key_provider.dart';
 import 'core/providers/cart_provider.dart';
+import 'core/services/notification_polling_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/shell/main_shell.dart';
@@ -47,6 +48,12 @@ class _DeliveryAppState extends State<DeliveryApp> {
       if (!mounted) return;
       if (auth.isLoggedIn && auth.userRole == 'buyer') {
         context.read<CartProvider>().fetchCount();
+      }
+      // Start notification polling for sellers
+      if (auth.isLoggedIn) {
+        final notifSvc = NotificationPollingService();
+        await notifSvc.init();
+        notifSvc.startPolling();
       }
     });
   }

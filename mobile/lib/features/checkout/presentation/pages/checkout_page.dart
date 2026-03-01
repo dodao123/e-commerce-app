@@ -430,14 +430,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
       'shipping_method': 'standard',
       'payment_method': 'cod',
       'note': '',
-      'items': widget.items.map((i) => {
-        'product_id': i['product_id'] ?? i['id'],
-        'product_name': i['product_name'] ?? i['name'],
-        'product_image': i['product_image'] ?? '',
-        'price': i['price'],
-        'quantity': i['quantity'],
-        'shop_id': i['shop_id'] ?? '',
-        'shop_name': i['shop_name'] ?? '',
+      'items': widget.items.map((i) {
+        return <String, dynamic>{
+          'product_id': i['product_id'] ?? i['id'],
+          'product_name': i['product_name'] ?? i['name'],
+          'product_image': i['product_image'] ?? '',
+          'price': i['price'],
+          'quantity': i['quantity'],
+          'shop_id': i['shop_id'] ?? '',
+          'shop_name': i['shop_name'] ?? '',
+        };
       }).toList(),
     };
     final result = await _orderDS.placeOrder(body);

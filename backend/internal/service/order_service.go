@@ -9,9 +9,10 @@ import (
 
 // OrderService handles order business logic.
 type OrderService struct {
-	orderRepo   *repository.PostgresOrderRepository
-	addressRepo *repository.PostgresAddressRepository
-	cartRepo    *repository.PostgresCartRepository
+	orderRepo    *repository.PostgresOrderRepository
+	addressRepo  *repository.PostgresAddressRepository
+	cartRepo     *repository.PostgresCartRepository
+	notifService *NotificationService
 }
 
 // NewOrderService creates a new OrderService.
@@ -19,11 +20,13 @@ func NewOrderService(
 	orderRepo *repository.PostgresOrderRepository,
 	addressRepo *repository.PostgresAddressRepository,
 	cartRepo *repository.PostgresCartRepository,
+	notifService *NotificationService,
 ) *OrderService {
 	return &OrderService{
-		orderRepo:   orderRepo,
-		addressRepo: addressRepo,
-		cartRepo:    cartRepo,
+		orderRepo:    orderRepo,
+		addressRepo:  addressRepo,
+		cartRepo:     cartRepo,
+		notifService: notifService,
 	}
 }
 
@@ -60,6 +63,11 @@ func (s *OrderService) PlaceOrder(
 	}
 	// Clear cart after ordering
 	_ = s.cartRepo.ClearCart(userID)
+	// Notify seller(s)
+	if s.notifService != nil {
+		go s.notifService.CreateOrderNotification(
+			created, req.Items)
+	}
 	return created, nil
 }
 

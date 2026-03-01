@@ -25,6 +25,7 @@ func allMigrations() []migrationEntry {
 		{Name: "006_create_delivery_addresses", SQL: CreateDeliveryAddressesTableSQL},
 		{Name: "007_create_orders", SQL: CreateOrdersTableSQL},
 		{Name: "008_create_order_items", SQL: CreateOrderItemsTableSQL},
+		{Name: "009_create_notifications", SQL: CreateNotificationsTableSQL},
 	}
 }
 

@@ -86,6 +86,14 @@ class ApiConstants {
   static const String shopOrdersCountEndpoint =
       '/api/v1/shop/orders/count';
 
+  /// Notifications endpoint (GET list).
+  static const String notificationsEndpoint =
+      '/api/v1/notifications';
+
+  /// Unread notifications count endpoint.
+  static const String notifUnreadEndpoint =
+      '/api/v1/notifications/unread';
+
   /// Default request timeout in seconds.
   static const int timeoutSeconds = 10;
 
