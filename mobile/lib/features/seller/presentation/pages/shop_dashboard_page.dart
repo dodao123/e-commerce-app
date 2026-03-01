@@ -34,7 +34,9 @@ class ShopDashboardPage extends StatelessWidget {
         child: Column(children: [
           _shopInfoCard(),
           const SizedBox(height: 24),
-          ShopQuickActions(isVi: isVi, isDark: isDark),
+          ShopQuickActions(
+            isVi: isVi, isDark: isDark,
+            shopId: shopData['id']?.toString() ?? ''),
         ])));
   }
 

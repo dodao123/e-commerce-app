@@ -72,6 +72,6 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             ]))),
       ]),
       bottomNavigationBar: buildDetailCartButton(
-          context, lang, widget.product.id));
+          context, lang, widget.product));
   }
 }

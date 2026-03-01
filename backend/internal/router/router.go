@@ -15,6 +15,8 @@ func NewRouter(
 	shopHandler *handler.ShopHandler,
 	productHandler *handler.ProductHandler,
 	cartHandler *handler.CartHandler,
+	addressHandler *handler.AddressHandler,
+	orderHandler *handler.OrderHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -56,6 +58,12 @@ func NewRouter(
 
 	// Cart routes (protected, requires JWT)
 	registerCartRoutes(mux, cartHandler, authGuard)
+
+	// Address routes (protected)
+	registerAddressRoutes(mux, addressHandler, authGuard)
+
+	// Order routes (protected)
+	registerOrderRoutes(mux, orderHandler, authGuard)
 
 	// Static file server for product images
 	mux.Handle("/uploads/",

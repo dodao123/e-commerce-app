@@ -30,6 +30,11 @@ class CartProvider extends ChangeNotifier {
       .where((i) => _selectedIds.contains(i.id))
       .fold(0, (sum, item) => sum + item.lineTotal);
 
+  /// Returns only selected cart items.
+  List<CartItemModel> get selectedItems =>
+      _items.where((i) => _selectedIds.contains(i.id))
+          .toList();
+
   /// Whether a specific item is selected.
   bool isSelected(String itemId) =>
       _selectedIds.contains(itemId);

@@ -22,6 +22,9 @@ class ProductModel {
   /// Seller's avatar URL.
   final String shopAvatar;
 
+  /// Base shipping fee for this product.
+  final double baseShippingFee;
+
   /// Creates a ProductModel instance.
   const ProductModel({
     required this.id, this.shopId = '',
@@ -34,6 +37,7 @@ class ProductModel {
     this.isNew = false,
     this.shopName = '', this.shopProvince = '',
     this.shopAvatar = '',
+    this.baseShippingFee = 0,
   });
 
   /// Creates a ProductModel from public API JSON response.
@@ -55,6 +59,8 @@ class ProductModel {
       shopName: json['shop_name'] ?? '',
       shopProvince: json['shop_province'] ?? '',
       shopAvatar: json['shop_avatar'] ?? '',
+      baseShippingFee:
+          (json['base_shipping_fee'] as num?)?.toDouble() ?? 0,
     );
   }
 

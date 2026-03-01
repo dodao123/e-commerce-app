@@ -217,9 +217,23 @@ class _AddressPickerPageState
   ].where((s) => s.isNotEmpty).join(', ');
 
   void _submit() {
+    final isVi = context.read<AppProvider>()
+        .locale.languageCode == 'vi';
+    if (_nameCtrl.text.trim().isEmpty) {
+      _showError(isVi
+          ? 'Vui lòng nhập họ và tên'
+          : 'Please enter full name');
+      return;
+    }
+    if (_phoneCtrl.text.trim().isEmpty) {
+      _showError(isVi
+          ? 'Vui lòng nhập số điện thoại'
+          : 'Please enter phone number');
+      return;
+    }
     Navigator.pop(context, {
-      'name': _nameCtrl.text,
-      'phone': _phoneCtrl.text,
+      'name': _nameCtrl.text.trim(),
+      'phone': _phoneCtrl.text.trim(),
       'area': _areaText,
       'street': _streetCtrl.text,
       'lat': _center.latitude,
@@ -228,6 +242,17 @@ class _AddressPickerPageState
       'isPickup': _isPickup,
       'type': _typeIndex == 0 ? 'office' : 'home',
     });
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor: Colors.red.shade400,
+      behavior: SnackBarBehavior.floating,
+      margin: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10)),
+    ));
   }
 
   @override

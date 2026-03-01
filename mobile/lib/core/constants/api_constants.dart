@@ -73,6 +73,19 @@ class ApiConstants {
   /// Cart count endpoint (GET /api/v1/cart/count).
   static const String cartCountEndpoint = '/api/v1/cart/count';
 
+  /// Delivery addresses endpoint (CRUD).
+  static const String addressesEndpoint = '/api/v1/addresses';
+
+  /// Orders endpoint (POST create, GET list).
+  static const String ordersEndpoint = '/api/v1/orders';
+
+  /// Shop orders endpoint (GET seller orders).
+  static const String shopOrdersEndpoint = '/api/v1/shop/orders';
+
+  /// Shop orders count endpoint (GET pending count).
+  static const String shopOrdersCountEndpoint =
+      '/api/v1/shop/orders/count';
+
   /// Default request timeout in seconds.
   static const int timeoutSeconds = 10;
 

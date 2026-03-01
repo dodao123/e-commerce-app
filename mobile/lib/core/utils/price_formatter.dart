@@ -21,4 +21,21 @@ class PriceFormatter {
     }
     return price.toInt().toString();
   }
+
+  /// Formats price as exact VND with dot separators.
+  /// Example: 1532700 → "1.532.700"
+  static String formatFull(double price) {
+    final str = price.toInt().toString();
+    final buffer = StringBuffer();
+    final remainder = str.length % 3;
+    for (var i = 0; i < str.length; i++) {
+      if (i > 0 && (i - remainder) % 3 == 0
+          && remainder != 0 || i > 0
+          && remainder == 0 && i % 3 == 0) {
+        buffer.write('.');
+      }
+      buffer.write(str[i]);
+    }
+    return buffer.toString();
+  }
 }

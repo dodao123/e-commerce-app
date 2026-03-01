@@ -67,44 +67,65 @@ class _LoginPageState extends State<LoginPage> {
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(children: [
-          Stack(children: [
-            LoginHeader(
-              title: isVi ? 'Đăng Nhập' : 'Sign In',
-              subtitle: isVi
-                  ? 'Đăng nhập bằng email\nvà mật khẩu của bạn.'
-                  : 'Login with your email\nand password.'),
-            const AuthBackButton(),
+      body: Stack(children: [
+        SingleChildScrollView(
+          child: Column(children: [
+            Stack(children: [
+              LoginHeader(
+                title: isVi ? 'Đăng Nhập' : 'Sign In',
+                subtitle: isVi
+                    ? 'Đăng nhập bằng email\nvà mật khẩu của bạn.'
+                    : 'Login with your email\nand password.'),
+              const AuthBackButton(),
+            ]),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+              child: Column(children: [
+                if (auth.errorMessage != null)
+                  _buildError(auth.errorMessage!),
+                _buildEmail(isVi),
+                const SizedBox(height: 12),
+                _buildPassword(isVi),
+                const SizedBox(height: 16),
+                LoginActions.buildLoginButton(
+                    isVi, auth.isLoading ? null : _handleEmailLogin),
+                const SizedBox(height: 8),
+                LoginActions.buildForgotPassword(isVi),
+                const SizedBox(height: 10),
+                SocialLoginButtons(
+                  dividerText: isVi ? 'Hoặc đăng nhập với' : 'Or sign in with',
+                  googleLabel: 'Google', facebookLabel: 'Facebook',
+                  onGoogleTap: auth.isLoading ? null : _handleGoogle,
+                  onFacebookTap: auth.isLoading ? null : _handleFacebook),
+                const SizedBox(height: 16),
+                _buildRegisterRow(isVi),
+              ])),
           ]),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10,0, 10),
-            child: Column(children: [
-              if (auth.errorMessage != null)
-                _buildError(auth.errorMessage!),
-              _buildEmail(isVi),
-              const SizedBox(height: 12),
-              _buildPassword(isVi),
-              const SizedBox(height: 16),
-              LoginActions.buildLoginButton(
-                  isVi, auth.isLoading ? null : _handleEmailLogin),
-              const SizedBox(height: 8),
-              LoginActions.buildForgotPassword(isVi),
-              const SizedBox(height: 10),
-              SocialLoginButtons(
-                dividerText: isVi ? 'Hoặc đăng nhập với' : 'Or sign in with',
-                googleLabel: 'Google', facebookLabel: 'Facebook',
-                onGoogleTap: _handleGoogle,
-                onFacebookTap: _handleFacebook),
-              const SizedBox(height: 16),
-              _buildRegisterRow(isVi),
-            ])),
-        ]),
-      ),
+        ),
+        if (auth.isLoading) _buildLoadingOverlay(),
+      ]),
     );
   }
 
 
+  Widget _buildLoadingOverlay() {
+    final isVi = context.read<AppProvider>()
+        .locale.languageCode == 'vi';
+    return Container(
+      color: Colors.black.withValues(alpha: 0.4),
+      child: Center(child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(
+              color: Colors.white),
+          const SizedBox(height: 16),
+          Text(isVi ? 'Đang đăng nhập...'
+              : 'Signing in...',
+              style: const TextStyle(
+                  color: Colors.white, fontSize: 15,
+                  fontWeight: FontWeight.w500)),
+        ])));
+  }
 
   Widget _buildError(String msg) => Padding(
     padding: const EdgeInsets.only(bottom: 16),

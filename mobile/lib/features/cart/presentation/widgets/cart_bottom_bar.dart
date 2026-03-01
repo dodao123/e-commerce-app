@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../../../core/providers/cart_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/price_formatter.dart';
+import '../../../checkout/presentation/pages/checkout_page.dart';
 
 /// Bottom bar with select-all, selected total price, and checkout.
 /// Only selected items count toward the displayed total.
@@ -69,7 +71,7 @@ class CartBottomBar extends StatelessWidget {
           const SizedBox(width: 12),
           // Checkout button
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () => _goCheckout(context, cart),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
@@ -78,7 +80,7 @@ class CartBottomBar extends StatelessWidget {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
               elevation: 0),
-            child: Text(isVi ? 'Kiểm tra' : 'Checkout',
+            child: Text(isVi ? 'Mua hàng' : 'Checkout',
                 style: const TextStyle(
                     fontWeight: FontWeight.w600)),
           ),
@@ -86,4 +88,30 @@ class CartBottomBar extends StatelessWidget {
       ),
     );
   }
+
+  void _goCheckout(BuildContext ctx, CartProvider cart) {
+    final selected = cart.selectedItems;
+    if (selected.isEmpty) {
+      ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+          content: Text(isVi
+              ? 'Vui lòng chọn sản phẩm'
+              : 'Please select items')));
+      return;
+    }
+    final items = selected.map((i) => {
+      'product_id': i.productId,
+      'product_name': i.productName,
+      'product_image': i.productImage.startsWith('http')
+          ? i.productImage
+          : '${ApiConstants.baseUrl}/${i.productImage}',
+      'price': i.price,
+      'quantity': i.quantity,
+      'shop_id': i.shopId,
+      'shop_name': i.shopName,
+      'shipping_fee': 32700,
+    }).toList();
+    Navigator.push(ctx, MaterialPageRoute(
+        builder: (_) => CheckoutPage(items: items)));
+  }
 }
+

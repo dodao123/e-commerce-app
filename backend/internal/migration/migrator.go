@@ -22,6 +22,9 @@ func allMigrations() []migrationEntry {
 		{Name: "003_add_password_hash", SQL: AddPasswordHashSQL},
 		{Name: "004_create_products", SQL: CreateProductsTableSQL},
 		{Name: "005_create_cart_items", SQL: CreateCartItemsTableSQL},
+		{Name: "006_create_delivery_addresses", SQL: CreateDeliveryAddressesTableSQL},
+		{Name: "007_create_orders", SQL: CreateOrdersTableSQL},
+		{Name: "008_create_order_items", SQL: CreateOrderItemsTableSQL},
 	}
 }
 
