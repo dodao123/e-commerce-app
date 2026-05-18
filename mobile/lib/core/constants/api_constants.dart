@@ -7,13 +7,13 @@ class ApiConstants {
   ApiConstants._();
 
   /// Backend server port.
-  static const String _serverPort = '8080';
+  static const String _serverPort = '8081';
 
   /// Host injected via `--dart-define=API_HOST=<ip>`.
   /// Falls back to `10.0.2.2` (Android emulator alias for localhost).
   static const String _apiHost = String.fromEnvironment(
     'API_HOST',
-    defaultValue: '10.0.2.2',
+    defaultValue: '192.168.44.159',
   );
 
   /// Base URL for the backend API server (auto-resolved).

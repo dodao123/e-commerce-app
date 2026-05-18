@@ -22,6 +22,6 @@ RUN FE
 .\scripts\run_dev.ps1 -Device "emulator"
 
 #down sv
-netstat -ano | findstr :8080
+netstat -ano | findstr :8081
 taskkill /PID 5868 /F
 

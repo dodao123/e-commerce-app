@@ -1,4 +1,4 @@
-$PORT = 8080
+$PORT = 8081
 
 Write-Host "Checking process using port $PORT ..."
 
