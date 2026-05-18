@@ -25,6 +25,7 @@ class MenuPage extends StatefulWidget {
 
 class _MenuPageState extends State<MenuPage> {
   String _shopId = '';
+  bool _fetchingShop = false;
 
   @override
   void initState() {
@@ -42,7 +43,16 @@ class _MenuPageState extends State<MenuPage> {
         setState(() =>
             _shopId = shop['id']?.toString() ?? '');
       }
-    } catch (_) {}
+    } catch (_) {} finally {
+      _fetchingShop = false;
+    }
+  }
+
+  void _checkAndFetchShopId(AuthProvider auth) {
+    if (auth.userRole == 'seller' && _shopId.isEmpty && !_fetchingShop) {
+      _fetchingShop = true;
+      Future.microtask(() => _fetchShopId());
+    }
   }
 
   @override
@@ -56,6 +66,7 @@ class _MenuPageState extends State<MenuPage> {
     }
 
     if (auth.userRole == 'seller') {
+      _checkAndFetchShopId(auth);
       return SellerMenuContent(
         isVi: isVi,
         shopName: auth.userName,

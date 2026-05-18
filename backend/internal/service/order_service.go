@@ -75,14 +75,34 @@ func (s *OrderService) PlaceOrder(
 func (s *OrderService) ListOrders(
 	userID string,
 ) ([]model.Order, error) {
-	return s.orderRepo.ListByUser(userID)
+	orders, err := s.orderRepo.ListByUser(userID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range orders {
+		detail, _ := s.orderRepo.GetDetail(orders[i].ID)
+		if detail != nil {
+			orders[i].Items = detail.Items
+		}
+	}
+	return orders, nil
 }
 
 // ListShopOrders returns orders for a seller's shop.
 func (s *OrderService) ListShopOrders(
 	shopID string,
 ) ([]model.Order, error) {
-	return s.orderRepo.ListByShop(shopID)
+	orders, err := s.orderRepo.ListByShop(shopID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range orders {
+		detail, _ := s.orderRepo.GetDetail(orders[i].ID)
+		if detail != nil {
+			orders[i].Items = detail.Items
+		}
+	}
+	return orders, nil
 }
 
 // GetOrderDetail returns order + items.

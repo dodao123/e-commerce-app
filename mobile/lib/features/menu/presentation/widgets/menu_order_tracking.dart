@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../checkout/data/order_datasource.dart';
+import '../../../../core/providers/app_provider.dart';
+import '../../../../core/services/notification_polling_service.dart';
+import 'package:provider/provider.dart';
 import '../../../orders/presentation/pages/buyer_order_list_page.dart';
 
 /// Order tracking section with status icons + badges.
@@ -27,6 +30,20 @@ class _MenuOrderTrackingState
   void initState() {
     super.initState();
     _fetchCounts();
+    NotificationPollingService().unreadCount.addListener(_fetchCounts);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<AppProvider>().orderUpdateTrigger.addListener(_fetchCounts);
+  }
+
+  @override
+  void dispose() {
+    NotificationPollingService().unreadCount.removeListener(_fetchCounts);
+    context.read<AppProvider>().orderUpdateTrigger.removeListener(_fetchCounts);
+    super.dispose();
   }
 
   Future<void> _fetchCounts() async {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../auth/providers/auth_provider.dart';
+import '../../../../core/services/notification_polling_service.dart';
 import 'role_upgrade_tile.dart';
 
 /// Section displaying role switch options.
@@ -101,6 +102,7 @@ class MenuRoleUpgrade extends StatelessWidget {
           ? 'Đã chuyển vai trò thành công!'
           : 'Role switched successfully!'),
         backgroundColor: Colors.green));
+      NotificationPollingService().refresh();
     }
   }
 }

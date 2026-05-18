@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../widgets/auth_back_button.dart';
 import '../widgets/login_actions.dart';
@@ -64,9 +65,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final isVi = context.watch<AppProvider>().locale.languageCode == 'vi';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final auth = context.watch<AuthProvider>();
 
     return Scaffold(
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       body: Stack(children: [
         SingleChildScrollView(
           child: Column(children: [
@@ -75,30 +78,32 @@ class _LoginPageState extends State<LoginPage> {
                 title: isVi ? 'Đăng Nhập' : 'Sign In',
                 subtitle: isVi
                     ? 'Đăng nhập bằng email\nvà mật khẩu của bạn.'
-                    : 'Login with your email\nand password.'),
-              const AuthBackButton(),
+                    : 'Login with your email\nand password.',
+                isDark: isDark),
+              AuthBackButton(isDark: isDark),
             ]),
             Padding(
-              padding: const EdgeInsets.fromLTRB(10, 10, 0, 10),
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 20),
               child: Column(children: [
                 if (auth.errorMessage != null)
-                  _buildError(auth.errorMessage!),
-                _buildEmail(isVi),
+                  _buildError(auth.errorMessage!, isDark),
+                _buildEmail(isVi, isDark),
                 const SizedBox(height: 12),
-                _buildPassword(isVi),
+                _buildPassword(isVi, isDark),
                 const SizedBox(height: 16),
                 LoginActions.buildLoginButton(
-                    isVi, auth.isLoading ? null : _handleEmailLogin),
+                    context, isVi, isDark, auth.isLoading ? null : _handleEmailLogin),
                 const SizedBox(height: 8),
-                LoginActions.buildForgotPassword(isVi),
+                LoginActions.buildForgotPassword(isVi, isDark),
                 const SizedBox(height: 10),
                 SocialLoginButtons(
+                  isDark: isDark,
                   dividerText: isVi ? 'Hoặc đăng nhập với' : 'Or sign in with',
                   googleLabel: 'Google', facebookLabel: 'Facebook',
                   onGoogleTap: auth.isLoading ? null : _handleGoogle,
                   onFacebookTap: auth.isLoading ? null : _handleFacebook),
                 const SizedBox(height: 16),
-                _buildRegisterRow(isVi),
+                _buildRegisterRow(isVi, isDark),
               ])),
           ]),
         ),
@@ -127,30 +132,41 @@ class _LoginPageState extends State<LoginPage> {
         ])));
   }
 
-  Widget _buildError(String msg) => Padding(
+  Widget _buildError(String msg, bool isDark) => Padding(
     padding: const EdgeInsets.only(bottom: 16),
-    child: Text(msg, style: const TextStyle(color: Colors.red)));
+    child: Text(msg, style: IndieFolkTheme.body(isDark).copyWith(color: Colors.red)));
 
-  Widget _buildEmail(bool isVi) => TextField(
+  Widget _buildEmail(bool isVi, bool isDark) => TextField(
     controller: _emailCtrl, keyboardType: TextInputType.emailAddress,
-    decoration: InputDecoration(prefixIcon: const Icon(Icons.email_outlined),
+    style: IndieFolkTheme.body(isDark),
+    decoration: InputDecoration(
+      prefixIcon: Icon(Icons.email_outlined, color: IndieFolkTheme.secondary(isDark)),
       hintText: isVi ? 'Nhập email' : 'Enter email',
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))));
+      hintStyle: IndieFolkTheme.body(isDark).copyWith(color: IndieFolkTheme.secondary(isDark)),
+      filled: true,
+      fillColor: IndieFolkTheme.surface(isDark),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide.none)));
 
-  Widget _buildPassword(bool isVi) => TextField(
+  Widget _buildPassword(bool isVi, bool isDark) => TextField(
     controller: _passwordCtrl, obscureText: _obscure,
-    decoration: InputDecoration(prefixIcon: const Icon(Icons.lock_outline),
+    style: IndieFolkTheme.body(isDark),
+    decoration: InputDecoration(
+      prefixIcon: Icon(Icons.lock_outline, color: IndieFolkTheme.secondary(isDark)),
       hintText: isVi ? 'Nhập mật khẩu' : 'Enter password',
+      hintStyle: IndieFolkTheme.body(isDark).copyWith(color: IndieFolkTheme.secondary(isDark)),
+      filled: true,
+      fillColor: IndieFolkTheme.surface(isDark),
       suffixIcon: IconButton(
-        icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+        icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility, color: IndieFolkTheme.secondary(isDark)),
         onPressed: () => setState(() => _obscure = !_obscure)),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14))));
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(6), borderSide: BorderSide.none)));
 
-  Widget _buildRegisterRow(bool isVi) => Row(
+  Widget _buildRegisterRow(bool isVi, bool isDark) => Row(
     mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(isVi ? 'Chưa có tài khoản? ' : 'Not yet registered! '),
-      GestureDetector(onTap: () => Navigator.push(context,
+      Text(isVi ? 'Chưa có tài khoản? ' : 'Not yet registered! ',
+        style: IndieFolkTheme.body(isDark)),
+      GestureDetector(onTap: () => Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (_) => const RegisterPage())),
         child: Text(isVi ? 'Đăng Ký' : 'Register',
-          style: const TextStyle(fontWeight: FontWeight.bold)))]);
+          style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.bold, color: IndieFolkTheme.tertiary(isDark))))]);
 }

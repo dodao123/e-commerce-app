@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../providers/auth_provider.dart';
 import '../widgets/auth_back_button.dart';
 import '../widgets/login_header.dart';
@@ -69,21 +70,24 @@ class _RegisterPageState extends State<RegisterPage> {
     if (ok) _onAuthSuccess();
   }
 
-  Widget _buildLoginRow(bool isVi) => Row(
+  Widget _buildLoginRow(bool isVi, bool isDark) => Row(
     mainAxisAlignment: MainAxisAlignment.center, children: [
-      Text(isVi ? 'Đã có tài khoản? ' : 'Already have an account? '),
-      GestureDetector(onTap: () => Navigator.push(context,
+      Text(isVi ? 'Đã có tài khoản? ' : 'Already have an account? ',
+          style: IndieFolkTheme.body(isDark)),
+      GestureDetector(onTap: () => Navigator.pushReplacement(context,
           MaterialPageRoute(builder: (_) => const LoginPage())),
         child: Text(isVi ? 'Đăng Nhập' : 'Login',
-          style: const TextStyle(fontWeight: FontWeight.bold)))]);
+          style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.bold, color: IndieFolkTheme.tertiary(isDark))))]);
 
   @override
   Widget build(BuildContext context) {
     final isVi = context.watch<AppProvider>().locale.languageCode == 'vi';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final auth = context.watch<AuthProvider>();
     final toggle = () => setState(() => _obscure = !_obscure);
 
     return Scaffold(
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       body: SingleChildScrollView(
         child: Column(children: [
           Stack(children: [
@@ -91,8 +95,9 @@ class _RegisterPageState extends State<RegisterPage> {
               title: isVi ? 'Đăng Ký' : 'Register',
               subtitle: isVi
                   ? 'Tạo tài khoản mới bằng email\nvà mật khẩu.'
-                  : 'Create a new account with\nemail and password.'),
-            const AuthBackButton(),
+                  : 'Create a new account with\nemail and password.',
+              isDark: isDark),
+            AuthBackButton(isDark: isDark),
           ]),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 30, 24, 24),
@@ -100,30 +105,30 @@ class _RegisterPageState extends State<RegisterPage> {
               if (auth.errorMessage != null)
                 Padding(padding: const EdgeInsets.only(bottom: 16),
                   child: Text(auth.errorMessage!,
-                    style: const TextStyle(color: Colors.red))),
+                    style: IndieFolkTheme.body(isDark).copyWith(color: Colors.red))),
               RegisterFormWidgets.buildField(controller: _nameCtrl,
                 icon: Icons.person_outline,
                 hint: isVi ? 'Họ và tên' : 'Full name',
-                isPassword: false, obscure: _obscure, onToggle: toggle),
+                isPassword: false, obscure: _obscure, onToggle: toggle, isDark: isDark),
               const SizedBox(height: 16),
               RegisterFormWidgets.buildField(controller: _emailCtrl,
                 icon: Icons.email_outlined, hint: 'Email',
-                isPassword: false, obscure: _obscure, onToggle: toggle),
+                isPassword: false, obscure: _obscure, onToggle: toggle, isDark: isDark),
               const SizedBox(height: 16),
               RegisterFormWidgets.buildField(controller: _passwordCtrl,
                 icon: Icons.lock_outline,
                 hint: isVi ? 'Mật khẩu' : 'Password',
-                isPassword: true, obscure: _obscure, onToggle: toggle),
+                isPassword: true, obscure: _obscure, onToggle: toggle, isDark: isDark),
               const SizedBox(height: 16),
               RegisterFormWidgets.buildField(controller: _confirmCtrl,
                 icon: Icons.lock_outline,
                 hint: isVi ? 'Xác nhận mật khẩu' : 'Confirm password',
-                isPassword: true, obscure: _obscure, onToggle: toggle),
+                isPassword: true, obscure: _obscure, onToggle: toggle, isDark: isDark),
               const SizedBox(height: 24),
               RegisterFormWidgets.buildRegisterButton(
-                  isVi, auth.isLoading, _handleRegister),
+                  isVi, isDark, auth.isLoading, _handleRegister),
               const SizedBox(height: 20),
-              _buildLoginRow(isVi),
+              _buildLoginRow(isVi, isDark),
             ])),
         ]),
       ),

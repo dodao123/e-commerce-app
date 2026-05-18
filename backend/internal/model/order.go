@@ -19,6 +19,7 @@ type Order struct {
 	Status         string    `json:"status"`
 	Note           string    `json:"note"`
 	CreatedAt      time.Time `json:"created_at"`
+	Items          []OrderItem `json:"items,omitempty"`
 }
 
 // OrderItem represents a product in an order.

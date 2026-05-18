@@ -86,4 +86,10 @@ class NotificationPollingService {
     unreadCount.value = count;
     _lastCount = count;
   }
+
+  /// Reset state on logout
+  void reset() {
+    unreadCount.value = 0;
+    _lastCount = -1;
+  }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../../core/utils/price_formatter.dart';
 import '../../data/shop_order_datasource.dart';
 import 'seller_order_detail_page.dart';
@@ -69,16 +69,17 @@ class _SellerOrderListPageState
         .locale.languageCode == 'vi';
 
     return Scaffold(
-      backgroundColor: isDark
-          ? DarkColors.background : AppColors.background,
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       appBar: AppBar(
-        title: Text(isVi ? 'Đơn hàng' : 'Orders'),
+        title: Text(isVi ? 'Đơn hàng' : 'Orders', style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20)),
         backgroundColor: Colors.transparent, elevation: 0,
         bottom: TabBar(
           controller: _tabCtrl, isScrollable: true,
-          labelColor: AppColors.primary,
-          unselectedLabelColor: Colors.grey.shade500,
-          indicatorColor: AppColors.primary,
+          labelColor: IndieFolkTheme.tertiary(isDark),
+          unselectedLabelColor: IndieFolkTheme.secondary(isDark),
+          indicatorColor: IndieFolkTheme.tertiary(isDark),
+          labelStyle: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600),
+          unselectedLabelStyle: IndieFolkTheme.body(isDark),
           tabs: [
             Tab(text: isVi ? 'Tất cả' : 'All'),
             Tab(text: isVi ? 'Chờ xác nhận' : 'Pending'),
@@ -102,8 +103,8 @@ class _SellerOrderListPageState
           const SizedBox(height: 16),
           Text(isVi ? 'Chưa có đơn hàng nào'
               : 'No orders yet',
-              style: TextStyle(fontSize: 15,
-                  color: Colors.grey.shade500)),
+              style: IndieFolkTheme.body(isDark).copyWith(fontSize: 15,
+                  color: IndieFolkTheme.secondary(isDark))),
         ]));
     }
     return RefreshIndicator(
@@ -127,8 +128,8 @@ class _SellerOrderListPageState
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isDark ? DarkColors.surface : Colors.white,
-          borderRadius: BorderRadius.circular(12),
+          color: IndieFolkTheme.surface(isDark),
+          borderRadius: BorderRadius.circular(6),
           boxShadow: [BoxShadow(
               color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
@@ -138,32 +139,64 @@ class _SellerOrderListPageState
           children: [
             Row(children: [
               _badge(status, isVi),
-              const Spacer(),
-              if (orderId.length >= 8)
-                Text('#${orderId.substring(0, 8)}',
-                    style: TextStyle(fontSize: 12,
-                        color: Colors.grey.shade500)),
             ]),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
+            if (o['items'] != null && (o['items'] as List).isNotEmpty) ...[
+              _itemPreview(o['items'] as List, isDark, isVi),
+              const SizedBox(height: 12),
+            ],
             Row(children: [
               Icon(Icons.person_outline, size: 16,
-                  color: Colors.grey.shade500),
+                  color: IndieFolkTheme.secondary(isDark)),
               const SizedBox(width: 6),
-              Text(name, style: TextStyle(fontSize: 13,
-                  color: isDark
-                      ? Colors.white
-                      : Colors.black87)),
+              Text(name, style: IndieFolkTheme.body(isDark).copyWith(fontSize: 13,
+                  fontWeight: FontWeight.w500)),
             ]),
             const SizedBox(height: 6),
             Row(children: [
-              const Icon(Icons.payments_outlined,
-                  size: 16, color: AppColors.primary),
+              Icon(Icons.payments_outlined,
+                  size: 16, color: IndieFolkTheme.tertiary(isDark)),
               const SizedBox(width: 6),
               Text('${PriceFormatter.formatFull(total)}đ',
-                  style: const TextStyle(fontSize: 14,
+                  style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.primary)),
+                      color: IndieFolkTheme.tertiary(isDark))),
             ])])));
+  }
+
+  Widget _itemPreview(List items, bool isDark, bool isVi) {
+    final first = items.first;
+    final name = first['product_name'] ?? '';
+    final qty = first['quantity'] ?? 1;
+    final image = first['product_image'] ?? '';
+    final extra = items.length > 1 ? (items.length - 1) : 0;
+    
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: image.isNotEmpty
+            ? Image.network(image, width: 50, height: 50, fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => _imgPlaceholder())
+            : _imgPlaceholder(),
+      ),
+      const SizedBox(width: 12),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+            style: IndieFolkTheme.body(isDark).copyWith(fontSize: 13, fontWeight: FontWeight.w600)),
+        if (extra > 0) ...[
+          const SizedBox(height: 4),
+          Text(isVi ? '...và $extra sản phẩm khác' : '...and $extra more items',
+              style: IndieFolkTheme.body(isDark).copyWith(fontSize: 11, color: IndieFolkTheme.tertiary(isDark))),
+        ]
+      ])),
+      const SizedBox(width: 8),
+      Text('x$qty', style: IndieFolkTheme.body(isDark).copyWith(fontSize: 13)),
+    ]);
+  }
+
+  Widget _imgPlaceholder() {
+    return Container(width: 50, height: 50, color: Colors.grey.shade200,
+        child: const Icon(Icons.image, size: 24, color: Colors.grey));
   }
 
   Widget _badge(String status, bool isVi) {
@@ -187,7 +220,7 @@ class _SellerOrderListPageState
             .withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20)),
       child: Text(labels[status] ?? status,
-          style: TextStyle(fontSize: 12,
+          style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(fontSize: 12,
               fontWeight: FontWeight.w600,
               color: colors[status] ?? Colors.grey)));
   }

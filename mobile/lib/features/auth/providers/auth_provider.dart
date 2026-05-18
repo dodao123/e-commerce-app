@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/datasources/auth_remote_datasource.dart';
 import '../data/datasources/email_auth_datasource.dart';
 import '../../../core/storage/token_manager.dart';
+import '../../../core/services/notification_polling_service.dart';
 
 /// Manages authentication state across the app.
 /// JWT stored securely: iOS Keychain / Android EncryptedSharedPrefs.
@@ -91,12 +92,13 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Sign out — clears secure storage.
   Future<void> signOut() async {
     await _socialAuth.signOut();
     await _tokenManager.clearAll();
     _isLoggedIn = false; _hasSelectedRole = false;
     _accessToken = null; _userProfile = {};
+    NotificationPollingService().stopPolling();
+    NotificationPollingService().reset();
     notifyListeners();
   }
 
@@ -118,6 +120,12 @@ class AuthProvider extends ChangeNotifier {
       _hasSelectedRole = await _tokenManager.hasSelectedRole(
           _userProfile['email'] ?? '');
       _isLoggedIn = true; _isLoading = false; notifyListeners();
+      
+      final notifSvc = NotificationPollingService();
+      await notifSvc.init();
+      notifSvc.reset();
+      notifSvc.startPolling();
+
       return true;
     } on Exception catch (e) {
       _errorMessage = e.toString().replaceAll('Exception: ', '');

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Social login buttons (Google and Facebook) with callback support.
 class SocialLoginButtons extends StatelessWidget {
@@ -11,6 +11,9 @@ class SocialLoginButtons extends StatelessWidget {
 
   /// Facebook button label.
   final String facebookLabel;
+
+  /// Whether dark mode is active.
+  final bool isDark;
 
   /// Callback when Google button is tapped.
   final VoidCallback? onGoogleTap;
@@ -24,6 +27,7 @@ class SocialLoginButtons extends StatelessWidget {
     required this.dividerText,
     required this.googleLabel,
     required this.facebookLabel,
+    required this.isDark,
     this.onGoogleTap,
     this.onFacebookTap,
   });
@@ -54,14 +58,14 @@ class SocialLoginButtons extends StatelessWidget {
   Widget _buildDivider() {
     return Row(
       children: [
-        const Expanded(child: Divider()),
+        Expanded(child: Divider(color: IndieFolkTheme.surface(isDark))),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(dividerText,
-              style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13)),
+              style: IndieFolkTheme.body(isDark).copyWith(
+                  color: IndieFolkTheme.secondary(isDark), fontSize: 13)),
         ),
-        const Expanded(child: Divider()),
+        Expanded(child: Divider(color: IndieFolkTheme.surface(isDark))),
       ],
     );
   }
@@ -78,8 +82,8 @@ class SocialLoginButtons extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(14),
+          color: IndieFolkTheme.surface(isDark),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -87,7 +91,7 @@ class SocialLoginButtons extends StatelessWidget {
             Icon(icon, color: color, size: 24),
             const SizedBox(width: 10),
             Text(label,
-                style: const TextStyle(
+                style: IndieFolkTheme.body(isDark).copyWith(
                     fontWeight: FontWeight.w600, fontSize: 15)),
           ],
         ),

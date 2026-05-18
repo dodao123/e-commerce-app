@@ -89,7 +89,7 @@ class CartBottomBar extends StatelessWidget {
     );
   }
 
-  void _goCheckout(BuildContext ctx, CartProvider cart) {
+  void _goCheckout(BuildContext ctx, CartProvider cart) async {
     final selected = cart.selectedItems;
     if (selected.isEmpty) {
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
@@ -110,8 +110,11 @@ class CartBottomBar extends StatelessWidget {
       'shop_name': i.shopName,
       'shipping_fee': 32700,
     }).toList();
-    Navigator.push(ctx, MaterialPageRoute(
+    final result = await Navigator.push(ctx, MaterialPageRoute(
         builder: (_) => CheckoutPage(items: items)));
+    if (result == true && ctx.mounted) {
+      cart.fetchCart();
+    }
   }
 }
 

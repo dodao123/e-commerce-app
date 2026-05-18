@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Gradient header with logo and title for auth pages.
 class LoginHeader extends StatelessWidget {
@@ -8,25 +9,23 @@ class LoginHeader extends StatelessWidget {
   /// Subtitle text to display.
   final String subtitle;
 
+  /// Whether dark mode is active.
+  final bool isDark;
+
   /// Creates a LoginHeader.
-  const LoginHeader({super.key, required this.title, required this.subtitle});
+  const LoginHeader({super.key, required this.title, required this.subtitle, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
+    final headerBg = isDark ? IndieFolkTheme.surface(isDark) : IndieFolkTheme.tertiary(isDark);
+    final headerText = isDark ? IndieFolkTheme.primary(isDark) : IndieFolkTheme.onPrimary(isDark);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(30, 60, 30, 40),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF4A3ADB), // Deep purple
-            Color(0xFF6C5CE7), // Medium purple
-            Color(0xFF8B7FE8), // Light purple
-          ],
-        ),
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: headerBg,
+        borderRadius: const BorderRadius.only(
           bottomLeft: Radius.circular(36),
           bottomRight: Radius.circular(36),
         ),
@@ -41,12 +40,12 @@ class LoginHeader extends StatelessWidget {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
+                color: headerText.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(14),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.storefront_rounded,
-                color: Colors.white,
+                color: headerText,
                 size: 28,
               ),
             ),
@@ -54,13 +53,13 @@ class LoginHeader extends StatelessWidget {
 
           const SizedBox(height: 24),
           Text(title,
-              style: const TextStyle(color: Colors.white, fontSize: 28,
+              style: IndieFolkTheme.h1(isDark).copyWith(
+                  color: headerText, fontSize: 28,
                   fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Text(subtitle,
-              style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.8), fontSize: 14,
-                  height: 1.5)),
+              style: IndieFolkTheme.body(isDark).copyWith(
+                  color: headerText.withValues(alpha: 0.8), fontSize: 14)),
         ],
       ),
     );

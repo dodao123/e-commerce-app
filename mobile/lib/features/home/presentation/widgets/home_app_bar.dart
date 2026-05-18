@@ -4,6 +4,7 @@ import '../../../../core/providers/app_provider.dart';
 import '../../../../core/providers/cart_icon_key_provider.dart';
 import '../../../../core/providers/cart_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../../core/utils/role_guard.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../../../auth/providers/auth_provider.dart';
@@ -58,52 +59,56 @@ class HomeAppBar extends StatelessWidget {
         const SizedBox(width: 4),
         // Avatar or Login
         auth.isLoggedIn
-            ? _buildProfileChip(auth, context)
-            : _buildLoginButton(isVi, context),
+            ? _buildProfileChip(auth, context, isVi, isDark)
+            : _buildLoginButton(isVi, context, isDark),
       ]),
     );
   }
 
-  Widget _buildLoginButton(bool isVi, BuildContext context) {
+  Widget _buildLoginButton(bool isVi, BuildContext context, bool isDark) {
     return GestureDetector(
       onTap: () => Navigator.push(context,
           MaterialPageRoute(builder: (_) => const LoginPage())),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.primary,
-          borderRadius: BorderRadius.circular(20)),
+          color: IndieFolkTheme.tertiary(isDark),
+          borderRadius: BorderRadius.circular(6)),
         child: Text(isVi ? 'Đăng Nhập' : 'Log In',
-            style: const TextStyle(color: Colors.white,
+            style: IndieFolkTheme.body(isDark).copyWith(color: IndieFolkTheme.onPrimary(isDark),
                 fontWeight: FontWeight.w600, fontSize: 13)),
       ),
     );
   }
 
-  Widget _buildProfileChip(AuthProvider auth, BuildContext context) {
+  Widget _buildProfileChip(AuthProvider auth, BuildContext context, bool isVi, bool isDark) {
     final hasAvatar = auth.avatarUrl.isNotEmpty;
     return GestureDetector(
-      onTap: () => _showLogoutDialog(auth, context),
+      onTap: () => _showLogoutDialog(auth, context, isVi, isDark),
       child: CircleAvatar(
-        radius: 18, backgroundColor: AppColors.primary,
+        radius: 18, backgroundColor: IndieFolkTheme.tertiary(isDark),
         backgroundImage: hasAvatar ? NetworkImage(auth.avatarUrl) : null,
         child: hasAvatar ? null : Text(
           auth.userName.isNotEmpty ? auth.userName[0].toUpperCase() : '?',
-          style: const TextStyle(color: Colors.white,
+          style: IndieFolkTheme.body(isDark).copyWith(color: IndieFolkTheme.onPrimary(isDark),
               fontWeight: FontWeight.bold, fontSize: 16))),
     );
   }
 
-  void _showLogoutDialog(AuthProvider auth, BuildContext context) {
+  void _showLogoutDialog(AuthProvider auth, BuildContext context, bool isVi, bool isDark) {
     showDialog(context: context, builder: (_) => AlertDialog(
-      title: Text(auth.userName), content: Text(auth.userEmail),
+      backgroundColor: IndieFolkTheme.surface(isDark),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      title: Text(auth.userName.isNotEmpty ? auth.userName : (isVi ? 'Tài khoản' : 'Account'),
+          style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20)),
+      content: Text(auth.userEmail, style: IndieFolkTheme.body(isDark)),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context),
-            child: const Text('Close')),
+            child: Text(isVi ? 'Đóng' : 'Close', style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600))),
         TextButton(
           onPressed: () { auth.signOut(); Navigator.pop(context); },
-          child: const Text('Logout',
-              style: TextStyle(color: Colors.red))),
+          child: Text(isVi ? 'Đăng xuất' : 'Logout',
+              style: IndieFolkTheme.body(isDark).copyWith(color: Colors.red, fontWeight: FontWeight.w600))),
       ]));
   }
 

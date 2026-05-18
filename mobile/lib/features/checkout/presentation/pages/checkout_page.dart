@@ -447,6 +447,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       setState(() => _placing = false);
       if (result != null) {
         context.read<CartProvider>().fetchCount();
+        context.read<AppProvider>().notifyOrderUpdate();
         final isVi = context.read<AppProvider>()
             .locale.languageCode == 'vi';
         ScaffoldMessenger.of(context).showSnackBar(

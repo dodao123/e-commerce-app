@@ -5,6 +5,9 @@ class AppProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
   Locale _locale = const Locale('en');
 
+  /// Trigger for real-time order count updates across tabs.
+  final ValueNotifier<int> orderUpdateTrigger = ValueNotifier<int>(0);
+
   /// Current theme mode (light or dark).
   ThemeMode get themeMode => _themeMode;
 
@@ -25,5 +28,10 @@ class AppProvider extends ChangeNotifier {
   void setLocale(String languageCode) {
     _locale = Locale(languageCode);
     notifyListeners();
+  }
+
+  /// Notify listeners that an order was placed or updated.
+  void notifyOrderUpdate() {
+    orderUpdateTrigger.value++;
   }
 }

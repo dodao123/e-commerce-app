@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/indie_folk_theme.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
+import '../../../../core/providers/app_provider.dart';
+import '../../../../core/services/notification_polling_service.dart';
+import 'package:provider/provider.dart';
 import '../../../seller/data/shop_order_datasource.dart';
 import '../../../seller/presentation/pages/seller_order_list_page.dart';
 
@@ -33,6 +37,28 @@ class _SellerOrderStatsState
   void initState() {
     super.initState();
     _fetchCounts();
+    NotificationPollingService().unreadCount.addListener(_fetchCounts);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<AppProvider>().orderUpdateTrigger.addListener(_fetchCounts);
+  }
+
+  @override
+  void dispose() {
+    NotificationPollingService().unreadCount.removeListener(_fetchCounts);
+    context.read<AppProvider>().orderUpdateTrigger.removeListener(_fetchCounts);
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(SellerOrderStats oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.shopId != oldWidget.shopId && widget.shopId.isNotEmpty) {
+      _fetchCounts();
+    }
   }
 
   Future<void> _fetchCounts() async {
