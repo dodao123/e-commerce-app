@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Support section with help center, chat, and about links.
 class MenuSupport extends StatelessWidget {
@@ -16,9 +16,9 @@ class MenuSupport extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? DarkColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8, offset: const Offset(0, 2))]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -26,7 +26,7 @@ class MenuSupport extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(isVi ? 'Hỗ trợ' : 'Support',
-                style: const TextStyle(
+                style: IndieFolkTheme.body(isDark).copyWith(
                     fontSize: 16, fontWeight: FontWeight.w600)),
           ),
           _supportTile(Icons.help_outline_rounded,
@@ -43,10 +43,10 @@ class MenuSupport extends StatelessWidget {
     return ListTile(
       dense: true,
       leading: Icon(icon, size: 22,
-          color: isDark ? DarkColors.textPrimary : AppColors.textPrimary),
-      title: Text(label, style: const TextStyle(fontSize: 14)),
+          color: IndieFolkTheme.primary(isDark)),
+      title: Text(label, style: IndieFolkTheme.body(isDark).copyWith(fontSize: 14)),
       trailing: Icon(Icons.chevron_right, size: 20,
-          color: isDark ? DarkColors.textSecondary : AppColors.textSecondary),
+          color: IndieFolkTheme.secondary(isDark)),
       onTap: () {},
     );
   }

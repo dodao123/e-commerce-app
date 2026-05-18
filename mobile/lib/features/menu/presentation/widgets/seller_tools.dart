@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../seller/presentation/pages/product_management_page.dart';
 
 /// Seller tools grid: My Products, Sales Performance,
@@ -18,29 +18,29 @@ class SellerTools extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? DarkColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8, offset: const Offset(0, 2))]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(isVi ? 'Công cụ bán hàng' : 'Seller Tools',
-              style: const TextStyle(
+              style: IndieFolkTheme.body(isDark).copyWith(
                   fontSize: 16, fontWeight: FontWeight.w600)),
           const SizedBox(height: 16),
           // First row: 3 items
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _toolItem(Icons.storefront_outlined,
+              _toolItem(context, Icons.storefront_outlined,
                   isVi ? 'Sản phẩm\ncủa tôi' : 'My\nProducts',
                   const Color(0xFF3A7BD5),
                   onTap: () => Navigator.push(context,
                     MaterialPageRoute(builder: (_) =>
                         const ProductManagementPage()))),
-              _toolItem(Icons.trending_up_rounded,
+              _toolItem(context, Icons.trending_up_rounded,
                   isVi ? 'Hiệu quả\nbán hàng' : 'Sales\nPerformance',
                   const Color(0xFFFF6D00)),
-              _toolItem(Icons.campaign_outlined,
+              _toolItem(context, Icons.campaign_outlined,
                   isVi ? 'Quảng cáo' : 'Advertising',
                   const Color(0xFFE53935)),
             ]),
@@ -48,10 +48,10 @@ class SellerTools extends StatelessWidget {
           // Second row: 2 items
           Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _toolItem(Icons.share_outlined,
+              _toolItem(context, Icons.share_outlined,
                   isVi ? 'Kênh\nMarketing' : 'Marketing\nChannel',
                   const Color(0xFF00BFA5)),
-              _toolItem(Icons.support_agent_outlined,
+              _toolItem(context, Icons.support_agent_outlined,
                   isVi ? 'Trung tâm\nhỗ trợ' : 'Support\nCenter',
                   const Color(0xFF7C4DFF)),
             ]),
@@ -59,8 +59,9 @@ class SellerTools extends StatelessWidget {
     );
   }
 
-  Widget _toolItem(IconData icon, String label, Color color,
+  Widget _toolItem(BuildContext context, IconData icon, String label, Color color,
       {VoidCallback? onTap}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: onTap,
       child: SizedBox(width: 90,
@@ -69,13 +70,13 @@ class SellerTools extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [color.withOpacity(0.15), color.withOpacity(0.05)],
+                colors: [color.withValues(alpha: 0.15), color.withValues(alpha: 0.05)],
                 begin: Alignment.topLeft, end: Alignment.bottomRight),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: color.withOpacity(0.2))),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: color.withValues(alpha: 0.2))),
             child: Icon(icon, size: 26, color: color)),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(fontSize: 11),
+          Text(label, style: IndieFolkTheme.body(isDark).copyWith(fontSize: 11),
               textAlign: TextAlign.center),
         ])),
     );

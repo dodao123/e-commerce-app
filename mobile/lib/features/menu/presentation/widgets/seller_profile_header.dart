@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../seller/presentation/pages/shop_router_page.dart';
 
 /// Premium seller profile header with gradient and shop stats.
@@ -34,7 +35,7 @@ class SellerProfileHeader extends StatelessWidget {
           colors: [Color(0xFF1A1A2E), Color(0xFF16213E)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(6),
         boxShadow: [BoxShadow(
             color: const Color(0xFF1A1A2E).withOpacity(0.4),
             blurRadius: 16,
@@ -65,7 +66,7 @@ class SellerProfileHeader extends StatelessWidget {
         child: hasAvatar ? null : Text(
           shopName.isNotEmpty
               ? shopName[0].toUpperCase() : '?',
-          style: const TextStyle(color: Colors.white,
+          style: IndieFolkTheme.h1(true).copyWith(color: Colors.white,
               fontSize: 22, fontWeight: FontWeight.bold))));
   }
 
@@ -73,12 +74,12 @@ class SellerProfileHeader extends StatelessWidget {
     return Expanded(child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(shopName, style: const TextStyle(
+        Text(shopName, style: IndieFolkTheme.h1(true).copyWith(
             fontSize: 18, fontWeight: FontWeight.bold,
             color: Colors.white)),
         const SizedBox(height: 4),
-        Text(shopEmail, style: TextStyle(fontSize: 12,
-            color: Colors.white.withOpacity(0.7))),
+        Text(shopEmail, style: IndieFolkTheme.body(true).copyWith(
+            fontSize: 12, color: Colors.white.withValues(alpha: 0.7))),
       ]));
   }
 
@@ -92,9 +93,9 @@ class SellerProfileHeader extends StatelessWidget {
         decoration: BoxDecoration(
           gradient: const LinearGradient(colors: [
             Color(0xFF00D2FF), Color(0xFF3A7BD5)]),
-          borderRadius: BorderRadius.circular(20)),
+          borderRadius: BorderRadius.circular(6)),
         child: Text(isVi ? 'Xem Shop' : 'View Shop',
-            style: const TextStyle(color: Colors.white,
+            style: IndieFolkTheme.body(true).copyWith(color: Colors.white,
                 fontSize: 12,
                 fontWeight: FontWeight.w600))));
   }
@@ -114,16 +115,16 @@ class SellerProfileHeader extends StatelessWidget {
 
   Widget _stat(String value, String label) {
     return Column(children: [
-      Text(value, style: const TextStyle(color: Colors.white,
+      Text(value, style: IndieFolkTheme.h1(true).copyWith(color: Colors.white,
           fontSize: 16, fontWeight: FontWeight.bold)),
       const SizedBox(height: 2),
-      Text(label, style: TextStyle(fontSize: 10,
-          color: Colors.white.withOpacity(0.6))),
+      Text(label, style: IndieFolkTheme.body(true).copyWith(fontSize: 10,
+          color: Colors.white.withValues(alpha: 0.6))),
     ]);
   }
 
   Widget _divider() {
     return Container(width: 1, height: 30,
-        color: Colors.white.withOpacity(0.15));
+        color: Colors.white.withValues(alpha: 0.15));
   }
 }

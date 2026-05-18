@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/storage/token_manager.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../data/product_remote_datasource.dart';
 import '../../data/shop_remote_datasource.dart';
 import '../widgets/product_info_banner.dart';
@@ -60,6 +60,7 @@ class _ProductManagementPageState
   void _showRegisterAlert() {
     final isVi = context.read<AppProvider>()
         .locale.languageCode == 'vi';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -79,7 +80,7 @@ class _ProductManagementPageState
                     builder: (_) => const ShopWelcomePage()));
             },
             child: Text(isVi ? 'Đăng ký ngay' : 'Register now',
-              style: TextStyle(color: AppColors.primary,
+              style: TextStyle(color: IndieFolkTheme.tertiary(isDark),
                 fontWeight: FontWeight.w600))),
         ]));
   }
@@ -98,16 +99,14 @@ class _ProductManagementPageState
 
     if (!_shopChecked) {
       return Scaffold(
-        backgroundColor: isDark
-            ? DarkColors.background : const Color(0xFFF5F5F5),
+        backgroundColor: IndieFolkTheme.neutral(isDark),
         appBar: _buildAppBar(isDark, isVi),
-        body: const Center(child: CircularProgressIndicator(
-          color: AppColors.primary)));
+        body: Center(child: CircularProgressIndicator(
+          color: IndieFolkTheme.tertiary(isDark))));
     }
 
     return Scaffold(
-      backgroundColor: isDark
-          ? DarkColors.background : const Color(0xFFF5F5F5),
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       appBar: _buildAppBar(isDark, isVi),
       body: Column(children: [
         if (_bannerVisible)
@@ -151,34 +150,33 @@ class _ProductManagementPageState
 
   PreferredSizeWidget _buildAppBar(bool isDark, bool isVi) {
     return AppBar(
-      backgroundColor: isDark ? DarkColors.surface : Colors.white,
-      elevation: 0.5,
+      backgroundColor: IndieFolkTheme.neutral(isDark),
+      elevation: 0,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
         icon: Icon(Icons.arrow_back_ios_rounded,
-          color: isDark ? DarkColors.textPrimary : Colors.black87,
+          color: IndieFolkTheme.primary(isDark),
           size: 20)),
       title: Text(isVi ? 'Sản Phẩm của Tôi' : 'My Products',
-        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600,
-          color: isDark ? DarkColors.textPrimary : Colors.black87)),
+        style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20)),
       actions: [
-        IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-        _chatIcon(),
+        IconButton(icon: Icon(Icons.search, color: IndieFolkTheme.primary(isDark)), onPressed: () {}),
+        _chatIcon(isDark),
       ]);
   }
 
-  Widget _chatIcon() {
+  Widget _chatIcon(bool isDark) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: Stack(children: [
-        IconButton(icon: const Icon(Icons.chat_bubble_outline),
+        IconButton(icon: Icon(Icons.chat_bubble_outline, color: IndieFolkTheme.primary(isDark)),
             onPressed: () {}),
         Positioned(right: 6, top: 6,
           child: Container(width: 16, height: 16,
-            decoration: const BoxDecoration(
-              color: AppColors.primary, shape: BoxShape.circle),
-            child: const Center(child: Text('1',
-              style: TextStyle(color: Colors.white,
+            decoration: BoxDecoration(
+              color: IndieFolkTheme.tertiary(isDark), shape: BoxShape.circle),
+            child: Center(child: Text('1',
+              style: TextStyle(color: IndieFolkTheme.onPrimary(isDark),
                   fontSize: 9, fontWeight: FontWeight.bold))))),
       ]));
   }
@@ -188,16 +186,14 @@ class _ProductManagementPageState
         ? ['Tất cả', 'Đang bán', 'Ngừng bán']
         : ['All', 'Active', 'Inactive'];
     return Container(
-      color: isDark ? DarkColors.surface : Colors.white,
+      color: IndieFolkTheme.neutral(isDark),
       child: TabBar(controller: _tabController,
         isScrollable: true,
-        labelColor: AppColors.primary,
-        unselectedLabelColor: isDark
-            ? DarkColors.textSecondary : Colors.grey,
-        indicatorColor: AppColors.primary,
+        labelColor: IndieFolkTheme.primary(isDark),
+        unselectedLabelColor: IndieFolkTheme.secondary(isDark),
+        indicatorColor: IndieFolkTheme.tertiary(isDark),
         indicatorWeight: 2.5,
-        labelStyle: const TextStyle(fontSize: 13,
-            fontWeight: FontWeight.w600),
+        labelStyle: IndieFolkTheme.label(isDark).copyWith(fontWeight: FontWeight.w600),
         tabAlignment: TabAlignment.start,
         tabs: List.generate(labels.length, (i) =>
             Tab(text: '${labels[i]}\n(${_tabCounts[i]})'))));
@@ -220,14 +216,15 @@ class _ProductManagementPageState
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
+            backgroundColor: IndieFolkTheme.tertiary(isDark),
+            foregroundColor: IndieFolkTheme.onPrimary(isDark),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(4)),
             elevation: 0),
           child: Text(
             isVi ? 'Thêm 1 sản phẩm mới' : 'Add new product',
-            style: const TextStyle(fontSize: 15,
-                fontWeight: FontWeight.w600))))));
+            style: IndieFolkTheme.body(isDark).copyWith(
+              color: IndieFolkTheme.onPrimary(isDark),
+              fontWeight: FontWeight.w600))))));
   }
 }

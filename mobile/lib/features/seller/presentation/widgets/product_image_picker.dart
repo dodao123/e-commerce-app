@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/api_constants.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import 'product_image_helpers.dart';
 
 /// Image/video picker for product forms.
@@ -28,7 +28,7 @@ class ProductImagePicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: isDark ? DarkColors.surface : Colors.white,
+      color: IndieFolkTheme.surface(isDark),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -48,13 +48,11 @@ class ProductImagePicker extends StatelessWidget {
   Widget _header() => Row(children: [
     Text(isVi ? 'Hình ảnh/video sản phẩm'
         : 'Product images/video',
-      style: const TextStyle(
-          fontSize: 14, fontWeight: FontWeight.w600)),
+      style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600)),
     const Text(' *', style: TextStyle(color: Colors.red)),
     const Spacer(),
     Text(isVi ? 'Tỉ lệ 1:1' : 'Ratio 1:1',
-      style: TextStyle(fontSize: 12, color: isDark
-          ? DarkColors.textSecondary : Colors.grey)),
+      style: IndieFolkTheme.label(isDark).copyWith(color: IndieFolkTheme.secondary(isDark))),
   ]);
 
   Widget _imageGrid() => Wrap(spacing: 8, runSpacing: 8,
@@ -92,8 +90,8 @@ class ProductImagePicker extends StatelessWidget {
   }
 
   Widget _ph() => Container(width: 72, height: 72,
-    decoration: BoxDecoration(color: Colors.grey.shade200,
+    decoration: BoxDecoration(color: IndieFolkTheme.neutral(isDark),
       borderRadius: BorderRadius.circular(8)),
     child: Icon(Icons.image, size: 28,
-      color: Colors.grey.shade400));
+      color: IndieFolkTheme.secondary(isDark)));
 }

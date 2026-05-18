@@ -30,6 +30,24 @@ class ProductRemoteDatasource {
     return _handleResponse(response);
   }
 
+  /// Updates an existing product for the seller's shop.
+  Future<Map<String, dynamic>> updateProduct({
+    required String token,
+    required String productId,
+    required Map<String, dynamic> productData,
+  }) async {
+    final url = Uri.parse(
+        '${ApiConstants.baseUrl}'
+        '${ApiConstants.createProductEndpoint}/$productId');
+    final response = await _client.put(url,
+      headers: _authHeaders(token),
+      body: jsonEncode(productData),
+    ).timeout(
+      const Duration(seconds: ApiConstants.timeoutSeconds));
+
+    return _handleResponse(response);
+  }
+
   /// Uploads images to server for a specific product.
   /// Returns list of server-side image paths.
   Future<List<String>> uploadImages({

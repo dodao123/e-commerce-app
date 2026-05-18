@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/api_constants.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Card widget displaying a single product in the list.
 class ProductCard extends StatelessWidget {
@@ -9,22 +9,21 @@ class ProductCard extends StatelessWidget {
   final bool isDark;
   final bool isVi;
   final VoidCallback? onTap;
+  final Function(String)? onStatusChanged;
 
   /// Creates the ProductCard widget.
   const ProductCard({super.key, required this.product,
-    required this.isDark, required this.isVi, this.onTap});
+    required this.isDark, required this.isVi, this.onTap, this.onStatusChanged});
 
   @override
   Widget build(BuildContext context) {
     final images = product['images'] as List? ?? [];
     return GestureDetector(onTap: onTap, child: Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? DarkColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04),
-          blurRadius: 4, offset: const Offset(0, 1))]),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6)),
       child: Row(children: [
         _thumb(images), const SizedBox(width: 10),
         Expanded(child: _details()),
@@ -52,10 +51,10 @@ class ProductCard extends StatelessWidget {
 
   Widget _phIcon() => Container(width: 60, height: 60,
     decoration: BoxDecoration(
-      color: isDark ? DarkColors.background : Colors.grey.shade100,
+      color: IndieFolkTheme.neutral(isDark),
       borderRadius: BorderRadius.circular(6)),
     child: Icon(Icons.image_outlined, size: 28,
-      color: Colors.grey.shade400));
+      color: IndieFolkTheme.secondary(isDark)));
 
   Widget _details() {
     final name = product['name'] ?? '';
@@ -65,15 +64,13 @@ class ProductCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500,
-            color: isDark ? DarkColors.textPrimary : Colors.black87)),
+          style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600)),
         const SizedBox(height: 4),
-        Text('₫${_fmtPrice(price)}', style: TextStyle(fontSize: 14,
-          fontWeight: FontWeight.w600, color: AppColors.primary)),
+        Text('₫${_fmtPrice(price)}', style: IndieFolkTheme.body(isDark).copyWith(
+          color: IndieFolkTheme.tertiary(isDark), fontWeight: FontWeight.bold)),
         const SizedBox(height: 2),
         Text('${isVi ? 'Kho' : 'Stock'}: $stock',
-          style: TextStyle(fontSize: 11, color: isDark
-              ? DarkColors.textSecondary : Colors.grey.shade600)),
+          style: IndieFolkTheme.label(isDark).copyWith(color: IndieFolkTheme.secondary(isDark))),
       ]);
   }
 
@@ -84,14 +81,33 @@ class ProductCard extends StatelessWidget {
   }
 
   Widget _badge(String status) {
-    final c = {'active': Colors.green, 'pending': Colors.orange,
-      'inactive': Colors.grey, 'violated': Colors.red,
-    }[status] ?? Colors.grey;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(color: c.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(12)),
-      child: Text(status, style: TextStyle(fontSize: 10,
-        fontWeight: FontWeight.w600, color: c)));
+    return PopupMenuButton<String>(
+      onSelected: onStatusChanged,
+      color: IndieFolkTheme.surface(isDark),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 'active',
+          child: Text(isVi ? 'Đang bán' : 'Active', style: IndieFolkTheme.body(isDark)),
+        ),
+        PopupMenuItem(
+          value: 'inactive',
+          child: Text(isVi ? 'Ngừng bán' : 'Inactive', style: IndieFolkTheme.body(isDark)),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: IndieFolkTheme.neutral(isDark),
+          border: Border.all(color: IndieFolkTheme.secondary(isDark).withOpacity(0.5)),
+          borderRadius: BorderRadius.circular(4)),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(status.toUpperCase(), style: IndieFolkTheme.label(isDark)),
+            const SizedBox(width: 4),
+            Icon(Icons.arrow_drop_down, size: 14, color: IndieFolkTheme.primary(isDark)),
+          ],
+        )),
+    );
   }
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Product condition selector: New or Used with optional note.
 class ProductConditionPicker extends StatelessWidget {
@@ -32,13 +32,12 @@ class ProductConditionPicker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: isDark ? DarkColors.surface : Colors.white,
+      color: IndieFolkTheme.surface(isDark),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(isVi ? 'Tình trạng hàng' : 'Condition',
-            style: const TextStyle(fontSize: 14,
-              fontWeight: FontWeight.w600)),
+            style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           Row(children: [
             _chip(isVi ? 'Mới' : 'New', true),
@@ -48,30 +47,23 @@ class ProductConditionPicker extends StatelessWidget {
           const SizedBox(height: 12),
           TextFormField(
             controller: noteController,
-            style: TextStyle(fontSize: 14,
-              color: isDark ? DarkColors.textPrimary : Colors.black87),
+            style: IndieFolkTheme.body(isDark),
             decoration: InputDecoration(
               hintText: isVi
                   ? 'Ghi chú VD: Mới 99%'
                   : 'Note e.g. 99% new',
-              hintStyle: TextStyle(fontSize: 13,
-                color: isDark
-                    ? DarkColors.textSecondary
-                    : Colors.grey.shade400),
+              hintStyle: IndieFolkTheme.body(isDark).copyWith(
+                color: IndieFolkTheme.secondary(isDark).withOpacity(0.5)),
               contentPadding: const EdgeInsets.symmetric(
                   horizontal: 12, vertical: 10),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(
-                  color: isDark
-                      ? DarkColors.textSecondary.withOpacity(0.3)
-                      : Colors.grey.shade300)),
+                  color: IndieFolkTheme.secondary(isDark).withOpacity(0.3))),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(
-                  color: isDark
-                      ? DarkColors.textSecondary.withOpacity(0.3)
-                      : Colors.grey.shade300)))),
+                  color: IndieFolkTheme.secondary(isDark).withOpacity(0.3))))),
         ]));
   }
 
@@ -83,14 +75,14 @@ class ProductConditionPicker extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? AppColors.primary.withOpacity(0.1)
+              ? IndieFolkTheme.tertiary(isDark).withOpacity(0.1)
               : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: selected ? AppColors.primary : Colors.grey.shade400,
+            color: selected ? IndieFolkTheme.tertiary(isDark) : IndieFolkTheme.secondary(isDark).withOpacity(0.5),
             width: selected ? 1.5 : 1)),
-        child: Text(label, style: TextStyle(
-          fontSize: 13, fontWeight: FontWeight.w500,
-          color: selected ? AppColors.primary : Colors.grey.shade600))));
+        child: Text(label, style: IndieFolkTheme.body(isDark).copyWith(
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+          color: selected ? IndieFolkTheme.tertiary(isDark) : IndieFolkTheme.secondary(isDark)))));
   }
 }

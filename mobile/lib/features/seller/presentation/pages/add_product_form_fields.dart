@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Text input fields for the add product form.
 /// Includes: product name, description, category, price,
@@ -65,32 +65,26 @@ class AddProductFormFields extends StatelessWidget {
       bool required = false}) {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: isDark ? DarkColors.surface : Colors.white,
+      color: IndieFolkTheme.surface(isDark),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            Text(label, style: const TextStyle(fontSize: 14,
-                fontWeight: FontWeight.w600)),
+            Text(label, style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600)),
             if (required) const Text(' *',
                 style: TextStyle(color: Colors.red)),
             const Spacer(),
             if (maxLen != null)
               Text('${ctrl.text.length}/$maxLen',
-                style: TextStyle(fontSize: 12,
-                  color: isDark ? DarkColors.textSecondary
-                      : Colors.grey)),
+                style: IndieFolkTheme.label(isDark).copyWith(color: IndieFolkTheme.secondary(isDark))),
           ]),
           const SizedBox(height: 8),
           TextField(controller: ctrl, maxLines: maxLines,
             maxLength: maxLen,
-            style: TextStyle(fontSize: 14, color: isDark
-                ? DarkColors.textPrimary : Colors.black87),
+            style: IndieFolkTheme.body(isDark),
             decoration: InputDecoration(hintText: hint,
               counterText: '', border: InputBorder.none,
-              hintStyle: TextStyle(fontSize: 13,
-                color: isDark ? DarkColors.textSecondary
-                    : Colors.grey.shade400))),
+              hintStyle: IndieFolkTheme.body(isDark).copyWith(color: IndieFolkTheme.secondary(isDark).withOpacity(0.5)))),
         ]));
   }
 
@@ -99,20 +93,19 @@ class AddProductFormFields extends StatelessWidget {
       onTap: onPickCategory,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        color: isDark ? DarkColors.surface : Colors.white,
+        color: IndieFolkTheme.surface(isDark),
         child: Row(children: [
           Text(isVi ? 'Ngành hàng' : 'Category',
-            style: const TextStyle(fontSize: 14,
-              fontWeight: FontWeight.w600)),
+            style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600)),
           const Text(' *', style: TextStyle(color: Colors.red)),
           const Spacer(),
           Text(category.isEmpty
               ? (isVi ? 'Chọn' : 'Select') : category,
-            style: TextStyle(fontSize: 14,
-              color: category.isEmpty ? Colors.grey : null)),
+            style: IndieFolkTheme.body(isDark).copyWith(
+              color: category.isEmpty ? IndieFolkTheme.secondary(isDark) : IndieFolkTheme.primary(isDark))),
           const SizedBox(width: 4),
           Icon(Icons.chevron_right, size: 20,
-            color: isDark ? DarkColors.textSecondary : Colors.grey),
+            color: IndieFolkTheme.secondary(isDark)),
         ])));
   }
 
@@ -121,13 +114,11 @@ class AddProductFormFields extends StatelessWidget {
       {String? suffix, bool required = false}) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      color: isDark ? DarkColors.surface : Colors.white,
+      color: IndieFolkTheme.surface(isDark),
       child: Row(children: [
-        Icon(icon, size: 20, color: isDark
-            ? DarkColors.textSecondary : Colors.grey.shade600),
+        Icon(icon, size: 20, color: IndieFolkTheme.secondary(isDark)),
         const SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 14,
-            fontWeight: FontWeight.w600)),
+        Text(label, style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600)),
         if (required)
           const Text(' *', style: TextStyle(color: Colors.red)),
         const Spacer(),
@@ -135,14 +126,13 @@ class AddProductFormFields extends StatelessWidget {
           child: TextField(controller: ctrl,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.end,
-            style: TextStyle(fontSize: 14, color: isDark
-                ? DarkColors.textPrimary : Colors.black87),
+            style: IndieFolkTheme.body(isDark),
             decoration: InputDecoration(
               hintText: suffix ?? '0',
               border: InputBorder.none,
-              hintStyle: TextStyle(fontSize: 14,
-                color: isDark ? DarkColors.textSecondary
-                    : Colors.grey.shade400)))),
+              hintStyle: IndieFolkTheme.body(isDark).copyWith(
+                color: IndieFolkTheme.secondary(isDark).withOpacity(0.5)))),
+        ),
       ]));
   }
 }

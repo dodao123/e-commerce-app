@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/storage/token_manager.dart';
 import '../../../auth/providers/auth_provider.dart';
@@ -107,21 +108,22 @@ class _MenuPageState extends State<MenuPage> {
         const SizedBox(height: 12),
         Text(isVi ? 'Đăng nhập để xem menu'
             : 'Login to view menu',
-            style: TextStyle(fontSize: 16,
-                color: Colors.grey.shade500)),
+            style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(fontSize: 16,
+                color: IndieFolkTheme.secondary(Theme.of(context).brightness == Brightness.dark))),
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: () => Navigator.push(context,
               MaterialPageRoute(
                   builder: (_) => const LoginPage())),
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFFEF6C4A),
-            foregroundColor: Colors.white,
+            backgroundColor: IndieFolkTheme.tertiary(Theme.of(context).brightness == Brightness.dark),
+            foregroundColor: IndieFolkTheme.onPrimary(Theme.of(context).brightness == Brightness.dark),
             shape: RoundedRectangleBorder(
                 borderRadius:
-                    BorderRadius.circular(20))),
+                    BorderRadius.circular(6))),
           child: Text(
-              isVi ? 'Đăng Nhập' : 'Log In')),
+              isVi ? 'Đăng Nhập' : 'Log In',
+              style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(fontWeight: FontWeight.w600))),
       ]));
   }
 }

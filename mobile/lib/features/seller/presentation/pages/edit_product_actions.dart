@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/storage/token_manager.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../data/product_edit_datasource.dart';
 import 'add_product_helpers.dart';
 import 'edit_product_page.dart';
@@ -11,14 +11,13 @@ import 'edit_product_page.dart';
 PreferredSizeWidget buildEditAppBar(
     BuildContext ctx, bool isDark, bool isVi) {
   return AppBar(
-    backgroundColor: isDark ? DarkColors.surface : Colors.white,
-    elevation: 0.5,
+    backgroundColor: IndieFolkTheme.neutral(isDark),
+    elevation: 0,
     leading: IconButton(
       onPressed: () => Navigator.pop(ctx),
-      icon: const Icon(Icons.arrow_back_ios_rounded, size: 20)),
+      icon: Icon(Icons.arrow_back_ios_rounded, size: 20, color: IndieFolkTheme.primary(isDark))),
     title: Text(isVi ? 'Chỉnh sửa sản phẩm' : 'Edit Product',
-      style: const TextStyle(
-          fontSize: 17, fontWeight: FontWeight.w600)));
+      style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20)));
 }
 
 Future<void> pickEditImages(EditProductPageState state) async {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../widgets/shop_quick_actions.dart';
 
 /// Dashboard page for seller's shop management.
@@ -20,19 +20,16 @@ class ShopDashboardPage extends StatelessWidget {
         .locale.languageCode == 'vi';
 
     return Scaffold(
-      backgroundColor: isDark
-          ? DarkColors.background : AppColors.background,
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       appBar: AppBar(
-        backgroundColor: isDark ? DarkColors.surface : Colors.white,
-        elevation: 0.5,
+        backgroundColor: IndieFolkTheme.neutral(isDark),
+        elevation: 0,
         title: Text(isVi ? 'Shop của tôi' : 'My Shop',
-          style: TextStyle(
-            color: isDark ? DarkColors.textPrimary : Colors.black87,
-            fontSize: 17, fontWeight: FontWeight.w600))),
+          style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20))),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(children: [
-          _shopInfoCard(),
+          _shopInfoCard(isDark),
           const SizedBox(height: 24),
           ShopQuickActions(
             isVi: isVi, isDark: isDark,
@@ -40,41 +37,38 @@ class ShopDashboardPage extends StatelessWidget {
         ])));
   }
 
-  Widget _shopInfoCard() {
+  Widget _shopInfoCard(bool isDark) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFEF6C4A), Color(0xFFFF8C6B)]),
-        borderRadius: BorderRadius.circular(16)),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(children: [
-            const Icon(Icons.store, color: Colors.white, size: 28),
+            Icon(Icons.store, color: IndieFolkTheme.primary(isDark), size: 28),
             const SizedBox(width: 12),
             Expanded(child: Text(
               shopData['shop_name'] ?? '',
-              style: const TextStyle(fontSize: 20,
-                fontWeight: FontWeight.bold, color: Colors.white))),
+              style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 24))),
           ]),
           const SizedBox(height: 12),
-          _infoRow(Icons.email_outlined, shopData['email'] ?? ''),
+          _infoRow(Icons.email_outlined, shopData['email'] ?? '', isDark),
           const SizedBox(height: 6),
-          _infoRow(Icons.phone_outlined, shopData['phone'] ?? ''),
+          _infoRow(Icons.phone_outlined, shopData['phone'] ?? '', isDark),
           const SizedBox(height: 6),
           _infoRow(Icons.location_on_outlined,
-              shopData['detail_address'] ?? ''),
+              shopData['detail_address'] ?? '', isDark),
         ]));
   }
 
-  Widget _infoRow(IconData icon, String text) {
+  Widget _infoRow(IconData icon, String text, bool isDark) {
     return Row(children: [
-      Icon(icon, size: 16, color: Colors.white70),
+      Icon(icon, size: 16, color: IndieFolkTheme.primary(isDark)),
       const SizedBox(width: 8),
-      Expanded(child: Text(text,
-        style: const TextStyle(fontSize: 13, color: Colors.white70))),
+      Expanded(child: Text(text, style: IndieFolkTheme.body(isDark))),
     ]);
   }
 }

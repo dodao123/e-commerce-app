@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// A single role upgrade tile with icon, gradient, and arrow.
 /// Used inside [MenuRoleUpgrade] to offer role switching.
@@ -35,7 +35,7 @@ class RoleUpgradeTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(6),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(children: [
@@ -43,8 +43,7 @@ class RoleUpgradeTile extends StatelessWidget {
           const SizedBox(width: 14),
           _textColumn(isDark),
           Icon(Icons.arrow_forward_ios_rounded, size: 14,
-              color: isDark ? DarkColors.textSecondary
-                  : Colors.grey.shade400),
+              color: IndieFolkTheme.secondary(isDark)),
         ]),
       ),
     );
@@ -55,7 +54,7 @@ class RoleUpgradeTile extends StatelessWidget {
       width: 42, height: 42,
       decoration: BoxDecoration(
         gradient: LinearGradient(colors: gradientColors),
-        borderRadius: BorderRadius.circular(12)),
+        borderRadius: BorderRadius.circular(6)),
       child: Icon(icon, color: Colors.white, size: 22),
     );
   }
@@ -65,14 +64,11 @@ class RoleUpgradeTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: isDark ? DarkColors.textPrimary
-                  : AppColors.textPrimary)),
+          Text(title, style: IndieFolkTheme.body(isDark).copyWith(fontSize: 14,
+              fontWeight: FontWeight.w600)),
           const SizedBox(height: 2),
-          Text(subtitle, style: TextStyle(fontSize: 12,
-              color: isDark ? DarkColors.textSecondary
-                  : AppColors.textSecondary)),
+          Text(subtitle, style: IndieFolkTheme.body(isDark).copyWith(fontSize: 12,
+              color: IndieFolkTheme.secondary(isDark))),
         ]),
     );
   }

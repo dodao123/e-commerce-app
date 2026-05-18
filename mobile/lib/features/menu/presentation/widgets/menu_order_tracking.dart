@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../checkout/data/order_datasource.dart';
 import '../../../orders/presentation/pages/buyer_order_list_page.dart';
 
@@ -47,8 +47,8 @@ class _MenuOrderTrackingState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? DarkColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6),
         boxShadow: [BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
@@ -58,7 +58,7 @@ class _MenuOrderTrackingState
         children: [
           Row(children: [
             Text(widget.isVi ? 'Đơn mua' : 'My Orders',
-                style: const TextStyle(fontSize: 16,
+                style: IndieFolkTheme.body(isDark).copyWith(fontSize: 16,
                     fontWeight: FontWeight.w600)),
             const Spacer(),
             GestureDetector(
@@ -66,8 +66,8 @@ class _MenuOrderTrackingState
               child: Text(
                   widget.isVi ? 'Xem lịch sử >'
                       : 'View history >',
-                  style: TextStyle(fontSize: 12,
-                      color: AppColors.primary,
+                  style: IndieFolkTheme.body(isDark).copyWith(fontSize: 12,
+                      color: IndieFolkTheme.tertiary(isDark),
                       fontWeight: FontWeight.w500))),
           ]),
           const SizedBox(height: 16),
@@ -112,11 +112,11 @@ class _MenuOrderTrackingState
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.primary
+                color: IndieFolkTheme.tertiary(Theme.of(context).brightness == Brightness.dark)
                     .withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14)),
+                borderRadius: BorderRadius.circular(6)),
               child: Icon(icon, size: 26,
-                  color: AppColors.primary)),
+                  color: IndieFolkTheme.tertiary(Theme.of(context).brightness == Brightness.dark))),
             if (count > 0)
               Positioned(right: -6, top: -6,
                 child: Container(
@@ -135,7 +135,7 @@ class _MenuOrderTrackingState
           ]),
           const SizedBox(height: 6),
           Text(label,
-              style: const TextStyle(fontSize: 11),
+              style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(fontSize: 11),
               textAlign: TextAlign.center),
         ]));
   }

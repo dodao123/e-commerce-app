@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../auth/providers/auth_provider.dart';
 import 'role_upgrade_tile.dart';
 
@@ -21,10 +21,10 @@ class MenuRoleUpgrade extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? DarkColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6),
         boxShadow: [BoxShadow(
-          color: Colors.black.withOpacity(0.04),
+          color: Colors.black.withValues(alpha: 0.04),
           blurRadius: 8, offset: const Offset(0, 2))]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,7 +33,7 @@ class MenuRoleUpgrade extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
             child: Text(
               isVi ? 'Chuyển đổi vai trò' : 'Switch Role',
-              style: const TextStyle(
+              style: IndieFolkTheme.body(isDark).copyWith(
                 fontSize: 16, fontWeight: FontWeight.w600))),
           ..._buildTiles(context, role),
         ]),
@@ -86,7 +86,8 @@ class MenuRoleUpgrade extends StatelessWidget {
               _executeSwitch(context, option.role);
             },
             style: FilledButton.styleFrom(
-                backgroundColor: AppColors.primary),
+                backgroundColor: IndieFolkTheme.tertiary(Theme.of(context).brightness == Brightness.dark),
+                foregroundColor: IndieFolkTheme.onPrimary(Theme.of(context).brightness == Brightness.dark)),
             child: Text(isVi ? 'Xác nhận' : 'Confirm')),
         ]));
   }

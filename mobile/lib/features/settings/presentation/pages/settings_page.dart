@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Settings page with theme and language options.
 class SettingsPage extends StatelessWidget {
@@ -15,68 +15,75 @@ class SettingsPage extends StatelessWidget {
     final isVi = provider.locale.languageCode == 'vi';
 
     return Scaffold(
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       appBar: AppBar(
-        title: Text(isVi ? 'Cài Đặt' : 'Settings'),
+        backgroundColor: IndieFolkTheme.neutral(isDark),
+        elevation: 0,
+        title: Text(isVi ? 'Cài Đặt' : 'Settings',
+          style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20)),
         centerTitle: true,
       ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          _buildSectionTitle(isVi ? 'Giao Diện' : 'Appearance'),
+          _buildSectionTitle(isVi ? 'Giao Diện' : 'Appearance', isDark),
           const SizedBox(height: 12),
           _buildThemeCard(provider, isDark, isVi),
           const SizedBox(height: 28),
-          _buildSectionTitle(isVi ? 'Ngôn Ngữ' : 'Language'),
+          _buildSectionTitle(isVi ? 'Ngôn Ngữ' : 'Language', isDark),
           const SizedBox(height: 12),
-          _buildLanguageCard(provider),
+          _buildLanguageCard(provider, isDark),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(String title, bool isDark) {
     return Text(title,
-        style: const TextStyle(
+        style: IndieFolkTheme.body(isDark).copyWith(
             fontSize: 18, fontWeight: FontWeight.bold));
   }
 
   Widget _buildThemeCard(AppProvider provider, bool isDark, bool isVi) {
     return Card(
+      color: IndieFolkTheme.surface(isDark),
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         child: SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(isVi ? 'Chế Độ Tối' : 'Dark Mode',
-              style: const TextStyle(fontWeight: FontWeight.w600)),
+              style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600)),
           subtitle: Text(isDark
               ? (isVi ? 'Đang bật giao diện tối' : 'Dark theme active')
-              : (isVi ? 'Đang bật giao diện sáng' : 'Light theme active')),
+              : (isVi ? 'Đang bật giao diện sáng' : 'Light theme active'),
+              style: IndieFolkTheme.label(isDark).copyWith(color: IndieFolkTheme.secondary(isDark))),
           secondary: Icon(
             isDark ? Icons.dark_mode : Icons.light_mode,
-            color: AppColors.primary,
+            color: IndieFolkTheme.tertiary(isDark),
             size: 28,
           ),
           value: isDark,
-          activeColor: AppColors.primary,
+          activeColor: IndieFolkTheme.tertiary(isDark),
           onChanged: (_) => provider.toggleTheme(),
         ),
       ),
     );
   }
 
-  Widget _buildLanguageCard(AppProvider provider) {
+  Widget _buildLanguageCard(AppProvider provider, bool isDark) {
     final currentLang = provider.locale.languageCode;
     return Card(
+      color: IndieFolkTheme.surface(isDark),
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Column(
         children: [
-          _buildLangTile(provider, 'en', 'English', '🇺🇸', currentLang == 'en'),
-          const Divider(height: 1, indent: 20, endIndent: 20),
+          _buildLangTile(provider, 'en', 'English', '🇺🇸', currentLang == 'en', isDark),
+          Divider(height: 1, indent: 20, endIndent: 20, color: IndieFolkTheme.secondary(isDark).withOpacity(0.2)),
           _buildLangTile(
-              provider, 'vi', 'Tiếng Việt', '🇻🇳', currentLang == 'vi'),
+              provider, 'vi', 'Tiếng Việt', '🇻🇳', currentLang == 'vi', isDark),
         ],
       ),
     );
@@ -84,13 +91,15 @@ class SettingsPage extends StatelessWidget {
 
   Widget _buildLangTile(
       AppProvider provider, String code, String label,
-      String flag, bool selected) {
+      String flag, bool selected, bool isDark) {
     return ListTile(
       leading: Text(flag, style: const TextStyle(fontSize: 24)),
-      title: Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
+      title: Text(label, style: IndieFolkTheme.body(isDark).copyWith(
+        fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+        color: selected ? IndieFolkTheme.tertiary(isDark) : IndieFolkTheme.primary(isDark))),
       trailing: selected
-          ? const Icon(Icons.check_circle, color: AppColors.primary)
-          : const Icon(Icons.circle_outlined, color: Colors.grey),
+          ? Icon(Icons.check_circle, color: IndieFolkTheme.tertiary(isDark))
+          : Icon(Icons.circle_outlined, color: IndieFolkTheme.secondary(isDark)),
       onTap: () => provider.setLocale(code),
     );
   }

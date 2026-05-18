@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../widgets/product_category_picker.dart';
 
 /// Helper methods for AddProductPage, extracted to
@@ -11,14 +11,14 @@ Widget buildProductTipBanner(bool isDark, bool isVi) {
     margin: const EdgeInsets.fromLTRB(12, 8, 12, 0),
     padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
     decoration: BoxDecoration(
-      color: isDark ? DarkColors.surface : const Color(0xFFFFF3E0),
-      borderRadius: BorderRadius.circular(10),
-      border: Border.all(color: Colors.orange.shade200)),
+      color: IndieFolkTheme.surface(isDark),
+      borderRadius: BorderRadius.circular(6),
+      border: Border.all(color: IndieFolkTheme.secondary(isDark).withOpacity(0.3))),
     child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(Icons.info_outline, size: 20,
-          color: Colors.orange.shade700),
+          color: IndieFolkTheme.tertiary(isDark)),
         const SizedBox(width: 8),
         Expanded(child: Text(
           isVi
@@ -26,10 +26,7 @@ Widget buildProductTipBanner(bool isDark, bool isVi) {
                 'người mua tìm kiếm dễ dàng hơn.'
               : 'Fill in product info completely to help '
                 'buyers find your product easily.',
-          style: TextStyle(fontSize: 12, height: 1.4,
-            color: isDark
-                ? DarkColors.textPrimary
-                : Colors.brown.shade700))),
+          style: IndieFolkTheme.body(isDark).copyWith(fontSize: 12, color: IndieFolkTheme.secondary(isDark)))),
       ]));
 }
 
@@ -65,12 +62,13 @@ Widget buildSaveButton(bool isDark, bool isVi, VoidCallback? onSave) {
       child: ElevatedButton(
         onPressed: onSave,
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
+          backgroundColor: IndieFolkTheme.tertiary(isDark),
+          foregroundColor: IndieFolkTheme.onPrimary(isDark),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8)),
+              borderRadius: BorderRadius.circular(4)),
           elevation: 0),
         child: Text(isVi ? 'Lưu' : 'Save',
-          style: const TextStyle(fontSize: 16,
+          style: IndieFolkTheme.body(isDark).copyWith(
+              color: IndieFolkTheme.onPrimary(isDark),
               fontWeight: FontWeight.w600))))));
 }

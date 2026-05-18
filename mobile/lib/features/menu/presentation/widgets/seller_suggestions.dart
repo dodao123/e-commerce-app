@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// "Suggestions for you" section with promotional cards.
 class SellerSuggestions extends StatelessWidget {
@@ -17,7 +17,7 @@ class SellerSuggestions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(isVi ? 'Đề xuất cho bạn' : 'Suggestions for you',
-            style: const TextStyle(
+            style: IndieFolkTheme.body(isDark).copyWith(
                 fontSize: 16, fontWeight: FontWeight.w600)),
         const SizedBox(height: 12),
         _suggestionCard(
@@ -53,11 +53,11 @@ class SellerSuggestions extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? DarkColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6),
         border: Border.all(
-          color: gradientColors.first.withOpacity(0.2)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03),
+          color: gradientColors.first.withValues(alpha: 0.2)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 8, offset: const Offset(0, 2))]),
       child: Row(children: [
         // Icon
@@ -65,20 +65,19 @@ class SellerSuggestions extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: gradientColors),
-            borderRadius: BorderRadius.circular(14)),
+            borderRadius: BorderRadius.circular(6)),
           child: Icon(icon, size: 28, color: Colors.white)),
         const SizedBox(width: 14),
         // Text
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(
+            Text(title, style: IndieFolkTheme.body(isDark).copyWith(
                 fontSize: 14, fontWeight: FontWeight.w600)),
             const SizedBox(height: 4),
             Text(subtitle, maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(fontSize: 11,
-                    color: isDark ? DarkColors.textSecondary
-                        : AppColors.textSecondary)),
+                style: IndieFolkTheme.body(isDark).copyWith(fontSize: 11,
+                    color: IndieFolkTheme.secondary(isDark))),
           ])),
         const SizedBox(width: 8),
         // Action button
@@ -87,8 +86,8 @@ class SellerSuggestions extends StatelessWidget {
               horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: gradientColors),
-            borderRadius: BorderRadius.circular(16)),
-          child: Text(buttonLabel, style: const TextStyle(
+            borderRadius: BorderRadius.circular(6)),
+          child: Text(buttonLabel, style: IndieFolkTheme.body(true).copyWith(
               color: Colors.white, fontSize: 11,
               fontWeight: FontWeight.w600))),
       ]),

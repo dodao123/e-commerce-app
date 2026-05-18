@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../widgets/product_image_picker.dart';
 import '../widgets/product_condition_picker.dart';
 import 'add_product_form_fields.dart';
@@ -26,6 +26,7 @@ Widget buildEditBody({
   required bool isNew,
   required ValueChanged<bool> onConditionChanged,
   required TextEditingController conditionNoteCtrl,
+  List<Widget>? extraFields,
 }) {
   return SingleChildScrollView(child: Column(children: [
     buildProductTipBanner(isDark, isVi),
@@ -43,12 +44,15 @@ Widget buildEditBody({
       shippingCtrl: shippingCtrl, category: category,
       onPickCategory: onPickCategory,
       isDark: isDark, isVi: isVi),
-    const SizedBox(height: 8),
-    ProductConditionPicker(
-      isNew: isNew,
-      onChanged: onConditionChanged,
-      noteController: conditionNoteCtrl,
-      isDark: isDark, isVi: isVi),
+    if (extraFields == null) ...[
+      const SizedBox(height: 8),
+      ProductConditionPicker(
+        isNew: isNew,
+        onChanged: onConditionChanged,
+        noteController: conditionNoteCtrl,
+        isDark: isDark, isVi: isVi),
+    ],
+    if (extraFields != null) ...extraFields,
     const SizedBox(height: 24),
   ]));
 }
@@ -80,13 +84,14 @@ Widget buildEditBottomBar({
         child: ElevatedButton(
           onPressed: saving ? null : onSave,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
+            backgroundColor: IndieFolkTheme.tertiary(isDark),
+            foregroundColor: IndieFolkTheme.onPrimary(isDark),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8)),
+                borderRadius: BorderRadius.circular(4)),
             elevation: 0),
           child: Text(isVi ? 'Cập nhật' : 'Update',
-            style: const TextStyle(fontSize: 15,
-                fontWeight: FontWeight.w600))))),
+            style: IndieFolkTheme.body(isDark).copyWith(
+              color: IndieFolkTheme.onPrimary(isDark),
+              fontWeight: FontWeight.w600))))),
     ])));
 }

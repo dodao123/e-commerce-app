@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../home/data/datasources/product_local_datasource.dart';
 import '../../../home/data/models/product_model.dart';
 import '../../../home/presentation/pages/product_detail_page.dart';
@@ -26,9 +26,8 @@ class MenuProductSuggestions extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Text(isVi ? 'Có thể bạn cũng thích' : 'You may also like',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500,
-                  color: isDark ? DarkColors.textSecondary
-                      : AppColors.textSecondary))),
+              style: IndieFolkTheme.body(isDark).copyWith(fontSize: 13, fontWeight: FontWeight.w500,
+                  color: IndieFolkTheme.secondary(isDark)))),
         const Expanded(child: Divider()),
       ]),
       const SizedBox(height: 14),
@@ -63,16 +62,16 @@ class _ProductSuggestionCard extends StatelessWidget {
           builder: (_) => ProductDetailPage(product: product))),
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? DarkColors.surface : Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04),
+          color: IndieFolkTheme.surface(isDark),
+          borderRadius: BorderRadius.circular(6),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 6, offset: const Offset(0, 2))]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, children: [
             // Product image
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(14)),
+                  top: Radius.circular(6)),
               child: AspectRatio(aspectRatio: 1,
                 child: Image.asset(product.imageUrl,
                     fit: BoxFit.cover,
@@ -85,11 +84,11 @@ class _ProductSuggestionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(product.localizedName(lang),
                       maxLines: 2, overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 12)),
+                      style: IndieFolkTheme.body(isDark).copyWith(fontSize: 12)),
                   const SizedBox(height: 4),
                   Text('\$${product.price.toStringAsFixed(0)}',
-                      style: const TextStyle(fontSize: 14,
-                          color: AppColors.primary,
+                      style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 14,
+                          color: IndieFolkTheme.tertiary(isDark),
                           fontWeight: FontWeight.bold)),
                 ])),
           ]),

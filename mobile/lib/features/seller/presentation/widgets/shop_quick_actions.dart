@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../data/shop_order_datasource.dart';
 import '../pages/product_management_page.dart';
 import '../pages/seller_order_list_page.dart';
@@ -50,13 +50,13 @@ class _ShopQuickActionsState
     final actions = [
       _Action(Icons.inventory_2_outlined,
           widget.isVi ? 'Sản phẩm' : 'Products',
-          const Color(0xFF4A3ADB),
+          IndieFolkTheme.tertiary(widget.isDark),
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (_) =>
                   const ProductManagementPage()))),
       _Action(Icons.receipt_long_outlined,
           widget.isVi ? 'Đơn hàng' : 'Orders',
-          const Color(0xFFEF6C4A),
+          IndieFolkTheme.tertiary(widget.isDark),
           badge: _pendingCount,
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (_) =>
@@ -64,17 +64,17 @@ class _ShopQuickActionsState
                       shopId: widget.shopId)))),
       _Action(Icons.bar_chart_outlined,
           widget.isVi ? 'Thống kê' : 'Analytics',
-          const Color(0xFF00D2D3)),
+          IndieFolkTheme.tertiary(widget.isDark)),
       _Action(Icons.settings_outlined,
           widget.isVi ? 'Cài đặt' : 'Settings',
-          Colors.grey.shade600),
+          IndieFolkTheme.secondary(widget.isDark)),
     ];
 
     return GridView.count(
       crossAxisCount: 2, shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       mainAxisSpacing: 12, crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
+      childAspectRatio: 1.4,
       children: actions.map((a) => _tile(a)).toList());
   }
 
@@ -84,13 +84,8 @@ class _ShopQuickActionsState
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: widget.isDark
-              ? DarkColors.surface : Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2))]),
+          color: IndieFolkTheme.surface(widget.isDark),
+          borderRadius: BorderRadius.circular(6)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
@@ -99,9 +94,8 @@ class _ShopQuickActionsState
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: action.color
-                      .withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10)),
+                  color: action.color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6)),
                 child: Icon(action.icon,
                     color: action.color, size: 22)),
               if (action.badge > 0)
@@ -115,19 +109,14 @@ class _ShopQuickActionsState
                         minWidth: 18, minHeight: 18),
                     child: Text('${action.badge}',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: IndieFolkTheme.label(widget.isDark).copyWith(
                             color: Colors.white,
-                            fontSize: 10,
                             fontWeight: FontWeight.bold)),
                   )),
             ]),
             const SizedBox(height: 10),
-            Text(action.label, style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: widget.isDark
-                    ? DarkColors.textPrimary
-                    : Colors.black87)),
+            Text(action.label, style: IndieFolkTheme.body(widget.isDark).copyWith(
+                fontWeight: FontWeight.w600)),
           ])));
   }
 }

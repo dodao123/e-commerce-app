@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../seller/data/shop_order_datasource.dart';
 import '../../../seller/presentation/pages/seller_order_list_page.dart';
 
@@ -64,8 +64,8 @@ class _SellerOrderStatsState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? DarkColors.surface : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: IndieFolkTheme.surface(isDark),
+        borderRadius: BorderRadius.circular(6),
         boxShadow: [BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 8,
@@ -85,7 +85,7 @@ class _SellerOrderStatsState
           color: Color(0xFF3A7BD5)),
       const SizedBox(width: 8),
       Text(widget.isVi ? 'Đơn hàng' : 'Orders',
-          style: const TextStyle(
+          style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(
               fontSize: 16,
               fontWeight: FontWeight.w600)),
       const Spacer(),
@@ -93,8 +93,8 @@ class _SellerOrderStatsState
         onTap: () => _openOrders(),
         child: Text(
             widget.isVi ? 'Xem lịch sử >' : 'History >',
-            style: const TextStyle(fontSize: 12,
-                color: Color(0xFF3A7BD5),
+            style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(fontSize: 12,
+                color: IndieFolkTheme.tertiary(Theme.of(context).brightness == Brightness.dark),
                 fontWeight: FontWeight.w500))),
     ]);
   }
@@ -142,13 +142,13 @@ class _SellerOrderStatsState
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: color.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12)),
+              borderRadius: BorderRadius.circular(6)),
             child: Icon(icon, size: 22, color: color)),
           const SizedBox(height: 6),
-          Text(count, style: const TextStyle(
+          Text(count, style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(
               fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 2),
-          Text(label, style: const TextStyle(fontSize: 10),
+          Text(label, style: IndieFolkTheme.body(Theme.of(context).brightness == Brightness.dark).copyWith(fontSize: 10),
               textAlign: TextAlign.center),
         ]));
   }

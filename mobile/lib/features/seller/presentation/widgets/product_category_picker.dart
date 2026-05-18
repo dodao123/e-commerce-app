@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Category list and bottom sheet picker for product categories.
 const List<Map<String, dynamic>> productCategories = [
@@ -23,9 +23,9 @@ Future<String?> showCategoryPicker(
   return showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: isDark ? DarkColors.surface : Colors.white,
+    backgroundColor: IndieFolkTheme.surface(isDark),
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(8))),
     builder: (_) => _CategorySheet(isVi: isVi, isDark: isDark));
 }
 
@@ -41,17 +41,16 @@ class _CategorySheet extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Container(width: 40, height: 4,
-          decoration: BoxDecoration(color: Colors.grey.shade400,
+          decoration: BoxDecoration(color: IndieFolkTheme.secondary(isDark).withOpacity(0.3),
             borderRadius: BorderRadius.circular(2))),
         const SizedBox(height: 16),
         Text(isVi ? 'Chọn ngành hàng' : 'Select Category',
-          style: const TextStyle(fontSize: 16,
-            fontWeight: FontWeight.w600)),
+          style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600, fontSize: 16)),
         const SizedBox(height: 12),
         ...productCategories.map((cat) => ListTile(
           leading: Icon(cat['icon'] as IconData,
-            color: AppColors.primary),
-          title: Text(isVi ? cat['vi'] : cat['en']),
+            color: IndieFolkTheme.tertiary(isDark)),
+          title: Text(isVi ? cat['vi'] : cat['en'], style: IndieFolkTheme.body(isDark)),
           onTap: () => Navigator.pop(context,
               isVi ? cat['vi'] : cat['en']),
         )),

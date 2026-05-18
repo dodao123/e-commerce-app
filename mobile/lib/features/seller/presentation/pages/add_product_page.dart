@@ -3,7 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/storage/token_manager.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../../data/product_remote_datasource.dart';
 import '../widgets/image_processing_overlay.dart';
 import '../widgets/product_image_picker.dart';
@@ -55,8 +55,7 @@ class _AddProductPageState extends State<AddProductPage> {
         .locale.languageCode == 'vi';
 
     return Scaffold(
-      backgroundColor: isDark
-          ? DarkColors.background : const Color(0xFFF5F5F5),
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       appBar: _appBar(isDark, isVi),
       body: SingleChildScrollView(child: Column(children: [
         _tipBanner(isDark, isVi),
@@ -89,14 +88,13 @@ class _AddProductPageState extends State<AddProductPage> {
 
   PreferredSizeWidget _appBar(bool isDark, bool isVi) {
     return AppBar(
-      backgroundColor: isDark ? DarkColors.surface : Colors.white,
-      elevation: 0.5,
+      backgroundColor: IndieFolkTheme.neutral(isDark),
+      elevation: 0,
       leading: IconButton(
         onPressed: () => Navigator.pop(context),
-        icon: const Icon(Icons.arrow_back_ios_rounded, size: 20)),
+        icon: Icon(Icons.arrow_back_ios_rounded, size: 20, color: IndieFolkTheme.primary(isDark))),
       title: Text(isVi ? 'Thêm sản phẩm' : 'Add Product',
-        style: const TextStyle(fontSize: 17,
-          fontWeight: FontWeight.w600)));
+        style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20)));
   }
 
   Widget _tipBanner(bool isDark, bool isVi) =>

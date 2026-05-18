@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/indie_folk_theme.dart';
 import '../widgets/product_category_picker.dart';
 import 'edit_product_actions.dart';
 import 'edit_product_handler.dart';
@@ -70,8 +70,7 @@ class EditProductPageState extends State<EditProductPage> {
     final isVi = context.watch<AppProvider>()
         .locale.languageCode == 'vi';
     return Scaffold(
-      backgroundColor: isDark
-          ? DarkColors.background : const Color(0xFFF5F5F5),
+      backgroundColor: IndieFolkTheme.neutral(isDark),
       appBar: buildEditAppBar(context, isDark, isVi),
       body: buildEditBody(
         context: context, isDark: isDark, isVi: isVi,
