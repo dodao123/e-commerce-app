@@ -107,7 +107,7 @@ func (r *PostgresOrderRepository) ListByShipper(
 		       subtotal, shipping_fee, total, status,
 		       note, created_at, shipper_id, shipper_name, shipper_phone
 		FROM orders
-		WHERE shipper_id = $1
+		WHERE shipper_id = $1 OR status = 'finding_driver'
 		ORDER BY created_at DESC`, shipperID)
 	if err != nil {
 		return nil, err

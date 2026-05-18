@@ -107,6 +107,9 @@ class ApiConstants {
   static const String notifUnreadEndpoint =
       '/api/v1/notifications/unread';
 
+  /// FCM device token registration endpoint.
+  static const String fcmTokenEndpoint = '/api/v1/fcm/token';
+
   /// Default request timeout in seconds.
   static const int timeoutSeconds = 10;
 

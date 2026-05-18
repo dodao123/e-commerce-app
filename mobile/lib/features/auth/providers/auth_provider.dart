@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../data/datasources/auth_remote_datasource.dart';
 import '../data/datasources/email_auth_datasource.dart';
 import '../../../core/storage/token_manager.dart';
 import '../../../core/services/notification_polling_service.dart';
+import '../../../core/services/fcm_token_service.dart';
 
 /// Manages authentication state across the app.
 /// JWT stored securely: iOS Keychain / Android EncryptedSharedPrefs.
@@ -127,6 +129,8 @@ class AuthProvider extends ChangeNotifier {
       final role = _userProfile['role'] ?? 'buyer';
       final interval = role == 'driver' ? 10 : 30;
       notifSvc.startPolling(role: role, seconds: interval);
+      // Register FCM device token to backend for push notifications
+      unawaited(FcmTokenService().registerToken());
 
       return true;
     } on Exception catch (e) {

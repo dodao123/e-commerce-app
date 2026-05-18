@@ -129,7 +129,7 @@ func (s *OrderService) GetOrderDetail(
 	return s.orderRepo.GetDetail(orderID)
 }
 
-// UpdateOrderStatus changes order status.
+// UpdateOrderStatus changes order status and notifies all relevant parties.
 func (s *OrderService) UpdateOrderStatus(
 	orderID, status string,
 ) error {
@@ -137,11 +137,21 @@ func (s *OrderService) UpdateOrderStatus(
 	if err != nil {
 		return err
 	}
-	if status == "finding_driver" && s.notifService != nil {
-		detail, _ := s.orderRepo.GetDetail(orderID)
-		if detail != nil {
-			_ = s.notifService.NotifyAllDrivers(&detail.Order)
-		}
+	if s.notifService == nil {
+		return nil
+	}
+	detail, _ := s.orderRepo.GetDetail(orderID)
+	if detail == nil {
+		return nil
+	}
+	switch status {
+	case "finding_driver":
+		// Seller confirmed → notify all drivers
+		_ = s.notifService.NotifyAllDrivers(&detail.Order)
+	case "delivered":
+		// Driver delivered → notify buyer + seller
+		s.notifService.NotifyOrderDelivered(
+			&detail.Order, detail.Items)
 	}
 	return nil
 }

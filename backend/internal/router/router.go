@@ -18,6 +18,7 @@ func NewRouter(
 	addressHandler *handler.AddressHandler,
 	orderHandler *handler.OrderHandler,
 	notifHandler *handler.NotificationHandler,
+	fcmHandler *handler.FcmHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -68,6 +69,14 @@ func NewRouter(
 
 	// Notification routes (protected)
 	registerNotificationRoutes(mux, notifHandler, authGuard)
+
+	// FCM token route (protected) — Flutter calls this after login
+	if fcmHandler != nil {
+		mux.Handle("/api/v1/fcm/token",
+			authGuard(http.HandlerFunc(
+				fcmHandler.HandleRegisterToken)),
+		)
+	}
 
 	// Static file server for product images
 	mux.Handle("/uploads/",

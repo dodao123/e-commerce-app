@@ -58,6 +58,7 @@ func main() {
 	var addressHandler *handler.AddressHandler
 	var orderHandler *handler.OrderHandler
 	var notifHandler *handler.NotificationHandler
+	var fcmHandler *handler.FcmHandler
 
 	// Image service (for bg removal + uploads)
 	uploadRoot := filepath.Join(".", "uploads")
@@ -100,19 +101,22 @@ func main() {
 		// Order + Notification DI chain
 		orderRepo := repository.NewPostgresOrderRepository(db.Pool)
 		notifRepo := repository.NewPostgresNotificationRepository(db.Pool)
+		tokenRepo := repository.NewPostgresFcmTokenRepository(db.Pool)
 		notifService := service.NewNotificationService(
-			notifRepo, shopRepo)
+			notifRepo, shopRepo, tokenRepo)
 		orderService := service.NewOrderService(
 			orderRepo, addressRepo, cartRepo, notifService)
 		orderHandler = handler.NewOrderHandler(orderService)
 		notifHandler = handler.NewNotificationHandler(notifService)
+		fcmHandler = handler.NewFcmHandler(tokenRepo)
 	}
 
 	// Setup router and middleware
 	mux := router.NewRouter(
 		authHandler, emailAuthHandler,
 		shopHandler, productHandler, cartHandler,
-		addressHandler, orderHandler, notifHandler, jwtService)
+		addressHandler, orderHandler, notifHandler,
+		fcmHandler, jwtService)
 	httpHandler := middleware.ApplyCORS(middleware.ApplyLogger(mux))
 
 	// Start HTTP server

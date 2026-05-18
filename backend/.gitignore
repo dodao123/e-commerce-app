@@ -13,3 +13,4 @@ Thumbs.db
 
 #image file 
 uploads/shops
+internal/config/firebase/*.json

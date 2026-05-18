@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../features/notifications/data/notification_datasource.dart';
 
 /// Callback when notification is tapped.
@@ -60,6 +61,41 @@ class NotificationPollingService {
     await androidPlugin?.createNotificationChannel(channel);
     // Request POST_NOTIFICATIONS permission on Android 13+
     await androidPlugin?.requestNotificationsPermission();
+
+    // --- FCM setup ---
+    // Request permission (Android 13+, iOS)
+    await FirebaseMessaging.instance.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    // Show FCM foreground messages as local notifications
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      final notification = message.notification;
+      if (notification == null) return;
+      _plugin.show(
+        notification.hashCode,
+        notification.title,
+        notification.body,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'driver_order_channel',
+            'Thông báo đơn hàng',
+            channelDescription: 'Thông báo đơn hàng mới',
+            importance: Importance.max,
+            priority: Priority.max,
+            icon: '@mipmap/ic_launcher',
+          ),
+        ),
+      );
+      // Refresh unread badge when FCM arrives
+      refresh();
+    });
+  }
+
+  /// Returns the current FCM device token (for backend to send push).
+  Future<String?> getFcmToken() async {
+    return FirebaseMessaging.instance.getToken();
   }
 
   /// Start polling every [seconds] interval with the given [role].
@@ -98,7 +134,7 @@ class NotificationPollingService {
     final isDriver = _currentRole == 'driver';
     final title = isDriver ? '🚚 Có đơn hàng cần giao!' : '🛍️ Thông báo mới!';
     final body = isDriver
-        ? 'Bạn có $newCount đơn hàng mới đang chờ xác nhận'
+        ? 'Bạn có $newCount đơn hàng mới có thể nhận giao '
         : 'Bạn có $newCount thông báo chưa đọc';
 
     const details = NotificationDetails(

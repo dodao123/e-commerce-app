@@ -42,12 +42,13 @@ class _DriverDeliveryStatsState extends State<DriverDeliveryStats> {
         // For simplicity, we can just group them or differentiate by another logic.
         // Let's assume 'shipping' is the main active state, and 'delivered' is done.
         // If the system expands, we can add 'picking_up'. For now, we'll map:
+        if (status == 'finding_driver') pickingUp++;
         if (status == 'shipping') shipping++;
         if (status == 'delivered') delivered++;
       }
 
       setState(() {
-        _pickingUp = 0; // Placeholder for future state
+        _pickingUp = pickingUp;
         _shipping = shipping;
         _delivered = delivered;
         _loading = false;

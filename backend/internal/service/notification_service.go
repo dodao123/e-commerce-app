@@ -1,4 +1,4 @@
-// Package service provides notification business logic.
+// Package service handles notification business logic with FCM push support.
 package service
 
 import (
@@ -11,26 +11,51 @@ import (
 
 // NotificationService handles notification operations.
 type NotificationService struct {
-	notifRepo *repository.PostgresNotificationRepository
-	shopRepo  *repository.PostgresShopRepository
+	notifRepo  *repository.PostgresNotificationRepository
+	shopRepo   *repository.PostgresShopRepository
+	tokenRepo  *repository.PostgresFcmTokenRepository
 }
 
 // NewNotificationService creates a new service.
 func NewNotificationService(
 	notifRepo *repository.PostgresNotificationRepository,
 	shopRepo *repository.PostgresShopRepository,
+	tokenRepo *repository.PostgresFcmTokenRepository,
 ) *NotificationService {
 	return &NotificationService{
-		notifRepo: notifRepo, shopRepo: shopRepo,
+		notifRepo: notifRepo,
+		shopRepo:  shopRepo,
+		tokenRepo: tokenRepo,
 	}
 }
 
-// CreateOrderNotification creates notifications for
-// each shop owner involved in the order.
+// pushToUser sends FCM push to a specific user and logs any error.
+func (s *NotificationService) pushToUser(
+	userID, title, body string,
+) {
+	if s.tokenRepo == nil {
+		return
+	}
+	token, err := s.tokenRepo.GetByUserID(userID)
+	if err != nil || token == "" {
+		return
+	}
+	go globalFcm.SendToToken(token, title, body) //nolint:errcheck
+}
+
+// dbAndPush creates a DB notification and sends an FCM push.
+func (s *NotificationService) dbAndPush(n model.Notification, title, body string) {
+	if err := s.notifRepo.Create(n); err != nil {
+		log.Printf("⚠️ Create notif err: %v", err)
+	}
+	s.pushToUser(n.UserID, title, body)
+}
+
+// CreateOrderNotification notifies shop owner(s) when a new order is placed.
+// Also sends FCM push to the seller's device immediately.
 func (s *NotificationService) CreateOrderNotification(
 	order *model.Order, items []model.OrderItem,
 ) {
-	// Collect unique shop IDs
 	seen := map[string]bool{}
 	for _, it := range items {
 		if it.ShopID == "" || seen[it.ShopID] {
@@ -43,57 +68,123 @@ func (s *NotificationService) CreateOrderNotification(
 			log.Printf("⚠️ Shop not found: %s", it.ShopID)
 			continue
 		}
-		notif := model.Notification{
-			UserID: shop.SellerID,
-			Title:  "Đơn hàng mới!",
-			Body: fmt.Sprintf(
-				"Bạn có đơn hàng mới từ %s — %s",
-				order.ReceiverName, it.ProductName),
+		title := "🛍️ Đơn hàng mới!"
+		body := fmt.Sprintf("Bạn có đơn hàng từ %s — %s",
+			order.ReceiverName, it.ProductName)
+		s.dbAndPush(model.Notification{
+			UserID:     shop.SellerID,
+			Title:      title,
+			Body:       body,
 			Type:       "order",
 			TargetRole: "seller",
 			RefID:      order.ID,
-		}
-		if err := s.notifRepo.Create(notif); err != nil {
-			log.Printf("⚠️ Create notif err: %v", err)
-		}
+		}, title, body)
 	}
 }
 
-// NotifyAllDrivers notifies all drivers about a new order.
+// NotifyAllDrivers notifies all drivers about a new order via DB + FCM push.
 func (s *NotificationService) NotifyAllDrivers(order *model.Order) error {
-	return s.notifRepo.NotifyAllDrivers(order)
+	if err := s.notifRepo.NotifyAllDrivers(order); err != nil {
+		return err
+	}
+	// FCM push to all driver devices immediately
+	if s.tokenRepo != nil {
+		tokens, err := s.tokenRepo.GetDriverTokens()
+		if err == nil && len(tokens) > 0 {
+			globalFcm.SendToMultiple(
+				tokens,
+				"🚚 Có đơn hàng cần giao!",
+				fmt.Sprintf("Đơn hàng từ %s đang chờ tài xế nhận",
+					order.ReceiverName),
+			)
+		}
+	}
+	return nil
 }
 
-// NotifyOrderAccepted notifies the buyer and shop(s) that a driver accepted.
+// NotifyOrderAccepted notifies buyer and shop(s) when a driver accepts.
 func (s *NotificationService) NotifyOrderAccepted(
 	order *model.Order, items []model.OrderItem, driverName string,
 ) {
-	// Notify buyer
-	_ = s.notifRepo.Create(model.Notification{
+	// 1. Notify buyer
+	buyerTitle := "🚗 Đơn hàng đang được giao!"
+	buyerBody := fmt.Sprintf(
+		"Tài xế %s đã nhận và đang giao đơn hàng của bạn.", driverName)
+	s.dbAndPush(model.Notification{
 		UserID:     order.UserID,
-		Title:      "Đơn hàng đang giao!",
-		Body:       fmt.Sprintf("Tài xế %s đã nhận giao đơn hàng của bạn.", driverName),
+		Title:      buyerTitle,
+		Body:       buyerBody,
 		Type:       "order",
 		TargetRole: "buyer",
 		RefID:      order.ID,
-	})
-	
-	// Notify shop(s)
+	}, buyerTitle, buyerBody)
+
+	// 2. Notify shop(s)
 	seen := map[string]bool{}
 	for _, it := range items {
-		if it.ShopID == "" || seen[it.ShopID] { continue }
-		seen[it.ShopID] = true
-		shop, err := s.shopRepo.GetShopByID(context.Background(), it.ShopID)
-		if err == nil && shop != nil {
-			_ = s.notifRepo.Create(model.Notification{
-				UserID:     shop.SellerID,
-				Title:      "Đơn hàng đã được tài xế nhận!",
-				Body:       fmt.Sprintf("Tài xế %s sẽ đến lấy đơn hàng %s", driverName, it.ProductName),
-				Type:       "order",
-				TargetRole: "seller",
-				RefID:      order.ID,
-			})
+		if it.ShopID == "" || seen[it.ShopID] {
+			continue
 		}
+		seen[it.ShopID] = true
+		shop, err := s.shopRepo.GetShopByID(
+			context.Background(), it.ShopID)
+		if err != nil || shop == nil {
+			continue
+		}
+		sellerTitle := "✅ Tài xế đã nhận đơn!"
+		sellerBody := fmt.Sprintf(
+			"Tài Xế %s đến lấy hàng - Sản Phẩm %s - của khách hàng %s",
+			driverName, it.ProductName, order.ReceiverName)
+		s.dbAndPush(model.Notification{
+			UserID:     shop.SellerID,
+			Title:      sellerTitle,
+			Body:       sellerBody,
+			Type:       "order",
+			TargetRole: "seller",
+			RefID:      order.ID,
+		}, sellerTitle, sellerBody)
+	}
+}
+
+// NotifyOrderDelivered notifies buyer (and seller) when delivered.
+func (s *NotificationService) NotifyOrderDelivered(
+	order *model.Order, items []model.OrderItem,
+) {
+	// 1. Notify buyer
+	buyerTitle := "🎉 Giao hàng thành công!"
+	buyerBody := "Đơn hàng của bạn đã được giao thành công. Cảm ơn bạn!"
+	s.dbAndPush(model.Notification{
+		UserID:     order.UserID,
+		Title:      buyerTitle,
+		Body:       buyerBody,
+		Type:       "order",
+		TargetRole: "buyer",
+		RefID:      order.ID,
+	}, buyerTitle, buyerBody)
+
+	// 2. Notify shop(s)
+	seen := map[string]bool{}
+	for _, it := range items {
+		if it.ShopID == "" || seen[it.ShopID] {
+			continue
+		}
+		seen[it.ShopID] = true
+		shop, err := s.shopRepo.GetShopByID(
+			context.Background(), it.ShopID)
+		if err != nil || shop == nil {
+			continue
+		}
+		sellerTitle := "📦 Đơn hàng đã giao!"
+		sellerBody := fmt.Sprintf(
+			"Sản phẩm %s đã được giao thành công.", it.ProductName)
+		s.dbAndPush(model.Notification{
+			UserID:     shop.SellerID,
+			Title:      sellerTitle,
+			Body:       sellerBody,
+			Type:       "order",
+			TargetRole: "seller",
+			RefID:      order.ID,
+		}, sellerTitle, sellerBody)
 	}
 }
 
