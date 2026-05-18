@@ -129,28 +129,57 @@ func (s *OrderService) GetOrderDetail(
 	return s.orderRepo.GetDetail(orderID)
 }
 
+// validTransitions defines allowed status changes.
+var validTransitions = map[string][]string{
+	"pending":        {"finding_driver", "cancelled"},
+	"finding_driver": {"shipping", "cancelled"},
+	"shipping":       {"delivered"},
+	"delivered":      {},
+	"cancelled":      {},
+}
+
+// isValidTransition checks if a status change is allowed.
+func isValidTransition(from, to string) bool {
+	allowed, ok := validTransitions[from]
+	if !ok {
+		return false
+	}
+	for _, s := range allowed {
+		if s == to {
+			return true
+		}
+	}
+	return false
+}
+
 // UpdateOrderStatus changes order status and notifies all relevant parties.
 func (s *OrderService) UpdateOrderStatus(
 	orderID, status string,
 ) error {
-	err := s.orderRepo.UpdateStatus(orderID, status)
-	if err != nil {
+	// Validate transition
+	detail, err := s.orderRepo.GetDetail(orderID)
+	if err != nil || detail == nil {
+		return fmt.Errorf("order not found")
+	}
+	if !isValidTransition(detail.Order.Status, status) {
+		return fmt.Errorf(
+			"cannot change from '%s' to '%s'",
+			detail.Order.Status, status)
+	}
+	if err := s.orderRepo.UpdateStatus(orderID, status); err != nil {
 		return err
 	}
 	if s.notifService == nil {
 		return nil
 	}
-	detail, _ := s.orderRepo.GetDetail(orderID)
-	if detail == nil {
-		return nil
-	}
 	switch status {
 	case "finding_driver":
-		// Seller confirmed → notify all drivers
 		_ = s.notifService.NotifyAllDrivers(&detail.Order)
 	case "delivered":
-		// Driver delivered → notify buyer + seller
 		s.notifService.NotifyOrderDelivered(
+			&detail.Order, detail.Items)
+	case "cancelled":
+		s.notifService.NotifyOrderCancelled(
 			&detail.Order, detail.Items)
 	}
 	return nil

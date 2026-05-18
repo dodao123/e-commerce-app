@@ -130,6 +130,12 @@ func (h *OrderHandler) HandleAcceptDelivery(
 		return
 	}
 	driverID := r.Context().Value(middleware.UserIDKey).(string)
+	role, _ := r.Context().Value(middleware.UserRoleKey).(string)
+	if role != "driver" {
+		WriteError(w, http.StatusForbidden,
+			"only drivers can accept deliveries")
+		return
+	}
 
 	if err := h.orderService.AcceptOrderDelivery(
 		orderID, driverID, req.DriverName, req.DriverPhone); err != nil {

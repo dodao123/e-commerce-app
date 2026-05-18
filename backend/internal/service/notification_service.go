@@ -187,6 +187,35 @@ func (s *NotificationService) NotifyOrderDelivered(
 		}, sellerTitle, sellerBody)
 	}
 }
+// NotifyOrderCancelled notifies seller(s) when buyer cancels.
+func (s *NotificationService) NotifyOrderCancelled(
+	order *model.Order, items []model.OrderItem,
+) {
+	seen := map[string]bool{}
+	for _, it := range items {
+		if it.ShopID == "" || seen[it.ShopID] {
+			continue
+		}
+		seen[it.ShopID] = true
+		shop, err := s.shopRepo.GetShopByID(
+			context.Background(), it.ShopID)
+		if err != nil || shop == nil {
+			continue
+		}
+		title := "❌ Đơn hàng bị hủy!"
+		body := fmt.Sprintf(
+			"Khách hàng %s đã hủy đơn hàng — %s",
+			order.ReceiverName, it.ProductName)
+		s.dbAndPush(model.Notification{
+			UserID:     shop.SellerID,
+			Title:      title,
+			Body:       body,
+			Type:       "order",
+			TargetRole: "seller",
+			RefID:      order.ID,
+		}, title, body)
+	}
+}
 
 // ListByUser returns notifications for a user.
 func (s *NotificationService) ListByUser(
