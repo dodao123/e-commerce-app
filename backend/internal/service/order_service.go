@@ -129,29 +129,6 @@ func (s *OrderService) GetOrderDetail(
 	return s.orderRepo.GetDetail(orderID)
 }
 
-// validTransitions defines allowed status changes.
-var validTransitions = map[string][]string{
-	"pending":        {"finding_driver", "cancelled"},
-	"finding_driver": {"shipping", "cancelled"},
-	"shipping":       {"delivered"},
-	"delivered":      {},
-	"cancelled":      {},
-}
-
-// isValidTransition checks if a status change is allowed.
-func isValidTransition(from, to string) bool {
-	allowed, ok := validTransitions[from]
-	if !ok {
-		return false
-	}
-	for _, s := range allowed {
-		if s == to {
-			return true
-		}
-	}
-	return false
-}
-
 // UpdateOrderStatus changes order status and notifies all relevant parties.
 func (s *OrderService) UpdateOrderStatus(
 	orderID, status string,
