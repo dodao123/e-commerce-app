@@ -49,11 +49,15 @@ class _DeliveryAppState extends State<DeliveryApp> {
       if (auth.isLoggedIn && auth.userRole == 'buyer') {
         context.read<CartProvider>().fetchCount();
       }
-      // Start notification polling for sellers
+      // Start polling with correct role (drivers need faster updates)
       if (auth.isLoggedIn) {
         final notifSvc = NotificationPollingService();
         await notifSvc.init();
-        notifSvc.startPolling();
+        final interval = auth.userRole == 'driver' ? 10 : 30;
+        notifSvc.startPolling(
+          seconds: interval,
+          role: auth.userRole,
+        );
       }
     });
   }

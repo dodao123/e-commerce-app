@@ -105,6 +105,23 @@ func (s *OrderService) ListShopOrders(
 	return orders, nil
 }
 
+// ListDriverOrders returns orders assigned to a driver.
+func (s *OrderService) ListDriverOrders(
+	driverID string,
+) ([]model.Order, error) {
+	orders, err := s.orderRepo.ListByShipper(driverID)
+	if err != nil {
+		return nil, err
+	}
+	for i := range orders {
+		detail, _ := s.orderRepo.GetDetail(orders[i].ID)
+		if detail != nil {
+			orders[i].Items = detail.Items
+		}
+	}
+	return orders, nil
+}
+
 // GetOrderDetail returns order + items.
 func (s *OrderService) GetOrderDetail(
 	orderID string,
@@ -116,7 +133,35 @@ func (s *OrderService) GetOrderDetail(
 func (s *OrderService) UpdateOrderStatus(
 	orderID, status string,
 ) error {
-	return s.orderRepo.UpdateStatus(orderID, status)
+	err := s.orderRepo.UpdateStatus(orderID, status)
+	if err != nil {
+		return err
+	}
+	if status == "finding_driver" && s.notifService != nil {
+		detail, _ := s.orderRepo.GetDetail(orderID)
+		if detail != nil {
+			_ = s.notifService.NotifyAllDrivers(&detail.Order)
+		}
+	}
+	return nil
+}
+
+// AcceptOrderDelivery handles a driver accepting an order.
+func (s *OrderService) AcceptOrderDelivery(
+	orderID, driverID, driverName, driverPhone string,
+) error {
+	err := s.orderRepo.AcceptDelivery(orderID, driverID, driverName, driverPhone)
+	if err != nil {
+		return err
+	}
+	// Notify Shop and Buyer
+	if s.notifService != nil {
+		detail, _ := s.orderRepo.GetDetail(orderID)
+		if detail != nil {
+			s.notifService.NotifyOrderAccepted(&detail.Order, detail.Items, driverName)
+		}
+	}
+	return nil
 }
 
 // CountShopPending returns pending order count.

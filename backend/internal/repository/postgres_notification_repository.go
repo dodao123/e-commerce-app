@@ -24,23 +24,35 @@ func (r *PostgresNotificationRepository) Create(
 ) error {
 	_, err := r.db.Exec(`
 		INSERT INTO notifications
-		(user_id, title, body, type, ref_id)
-		VALUES ($1,$2,$3,$4,$5)`,
-		n.UserID, n.Title, n.Body, n.Type, n.RefID)
+		(user_id, title, body, type, target_role, ref_id)
+		VALUES ($1,$2,$3,$4,$5,$6)`,
+		n.UserID, n.Title, n.Body, n.Type, n.TargetRole, n.RefID)
+	return err
+}
+
+// NotifyAllDrivers creates a notification for all active drivers.
+func (r *PostgresNotificationRepository) NotifyAllDrivers(
+	order *model.Order,
+) error {
+	_, err := r.db.Exec(`
+		INSERT INTO notifications (user_id, title, body, type, target_role, ref_id)
+		SELECT id, 'Có đơn hàng mới cần giao!', 'Đơn hàng tới ' || $1, 'driver_pickup', 'driver', $2
+		FROM users WHERE role = 'driver' AND is_active = TRUE`,
+		order.ReceiverName, order.ID)
 	return err
 }
 
 // ListByUser returns notifications for a user.
 func (r *PostgresNotificationRepository) ListByUser(
-	userID string,
+	userID string, role string,
 ) ([]model.Notification, error) {
 	rows, err := r.db.Query(`
-		SELECT id, user_id, title, body, type,
+		SELECT id, user_id, title, body, type, target_role,
 		       ref_id, is_read, created_at
 		FROM notifications
-		WHERE user_id=$1
+		WHERE user_id=$1 AND target_role=$2
 		ORDER BY created_at DESC
-		LIMIT 50`, userID)
+		LIMIT 50`, userID, role)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +62,7 @@ func (r *PostgresNotificationRepository) ListByUser(
 		var n model.Notification
 		if err := rows.Scan(
 			&n.ID, &n.UserID, &n.Title, &n.Body,
-			&n.Type, &n.RefID, &n.IsRead, &n.CreatedAt,
+			&n.Type, &n.TargetRole, &n.RefID, &n.IsRead, &n.CreatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -71,12 +83,12 @@ func (r *PostgresNotificationRepository) MarkRead(
 
 // CountUnread returns unread count for a user.
 func (r *PostgresNotificationRepository) CountUnread(
-	userID string,
+	userID string, role string,
 ) (int, error) {
 	var count int
 	err := r.db.QueryRow(`
 		SELECT COUNT(*) FROM notifications
-		WHERE user_id=$1 AND is_read=FALSE`,
-		userID).Scan(&count)
+		WHERE user_id=$1 AND target_role=$2 AND is_read=FALSE`,
+		userID, role).Scan(&count)
 	return count, err
 }

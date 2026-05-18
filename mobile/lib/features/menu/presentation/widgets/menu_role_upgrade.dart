@@ -102,7 +102,7 @@ class MenuRoleUpgrade extends StatelessWidget {
           ? 'Đã chuyển vai trò thành công!'
           : 'Role switched successfully!'),
         backgroundColor: Colors.green));
-      NotificationPollingService().refresh();
+      NotificationPollingService().refresh(role: role);
     }
   }
 }

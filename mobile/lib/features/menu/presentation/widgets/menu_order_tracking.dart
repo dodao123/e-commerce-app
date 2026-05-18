@@ -31,18 +31,15 @@ class _MenuOrderTrackingState
     super.initState();
     _fetchCounts();
     NotificationPollingService().unreadCount.addListener(_fetchCounts);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     context.read<AppProvider>().orderUpdateTrigger.addListener(_fetchCounts);
   }
 
   @override
   void dispose() {
     NotificationPollingService().unreadCount.removeListener(_fetchCounts);
-    context.read<AppProvider>().orderUpdateTrigger.removeListener(_fetchCounts);
+    if (mounted) {
+      context.read<AppProvider>().orderUpdateTrigger.removeListener(_fetchCounts);
+    }
     super.dispose();
   }
 
@@ -98,7 +95,7 @@ class _MenuOrderTrackingState
                   () => _openOrders(context, 1)),
               _statusIcon(Icons.local_shipping_outlined,
                   widget.isVi ? 'Đang giao' : 'Shipping',
-                  _counts['shipping'] ?? 0,
+                  (_counts['shipping'] ?? 0) + (_counts['finding_driver'] ?? 0),
                   () => _openOrders(context, 2)),
               _statusIcon(Icons.check_circle_outline,
                   widget.isVi ? 'Đã giao' : 'Delivered',

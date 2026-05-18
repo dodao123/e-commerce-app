@@ -55,6 +55,23 @@ class OrderDatasource {
     }
   }
 
+  /// Fetches driver's assigned orders.
+  Future<List<Map<String, dynamic>>> fetchDriverOrders() async {
+    try {
+      final url = Uri.parse(
+          '${ApiConstants.baseUrl}'
+          '/api/v1/driver/orders');
+      final r = await _client.get(
+          url, headers: await _headers());
+      if (r.statusCode != 200) return [];
+      final List<dynamic> data = jsonDecode(r.body);
+      return data.cast<Map<String, dynamic>>();
+    } catch (e) {
+      debugPrint('Fetch driver orders error: $e');
+      return [];
+    }
+  }
+
   /// Fetches order detail by ID.
   Future<Map<String, dynamic>?> fetchDetail(
       String id) async {
@@ -87,6 +104,49 @@ class OrderDatasource {
       return r.statusCode == 200;
     } catch (e) {
       debugPrint('Cancel order error: $e');
+      return false;
+    }
+  }
+
+  /// Driver accepts an order delivery.
+  Future<bool> acceptDelivery({
+    required String orderId,
+    required String driverName,
+    required String driverPhone,
+  }) async {
+    try {
+      final url = Uri.parse(
+          '${ApiConstants.baseUrl}'
+          '${ApiConstants.ordersEndpoint}'
+          '/$orderId/accept-delivery');
+      final r = await _client.post(
+        url,
+        headers: await _headers(),
+        body: jsonEncode({
+          'driver_name': driverName,
+          'driver_phone': driverPhone,
+        }),
+      );
+      return r.statusCode == 200;
+    } catch (e) {
+      debugPrint('Accept delivery error: $e');
+      return false;
+    }
+  }
+
+  /// Driver marks an order as delivered.
+  Future<bool> markDelivered(String orderId) async {
+    try {
+      final url = Uri.parse(
+          '${ApiConstants.baseUrl}'
+          '${ApiConstants.ordersEndpoint}'
+          '/$orderId/status');
+      final r = await _client.put(url,
+          headers: await _headers(),
+          body: jsonEncode({'status': 'delivered'}));
+      return r.statusCode == 200;
+    } catch (e) {
+      debugPrint('Mark delivered error: $e');
       return false;
     }
   }

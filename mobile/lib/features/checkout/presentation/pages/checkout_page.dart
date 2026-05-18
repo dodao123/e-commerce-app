@@ -7,6 +7,7 @@ import '../../../../core/utils/price_formatter.dart';
 import '../../../seller/presentation/pages/address_picker_page.dart';
 import '../../data/address_datasource.dart';
 import '../../data/order_datasource.dart';
+import '../../../../core/constants/api_constants.dart';
 
 /// Checkout page matching Shopee-style layout.
 class CheckoutPage extends StatefulWidget {
@@ -180,7 +181,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   Widget _productRow(Map<String, dynamic> item) {
-    final imgUrl = item['product_image']?.toString() ?? '';
+    final imgUrl = ApiConstants.resolveImageUrl(item['product_image']?.toString() ?? '');
     final price = (item['price'] as num).toDouble();
     final qty = (item['quantity'] as num).toInt();
     return Padding(
@@ -446,7 +447,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
     if (mounted) {
       setState(() => _placing = false);
       if (result != null) {
-        context.read<CartProvider>().fetchCount();
+        context.read<CartProvider>().fetchCart();
         context.read<AppProvider>().notifyOrderUpdate();
         final isVi = context.read<AppProvider>()
             .locale.languageCode == 'vi';

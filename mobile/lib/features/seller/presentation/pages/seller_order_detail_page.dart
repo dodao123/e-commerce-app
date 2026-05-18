@@ -75,6 +75,10 @@ class _SellerOrderDetailPageState
         const SizedBox(height: 12),
         _buyerCard(order, isDark),
         const SizedBox(height: 12),
+        if (status != 'pending' && status != 'cancelled') ...[
+          _shipperCard(order, status, isVi, isDark),
+          const SizedBox(height: 12),
+        ],
         _itemsCard(items, isDark),
         const SizedBox(height: 12),
         _summaryCard(order, isDark),
@@ -87,12 +91,14 @@ class _SellerOrderDetailPageState
       String status, bool isVi, bool isDark) {
     final labels = {
       'pending': isVi ? 'Chờ xác nhận' : 'Pending',
+      'finding_driver': isVi ? 'Chờ Shipper' : 'Finding Shipper',
       'shipping': isVi ? 'Đang giao' : 'Shipping',
       'delivered': isVi ? 'Đã giao' : 'Delivered',
       'cancelled': isVi ? 'Đã hủy' : 'Cancelled',
     };
     final colors = {
       'pending': Colors.orange,
+      'finding_driver': Colors.purple,
       'shipping': Colors.blue,
       'delivered': Colors.green,
       'cancelled': Colors.red,
@@ -119,6 +125,7 @@ class _SellerOrderDetailPageState
   IconData _statusIcon(String s) {
     switch (s) {
       case 'pending': return Icons.schedule;
+      case 'finding_driver': return Icons.person_search;
       case 'shipping': return Icons.local_shipping;
       case 'delivered': return Icons.check_circle;
       case 'cancelled': return Icons.cancel;
@@ -162,6 +169,50 @@ class _SellerOrderDetailPageState
         Expanded(child: Text(text,
             style: const TextStyle(fontSize: 13))),
       ]);
+  }
+
+  Widget _shipperCard(
+      Map<String, dynamic> order, String status, bool isVi, bool isDark) {
+    if (status == 'finding_driver') {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? DarkColors.surface : Colors.white,
+          borderRadius: BorderRadius.circular(12)),
+        child: Row(
+          children: [
+            Icon(Icons.person_search, color: Colors.purple.shade300, size: 24),
+            const SizedBox(width: 12),
+            Text(isVi ? 'Đang chờ Shipper nhận đơn...' : 'Waiting for shipper...',
+                style: TextStyle(fontSize: 14, color: Colors.purple.shade300, fontWeight: FontWeight.w500)),
+          ]));
+    }
+
+    final shipperName = order['shipper_name'] ?? (isVi ? 'Không rõ' : 'Unknown');
+    final shipperPhone = order['shipper_phone'] ?? '';
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? DarkColors.surface : Colors.white,
+        borderRadius: BorderRadius.circular(12)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(Icons.delivery_dining, color: AppColors.primary, size: 20),
+            const SizedBox(width: 8),
+            Text(isVi ? 'Thông tin Shipper' : 'Shipper Info',
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
+          ]),
+          const SizedBox(height: 10),
+          _infoRow(Icons.badge_outlined, shipperName),
+          if (shipperPhone.toString().isNotEmpty) ...[
+            const SizedBox(height: 8),
+            _infoRow(Icons.phone_outlined, shipperPhone),
+          ],
+        ]));
   }
 
   Widget _itemsCard(List items, bool isDark) {
@@ -241,16 +292,16 @@ class _SellerOrderDetailPageState
   Widget _actionButtons(
       String status, Map<String, dynamic> order,
       bool isVi) {
-    if (status == 'delivered' || status == 'cancelled') {
+    if (status == 'delivered' || status == 'cancelled' || status == 'finding_driver') {
       return const SizedBox.shrink();
     }
     final next =
-        status == 'pending' ? 'shipping' : 'delivered';
+        status == 'pending' ? 'finding_driver' : 'delivered';
     final label = status == 'pending'
-        ? (isVi ? 'Xác nhận đơn hàng' : 'Confirm Order')
+        ? (isVi ? 'Tìm Shipper' : 'Find Shipper')
         : (isVi ? 'Đánh dấu đã giao' : 'Mark Delivered');
     final icon = status == 'pending'
-        ? Icons.check_circle_outline
+        ? Icons.search
         : Icons.local_shipping;
     return SizedBox(
       width: double.infinity,

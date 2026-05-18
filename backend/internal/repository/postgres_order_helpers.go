@@ -16,6 +16,7 @@ func scanOrderRows(rows *sql.Rows) ([]model.Order, error) {
 			&o.ReceiverName, &o.ReceiverPhone,
 			&o.Subtotal, &o.ShippingFee, &o.Total,
 			&o.Status, &o.Note, &o.CreatedAt,
+			&o.ShipperID, &o.ShipperName, &o.ShipperPhone,
 		); err != nil {
 			return nil, err
 		}
@@ -34,14 +35,16 @@ func (r *PostgresOrderRepository) GetDetail(
 		       receiver_name, receiver_phone, receiver_addr,
 		       shipping_method, payment_method,
 		       subtotal, shipping_fee, total,
-		       status, note, created_at
+		       status, note, created_at,
+		       shipper_id, shipper_name, shipper_phone
 		FROM orders WHERE id=$1`, orderID).Scan(
 		&o.ID, &o.UserID, &o.AddressID,
 		&o.ReceiverName, &o.ReceiverPhone,
 		&o.ReceiverAddr, &o.ShippingMethod,
 		&o.PaymentMethod, &o.Subtotal,
 		&o.ShippingFee, &o.Total,
-		&o.Status, &o.Note, &o.CreatedAt)
+		&o.Status, &o.Note, &o.CreatedAt,
+		&o.ShipperID, &o.ShipperName, &o.ShipperPhone)
 	if err != nil {
 		return nil, err
 	}

@@ -9,8 +9,9 @@ type Notification struct {
 	UserID    string    `json:"user_id"`
 	Title     string    `json:"title"`
 	Body      string    `json:"body"`
-	Type      string    `json:"type"`
-	RefID     string    `json:"ref_id"`
+	Type       string    `json:"type"`
+	TargetRole string    `json:"target_role"`
+	RefID      string    `json:"ref_id"`
 	IsRead    bool      `json:"is_read"`
 	CreatedAt time.Time `json:"created_at"`
 }

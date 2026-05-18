@@ -6,8 +6,8 @@ class IndieFolkTheme {
   static Color primary(bool isDark) => isDark ? const Color(0xFFF7EDD6) : const Color(0xFF1E1A13);
   static Color secondary(bool isDark) => isDark ? const Color(0xFFA9A090) : const Color(0xFF877C68);
   static Color tertiary(bool isDark) => isDark ? const Color(0xFFD6975A) : const Color(0xFFC27C38);
-  static Color neutral(bool isDark) => isDark ? const Color(0xFF1A1A2E) : const Color(0xFFEFE6D0);
-  static Color surface(bool isDark) => isDark ? const Color(0xFF252540) : const Color(0xFFF7EDD6);
+  static Color neutral(bool isDark) => isDark ? const Color(0xFF1F1A15) : const Color(0xFFEFE6D0);
+  static Color surface(bool isDark) => isDark ? const Color(0xFF2A231C) : const Color(0xFFF7EDD6);
   static Color onPrimary(bool isDark) => isDark ? const Color(0xFF1E1A13) : const Color(0xFFF7EDD6);
 
   // Typography

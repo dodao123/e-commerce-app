@@ -38,18 +38,15 @@ class _SellerOrderStatsState
     super.initState();
     _fetchCounts();
     NotificationPollingService().unreadCount.addListener(_fetchCounts);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     context.read<AppProvider>().orderUpdateTrigger.addListener(_fetchCounts);
   }
 
   @override
   void dispose() {
     NotificationPollingService().unreadCount.removeListener(_fetchCounts);
-    context.read<AppProvider>().orderUpdateTrigger.removeListener(_fetchCounts);
+    if (mounted) {
+      context.read<AppProvider>().orderUpdateTrigger.removeListener(_fetchCounts);
+    }
     super.dispose();
   }
 
@@ -67,7 +64,7 @@ class _SellerOrderStatsState
         widget.shopId);
     final counts = <String, int>{
       'pending': 0, 'cancelled': 0,
-      'shipping': 0, 'delivered': 0,
+      'finding_driver': 0, 'shipping': 0, 'delivered': 0,
     };
     for (final o in orders) {
       final s = o['status']?.toString() ?? '';
@@ -131,27 +128,27 @@ class _SellerOrderStatsState
       children: [
         _statItem(
             '${_counts['pending'] ?? 0}',
-            widget.isVi ? 'Chờ lấy\nhàng' : 'Pending',
+            widget.isVi ? 'Chờ xác\nnhận' : 'Pending',
             Icons.inventory_2_outlined,
             const Color(0xFFFF9800),
             onTap: _openOrders),
         _statItem(
-            '${_counts['cancelled'] ?? 0}',
-            widget.isVi ? 'Đơn hủy' : 'Cancelled',
-            Icons.cancel_outlined,
-            const Color(0xFFE53935),
-            onTap: _openOrders),
-        _statItem(
-            '${_counts['shipping'] ?? 0}',
-            widget.isVi ? 'Đang giao' : 'Shipping',
+            '${(_counts['shipping'] ?? 0) + (_counts['finding_driver'] ?? 0)}',
+            widget.isVi ? 'Đang\ngiao' : 'Shipping',
             Icons.local_shipping_outlined,
             const Color(0xFF7C4DFF),
             onTap: _openOrders),
         _statItem(
             '${_counts['delivered'] ?? 0}',
-            widget.isVi ? 'Đã giao' : 'Delivered',
+            widget.isVi ? 'Đã\ngiao' : 'Delivered',
             Icons.check_circle_outline,
             const Color(0xFF00BFA5),
+            onTap: _openOrders),
+        _statItem(
+            '${_counts['cancelled'] ?? 0}',
+            widget.isVi ? 'Đơn\nhủy' : 'Cancelled',
+            Icons.cancel_outlined,
+            const Color(0xFFE53935),
             onTap: _openOrders),
       ]);
   }

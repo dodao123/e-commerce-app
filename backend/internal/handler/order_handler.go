@@ -58,6 +58,24 @@ func (h *OrderHandler) HandleListOrders(
 	WriteJSON(w, http.StatusOK, orders)
 }
 
+// HandleListDriverOrders handles GET /api/v1/driver/orders.
+func (h *OrderHandler) HandleListDriverOrders(
+	w http.ResponseWriter, r *http.Request,
+) {
+	driverID := r.Context().Value(
+		middleware.UserIDKey).(string)
+	orders, err := h.orderService.ListDriverOrders(driverID)
+	if err != nil {
+		WriteError(w, http.StatusInternalServerError,
+			"failed to list driver orders")
+		return
+	}
+	if orders == nil {
+		orders = []model.Order{}
+	}
+	WriteJSON(w, http.StatusOK, orders)
+}
+
 // HandleOrderDetail handles GET /api/v1/orders/{id}.
 func (h *OrderHandler) HandleOrderDetail(
 	w http.ResponseWriter, r *http.Request,
@@ -92,4 +110,32 @@ func (h *OrderHandler) HandleUpdateStatus(
 	}
 	WriteJSON(w, http.StatusOK,
 		map[string]string{"status": req.Status})
+}
+
+// HandleAcceptDelivery handles POST /api/v1/orders/{id}/accept-delivery
+func (h *OrderHandler) HandleAcceptDelivery(
+	w http.ResponseWriter, r *http.Request,
+) {
+	orderID := r.PathValue("id")
+	// The user info should ideally come from Context/Auth, but for MVP we might need Name/Phone from token or request body.
+	// We'll read from Context. Wait, UserID is in context, but Name/Phone might not be.
+	// We'll require Name/Phone in the request body for simplicity, or we can fetch the user.
+	// Let's require them in the body.
+	var req struct {
+		DriverName  string `json:"driver_name"`
+		DriverPhone string `json:"driver_phone"`
+	}
+	if err := ReadJSON(r, &req); err != nil {
+		WriteError(w, http.StatusBadRequest, "invalid body")
+		return
+	}
+	driverID := r.Context().Value(middleware.UserIDKey).(string)
+
+	if err := h.orderService.AcceptOrderDelivery(
+		orderID, driverID, req.DriverName, req.DriverPhone); err != nil {
+		WriteError(w, http.StatusConflict, err.Error())
+		return
+	}
+
+	WriteJSON(w, http.StatusOK, map[string]string{"message": "Order accepted successfully"})
 }

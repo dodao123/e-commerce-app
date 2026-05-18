@@ -96,19 +96,44 @@ class HomeAppBar extends StatelessWidget {
   }
 
   void _showLogoutDialog(AuthProvider auth, BuildContext context, bool isVi, bool isDark) {
+    final hasAvatar = auth.avatarUrl.isNotEmpty;
     showDialog(context: context, builder: (_) => AlertDialog(
       backgroundColor: IndieFolkTheme.surface(isDark),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-      title: Text(auth.userName.isNotEmpty ? auth.userName : (isVi ? 'Tài khoản' : 'Account'),
-          style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 20)),
-      content: Text(auth.userEmail, style: IndieFolkTheme.body(isDark)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      title: Column(
+        children: [
+          CircleAvatar(
+            radius: 30, backgroundColor: IndieFolkTheme.tertiary(isDark),
+            backgroundImage: hasAvatar ? NetworkImage(auth.avatarUrl) : null,
+            child: hasAvatar ? null : Text(
+              auth.userName.isNotEmpty ? auth.userName[0].toUpperCase() : '?',
+              style: IndieFolkTheme.h1(isDark).copyWith(color: IndieFolkTheme.onPrimary(isDark),
+                  fontWeight: FontWeight.bold, fontSize: 28))),
+          const SizedBox(height: 16),
+          Text(auth.userName.isNotEmpty ? auth.userName : (isVi ? 'Tài khoản' : 'Account'),
+              style: IndieFolkTheme.h1(isDark).copyWith(fontSize: 22)),
+        ],
+      ),
+      content: Text(auth.userEmail, textAlign: TextAlign.center, style: IndieFolkTheme.body(isDark)),
+      actionsAlignment: MainAxisAlignment.center,
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context),
-            child: Text(isVi ? 'Đóng' : 'Close', style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600))),
-        TextButton(
+        OutlinedButton(
+          onPressed: () => Navigator.pop(context),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: IndieFolkTheme.primary(isDark),
+            side: BorderSide(color: IndieFolkTheme.primary(isDark).withValues(alpha: 0.2)),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          ),
+          child: Text(isVi ? 'Đóng' : 'Close', style: IndieFolkTheme.body(isDark).copyWith(fontWeight: FontWeight.w600))),
+        FilledButton(
           onPressed: () { auth.signOut(); Navigator.pop(context); },
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.red.shade400,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+          ),
           child: Text(isVi ? 'Đăng xuất' : 'Logout',
-              style: IndieFolkTheme.body(isDark).copyWith(color: Colors.red, fontWeight: FontWeight.w600))),
+              style: IndieFolkTheme.body(isDark).copyWith(color: Colors.white, fontWeight: FontWeight.w600))),
       ]));
   }
 

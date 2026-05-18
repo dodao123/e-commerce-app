@@ -26,7 +26,11 @@ func (h *NotificationHandler) HandleList(
 ) {
 	userID := r.Context().Value(
 		middleware.UserIDKey).(string)
-	list, err := h.notifService.ListByUser(userID)
+	role := r.URL.Query().Get("role")
+	if role == "" {
+		role = "buyer"
+	}
+	list, err := h.notifService.ListByUser(userID, role)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError,
 			"failed to list notifications")
@@ -58,7 +62,11 @@ func (h *NotificationHandler) HandleUnreadCount(
 ) {
 	userID := r.Context().Value(
 		middleware.UserIDKey).(string)
-	count, err := h.notifService.CountUnread(userID)
+	role := r.URL.Query().Get("role")
+	if role == "" {
+		role = "buyer"
+	}
+	count, err := h.notifService.CountUnread(userID, role)
 	if err != nil {
 		WriteError(w, http.StatusInternalServerError,
 			"failed to count")

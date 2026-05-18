@@ -9,9 +9,9 @@ if (!$connections) {
 } else {
     $pids = $connections | Select-Object -ExpandProperty OwningProcess -Unique
 
-    foreach ($pid in $pids) {
-        Write-Host "Killing process $pid ..."
-        Stop-Process -Id $pid -Force
+    foreach ($processId in $pids) {
+        if ([string]::IsNullOrWhiteSpace($processId)) { continue }
+        Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
     }
 
     Write-Host "Port $PORT has been freed"

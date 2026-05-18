@@ -18,11 +18,11 @@ class NotificationDatasource {
   }
 
   /// Fetches all notifications for logged-in user.
-  Future<List<Map<String, dynamic>>> fetchAll() async {
+  Future<List<Map<String, dynamic>>> fetchAll(String role) async {
     try {
       final url = Uri.parse(
           '${ApiConstants.baseUrl}'
-          '${ApiConstants.notificationsEndpoint}');
+          '${ApiConstants.notificationsEndpoint}?role=$role');
       final r = await _client.get(
           url, headers: await _headers());
       if (r.statusCode != 200) return [];
@@ -35,11 +35,11 @@ class NotificationDatasource {
   }
 
   /// Returns unread notification count.
-  Future<int> fetchUnreadCount() async {
+  Future<int> fetchUnreadCount(String role) async {
     try {
       final url = Uri.parse(
           '${ApiConstants.baseUrl}'
-          '${ApiConstants.notifUnreadEndpoint}');
+          '${ApiConstants.notifUnreadEndpoint}?role=$role');
       final r = await _client.get(
           url, headers: await _headers());
       if (r.statusCode != 200) return 0;

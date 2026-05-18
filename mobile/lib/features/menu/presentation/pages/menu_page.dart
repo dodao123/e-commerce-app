@@ -13,6 +13,7 @@ import '../widgets/menu_support.dart';
 import '../widgets/menu_role_upgrade.dart';
 import '../widgets/menu_product_suggestions.dart';
 import 'seller_menu_content.dart';
+import 'driver_menu_content.dart';
 
 /// Menu page — displays role-based content.
 class MenuPage extends StatefulWidget {
@@ -73,6 +74,14 @@ class _MenuPageState extends State<MenuPage> {
         shopEmail: auth.userEmail,
         avatarUrl: auth.avatarUrl,
         shopId: _shopId);
+    }
+
+    if (auth.userRole == 'driver') {
+      return DriverMenuContent(
+        isVi: isVi,
+        driverName: auth.userName,
+        driverEmail: auth.userEmail,
+        avatarUrl: auth.avatarUrl);
     }
 
     return _buildBuyerMenu(auth, isVi);

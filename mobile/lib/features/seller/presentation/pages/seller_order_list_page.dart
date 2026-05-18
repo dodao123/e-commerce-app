@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/indie_folk_theme.dart';
 import '../../../../core/utils/price_formatter.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../data/shop_order_datasource.dart';
 import 'seller_order_detail_page.dart';
 
@@ -57,8 +58,13 @@ class _SellerOrderListPageState
   List<Map<String, dynamic>> get _filtered {
     final s = _statuses[_tabCtrl.index];
     if (s == 'all') return _orders;
-    return _orders
-        .where((o) => o['status'] == s).toList();
+    return _orders.where((o) {
+      final status = o['status'];
+      if (s == 'shipping') {
+        return status == 'shipping' || status == 'finding_driver';
+      }
+      return status == s;
+    }).toList();
   }
 
   @override
@@ -168,7 +174,7 @@ class _SellerOrderListPageState
     final first = items.first;
     final name = first['product_name'] ?? '';
     final qty = first['quantity'] ?? 1;
-    final image = first['product_image'] ?? '';
+    final image = ApiConstants.resolveImageUrl(first['product_image'] ?? '');
     final extra = items.length > 1 ? (items.length - 1) : 0;
     
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -202,12 +208,14 @@ class _SellerOrderListPageState
   Widget _badge(String status, bool isVi) {
     final labels = {
       'pending': isVi ? 'Chờ xác nhận' : 'Pending',
+      'finding_driver': isVi ? 'Chờ Shipper' : 'Finding Shipper',
       'shipping': isVi ? 'Đang giao' : 'Shipping',
       'delivered': isVi ? 'Đã giao' : 'Delivered',
       'cancelled': isVi ? 'Đã hủy' : 'Cancelled',
     };
     final colors = {
       'pending': Colors.orange,
+      'finding_driver': Colors.purple,
       'shipping': Colors.blue,
       'delivered': Colors.green,
       'cancelled': Colors.red,

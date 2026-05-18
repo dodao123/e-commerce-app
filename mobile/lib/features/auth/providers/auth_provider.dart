@@ -124,7 +124,9 @@ class AuthProvider extends ChangeNotifier {
       final notifSvc = NotificationPollingService();
       await notifSvc.init();
       notifSvc.reset();
-      notifSvc.startPolling();
+      final role = _userProfile['role'] ?? 'buyer';
+      final interval = role == 'driver' ? 10 : 30;
+      notifSvc.startPolling(role: role, seconds: interval);
 
       return true;
     } on Exception catch (e) {

@@ -18,6 +18,9 @@ type Order struct {
 	Total          float64   `json:"total"`
 	Status         string    `json:"status"`
 	Note           string    `json:"note"`
+	ShipperID      *string   `json:"shipper_id,omitempty"`
+	ShipperName    string    `json:"shipper_name,omitempty"`
+	ShipperPhone   string    `json:"shipper_phone,omitempty"`
 	CreatedAt      time.Time `json:"created_at"`
 	Items          []OrderItem `json:"items,omitempty"`
 }

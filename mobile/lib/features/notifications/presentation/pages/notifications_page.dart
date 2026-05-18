@@ -4,7 +4,9 @@ import '../../../../core/providers/app_provider.dart';
 import '../../../../core/services/notification_polling_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../seller/presentation/pages/seller_order_detail_page.dart';
+import '../../../driver/presentation/pages/driver_order_detail_page.dart';
 import '../../data/notification_datasource.dart';
+import '../../../auth/providers/auth_provider.dart';
 
 /// Notifications page — fetches from backend API.
 /// Listens to polling service unread count changes
@@ -44,7 +46,8 @@ class _NotificationsPageState
   Future<void> _fetch() async {
     if (!mounted) return;
     setState(() => _loading = true);
-    _items = await _ds.fetchAll();
+    final role = context.read<AuthProvider>().userRole;
+    _items = await _ds.fetchAll(role);
     if (mounted) setState(() => _loading = false);
   }
 
@@ -156,12 +159,18 @@ class _NotificationsPageState
       _polling.refresh();
     }
     final refId = n['ref_id']?.toString() ?? '';
-    if (mounted && refId.isNotEmpty) {
+    if (!mounted || refId.isEmpty) return;
+    final role = context.read<AuthProvider>().userRole;
+    if (role == 'driver') {
+      await Navigator.push(context, MaterialPageRoute(
+          builder: (_) => DriverOrderDetailPage(
+              orderId: refId)));
+    } else {
       await Navigator.push(context, MaterialPageRoute(
           builder: (_) => SellerOrderDetailPage(
               orderId: refId)));
-      _fetch();
     }
+    _fetch();
   }
 
   String _fmtTime(String iso, bool isVi) {

@@ -38,6 +38,10 @@ func registerOrderRoutes(
 	mux.Handle("/api/v1/orders/{id}/status",
 		authGuard(http.HandlerFunc(
 			orderHandler.HandleUpdateStatus)))
+	// Driver: accept delivery
+	mux.Handle("/api/v1/orders/{id}/accept-delivery",
+		authGuard(http.HandlerFunc(
+			orderHandler.HandleAcceptDelivery)))
 	// Seller: shop orders
 	mux.Handle("/api/v1/shop/orders",
 		authGuard(http.HandlerFunc(
@@ -45,4 +49,8 @@ func registerOrderRoutes(
 	mux.Handle("/api/v1/shop/orders/count",
 		authGuard(http.HandlerFunc(
 			orderHandler.HandleShopOrderCount)))
+	// Driver: list driver's assigned orders
+	mux.Handle("/api/v1/driver/orders",
+		authGuard(http.HandlerFunc(
+			orderHandler.HandleListDriverOrders)))
 }

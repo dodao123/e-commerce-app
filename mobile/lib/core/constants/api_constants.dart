@@ -19,6 +19,19 @@ class ApiConstants {
   /// Base URL for the backend API server (auto-resolved).
   static const String baseUrl = 'http://$_apiHost:$_serverPort';
 
+  /// Resolves an image URL, replacing any stale IP address with the current [baseUrl].
+  static String resolveImageUrl(String url) {
+    if (url.isEmpty) return '';
+    if (url.contains('/uploads/')) {
+      final idx = url.indexOf('/uploads/');
+      return '$baseUrl${url.substring(idx)}';
+    }
+    if (!url.startsWith('http')) {
+      return url.startsWith('/') ? '$baseUrl$url' : '$baseUrl/$url';
+    }
+    return url;
+  }
+
   /// Health check endpoint path.
   static const String healthEndpoint = '/api/v1/health';
 

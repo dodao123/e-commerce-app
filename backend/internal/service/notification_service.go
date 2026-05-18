@@ -49,8 +49,9 @@ func (s *NotificationService) CreateOrderNotification(
 			Body: fmt.Sprintf(
 				"Bạn có đơn hàng mới từ %s — %s",
 				order.ReceiverName, it.ProductName),
-			Type:  "order",
-			RefID: order.ID,
+			Type:       "order",
+			TargetRole: "seller",
+			RefID:      order.ID,
 		}
 		if err := s.notifRepo.Create(notif); err != nil {
 			log.Printf("⚠️ Create notif err: %v", err)
@@ -58,11 +59,49 @@ func (s *NotificationService) CreateOrderNotification(
 	}
 }
 
+// NotifyAllDrivers notifies all drivers about a new order.
+func (s *NotificationService) NotifyAllDrivers(order *model.Order) error {
+	return s.notifRepo.NotifyAllDrivers(order)
+}
+
+// NotifyOrderAccepted notifies the buyer and shop(s) that a driver accepted.
+func (s *NotificationService) NotifyOrderAccepted(
+	order *model.Order, items []model.OrderItem, driverName string,
+) {
+	// Notify buyer
+	_ = s.notifRepo.Create(model.Notification{
+		UserID:     order.UserID,
+		Title:      "Đơn hàng đang giao!",
+		Body:       fmt.Sprintf("Tài xế %s đã nhận giao đơn hàng của bạn.", driverName),
+		Type:       "order",
+		TargetRole: "buyer",
+		RefID:      order.ID,
+	})
+	
+	// Notify shop(s)
+	seen := map[string]bool{}
+	for _, it := range items {
+		if it.ShopID == "" || seen[it.ShopID] { continue }
+		seen[it.ShopID] = true
+		shop, err := s.shopRepo.GetShopByID(context.Background(), it.ShopID)
+		if err == nil && shop != nil {
+			_ = s.notifRepo.Create(model.Notification{
+				UserID:     shop.SellerID,
+				Title:      "Đơn hàng đã được tài xế nhận!",
+				Body:       fmt.Sprintf("Tài xế %s sẽ đến lấy đơn hàng %s", driverName, it.ProductName),
+				Type:       "order",
+				TargetRole: "seller",
+				RefID:      order.ID,
+			})
+		}
+	}
+}
+
 // ListByUser returns notifications for a user.
 func (s *NotificationService) ListByUser(
-	userID string,
+	userID string, role string,
 ) ([]model.Notification, error) {
-	return s.notifRepo.ListByUser(userID)
+	return s.notifRepo.ListByUser(userID, role)
 }
 
 // MarkRead marks a notification as read.
@@ -74,7 +113,7 @@ func (s *NotificationService) MarkRead(
 
 // CountUnread returns unread notification count.
 func (s *NotificationService) CountUnread(
-	userID string,
+	userID string, role string,
 ) (int, error) {
-	return s.notifRepo.CountUnread(userID)
+	return s.notifRepo.CountUnread(userID, role)
 }
