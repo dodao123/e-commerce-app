@@ -25,21 +25,21 @@ class _MenuOrderTrackingState
     extends State<MenuOrderTracking> {
   final _ds = OrderDatasource();
   Map<String, int> _counts = {};
+  late AppProvider _appProvider;
 
   @override
   void initState() {
     super.initState();
+    _appProvider = context.read<AppProvider>();
     _fetchCounts();
     NotificationPollingService().unreadCount.addListener(_fetchCounts);
-    context.read<AppProvider>().orderUpdateTrigger.addListener(_fetchCounts);
+    _appProvider.orderUpdateTrigger.addListener(_fetchCounts);
   }
 
   @override
   void dispose() {
     NotificationPollingService().unreadCount.removeListener(_fetchCounts);
-    if (mounted) {
-      context.read<AppProvider>().orderUpdateTrigger.removeListener(_fetchCounts);
-    }
+    _appProvider.orderUpdateTrigger.removeListener(_fetchCounts);
     super.dispose();
   }
 

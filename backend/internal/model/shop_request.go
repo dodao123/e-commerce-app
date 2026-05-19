@@ -22,6 +22,12 @@ type CreateShopRequest struct {
 	// DetailAddress is the detailed street address.
 	DetailAddress string `json:"detail_address" validate:"required,min=5"`
 
+	// Latitude is the GPS latitude.
+	Latitude float64 `json:"lat"`
+
+	// Longitude is the GPS longitude.
+	Longitude float64 `json:"lng"`
+
 	// Email is the shop's contact email.
 	Email string `json:"email" validate:"required,email"`
 
@@ -57,6 +63,18 @@ type UpdateShopRequest struct {
 
 	// DetailAddress is the detailed street address.
 	DetailAddress *string `json:"detail_address,omitempty" validate:"omitempty,min=5"`
+
+	// Email is the shop's contact email.
+	Email *string `json:"email,omitempty"`
+
+	// Phone is the shop's contact phone number.
+	Phone *string `json:"phone,omitempty"`
+
+	// Latitude is the GPS latitude.
+	Latitude *float64 `json:"lat,omitempty"`
+
+	// Longitude is the GPS longitude.
+	Longitude *float64 `json:"lng,omitempty"`
 
 	// Nationality is the shop owner's nationality.
 	Nationality *string `json:"nationality,omitempty"`

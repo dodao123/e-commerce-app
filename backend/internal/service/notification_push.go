@@ -36,15 +36,24 @@ func (s *NotificationService) CreateOrderNotification(
 	}
 }
 
-// NotifyAllDrivers notifies all drivers via DB + FCM push.
-func (s *NotificationService) NotifyAllDrivers(
-	order *model.Order,
+// NotifyNearbyDrivers notifies nearby drivers via DB + FCM push.
+func (s *NotificationService) NotifyNearbyDrivers(
+	order *model.Order, items []model.OrderItem,
 ) error {
-	if err := s.notifRepo.NotifyAllDrivers(order); err != nil {
+	if len(items) == 0 {
+		return nil
+	}
+	// We use the first item's shop to determine the location.
+	shop, err := s.shopRepo.GetShopByID(context.Background(), items[0].ShopID)
+	if err != nil || shop == nil {
+		return fmt.Errorf("shop not found for order")
+	}
+
+	if err := s.notifRepo.NotifyNearbyDrivers(order, shop.Latitude, shop.Longitude); err != nil {
 		return err
 	}
 	if s.tokenRepo != nil {
-		tokens, err := s.tokenRepo.GetDriverTokens()
+		tokens, err := s.tokenRepo.GetNearbyDriverTokens(shop.Latitude, shop.Longitude, order.AddressID)
 		if err == nil && len(tokens) > 0 {
 			globalFcm.SendToMultiple(
 				tokens,

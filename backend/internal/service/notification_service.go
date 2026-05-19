@@ -13,6 +13,7 @@ type NotificationService struct {
 	notifRepo *repository.PostgresNotificationRepository
 	shopRepo  *repository.PostgresShopRepository
 	tokenRepo *repository.PostgresFcmTokenRepository
+	radiusKM  float64
 }
 
 // NewNotificationService creates a new service.
@@ -20,11 +21,13 @@ func NewNotificationService(
 	notifRepo *repository.PostgresNotificationRepository,
 	shopRepo *repository.PostgresShopRepository,
 	tokenRepo *repository.PostgresFcmTokenRepository,
+	radiusKM float64,
 ) *NotificationService {
 	return &NotificationService{
 		notifRepo: notifRepo,
 		shopRepo:  shopRepo,
 		tokenRepo: tokenRepo,
+		radiusKM:  radiusKM,
 	}
 }
 

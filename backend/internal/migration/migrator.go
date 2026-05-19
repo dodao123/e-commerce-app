@@ -28,6 +28,9 @@ func allMigrations() []migrationEntry {
 		{Name: "009_create_notifications", SQL: CreateNotificationsTableSQL},
 		{Name: "010_alter_orders_add_shipper", SQL: AlterOrdersAddShipperSQL},
 		{Name: "011_alter_notifications_add_target_role", SQL: AlterNotificationsAddTargetRoleSQL},
+		{Name: "012_add_coordinates", SQL: AddCoordinatesToShopsAndAddressesSQL},
+		{Name: "013_create_shipper_profiles", SQL: CreateShipperProfilesSQL},
+		{Name: "014_alter_shipper_profiles_add_location", SQL: AlterShipperProfilesAddLocationSQL},
 	}
 }
 

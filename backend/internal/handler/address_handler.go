@@ -6,6 +6,7 @@ import (
 	"delivery-app/backend/internal/model"
 	"delivery-app/backend/internal/service"
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -51,6 +52,7 @@ func (h *AddressHandler) HandleCreateAddress(
 			"invalid body")
 		return
 	}
+	log.Printf("[AddressHandler] Creating address: %+v", addr)
 	addr.UserID = userID
 	created, err := h.addressService.Create(addr)
 	if err != nil {

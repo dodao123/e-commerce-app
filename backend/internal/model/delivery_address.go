@@ -13,6 +13,8 @@ type DeliveryAddress struct {
 	District      string    `json:"district"`
 	Ward          string    `json:"ward"`
 	DetailAddress string    `json:"detail_address"`
+	Latitude      float64   `json:"lat"`
+	Longitude     float64   `json:"lng"`
 	IsDefault     bool      `json:"is_default"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`

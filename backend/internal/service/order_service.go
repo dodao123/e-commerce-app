@@ -13,6 +13,7 @@ type OrderService struct {
 	addressRepo  *repository.PostgresAddressRepository
 	cartRepo     *repository.PostgresCartRepository
 	notifService *NotificationService
+	radiusKM     float64
 }
 
 // NewOrderService creates a new OrderService.
@@ -21,12 +22,14 @@ func NewOrderService(
 	addressRepo *repository.PostgresAddressRepository,
 	cartRepo *repository.PostgresCartRepository,
 	notifService *NotificationService,
+	radiusKM float64,
 ) *OrderService {
 	return &OrderService{
 		orderRepo:    orderRepo,
 		addressRepo:  addressRepo,
 		cartRepo:     cartRepo,
 		notifService: notifService,
+		radiusKM:     radiusKM,
 	}
 }
 
@@ -109,7 +112,7 @@ func (s *OrderService) ListShopOrders(
 func (s *OrderService) ListDriverOrders(
 	driverID string,
 ) ([]model.Order, error) {
-	orders, err := s.orderRepo.ListByShipper(driverID)
+	orders, err := s.orderRepo.ListByShipper(driverID, s.radiusKM)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +154,7 @@ func (s *OrderService) UpdateOrderStatus(
 	}
 	switch status {
 	case "finding_driver":
-		_ = s.notifService.NotifyAllDrivers(&detail.Order)
+		_ = s.notifService.NotifyNearbyDrivers(&detail.Order, detail.Items)
 	case "delivered":
 		s.notifService.NotifyOrderDelivered(
 			&detail.Order, detail.Items)

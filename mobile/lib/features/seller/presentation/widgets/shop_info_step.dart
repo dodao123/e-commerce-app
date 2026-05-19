@@ -39,6 +39,8 @@ class ShopInfoStepState extends State<ShopInfoStep> {
     'district': _addressData['district'] ?? '',
     'ward': _addressData['ward'] ?? '',
     'detail_address': _addressData['street'] ?? '',
+    'lat': _addressData['lat'] ?? 0.0,
+    'lng': _addressData['lng'] ?? 0.0,
   };
 
   /// Validates all fields in step 1.

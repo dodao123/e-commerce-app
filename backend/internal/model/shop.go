@@ -56,6 +56,12 @@ type Shop struct {
 	// DetailAddress is the detailed street address.
 	DetailAddress string `json:"detail_address"`
 
+	// Latitude is the GPS latitude.
+	Latitude float64 `json:"lat"`
+
+	// Longitude is the GPS longitude.
+	Longitude float64 `json:"lng"`
+
 	// Email is the shop's contact email.
 	Email string `json:"email"`
 

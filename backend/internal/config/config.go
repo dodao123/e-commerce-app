@@ -9,9 +9,10 @@ import (
 
 // Config holds all application configuration values.
 type Config struct {
-	ServerPort string
-	Database   DatabaseConfig
-	Auth       AuthConfig
+	ServerPort          string
+	MaxDeliveryRadiusKM float64
+	Database            DatabaseConfig
+	Auth                AuthConfig
 }
 
 // DatabaseConfig holds PostgreSQL connection parameters.
@@ -36,9 +37,12 @@ type AuthConfig struct {
 // Load reads configuration from environment variables.
 func Load() *Config {
 	jwtExpiry, _ := strconv.Atoi(getEnv("JWT_EXPIRY_HOURS", "24"))
+	radiusStr := getEnv("MAX_DELIVERY_RADIUS_KM", "10")
+	radius, _ := strconv.ParseFloat(radiusStr, 64)
 
 	return &Config{
-		ServerPort: getEnv("SERVER_PORT", "8081"),
+		ServerPort:          getEnv("SERVER_PORT", "8081"),
+		MaxDeliveryRadiusKM: radius,
 		Database: DatabaseConfig{
 			Host:     getEnv("DB_HOST", "localhost"),
 			Port:     getEnv("DB_PORT", "5432"),

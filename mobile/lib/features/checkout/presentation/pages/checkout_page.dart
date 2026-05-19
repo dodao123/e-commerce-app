@@ -332,13 +332,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
     final addrData = <String, dynamic>{
       'receiver_name': result['name'] ?? '',
       'phone': result['phone'] ?? '',
-      'province': areaParts.isNotEmpty
-          ? areaParts[0] : '',
-      'district': areaParts.length > 1
-          ? areaParts[1] : '',
-      'ward': areaParts.length > 2
-          ? areaParts[2] : '',
+      'province': result['province'] ?? '',
+      'district': result['district'] ?? '',
+      'ward': result['ward'] ?? '',
       'detail_address': result['street'] ?? '',
+      'lat': result['lat'] ?? 0.0,
+      'lng': result['lng'] ?? 0.0,
       'is_default': result['isDefault'] ?? false,
     };
     await _addrDS.create(addrData);

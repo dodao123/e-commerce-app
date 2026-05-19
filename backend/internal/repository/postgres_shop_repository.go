@@ -29,10 +29,10 @@ func (repository *PostgresShopRepository) CreateShop(
 	query := `
 		INSERT INTO shops (
 			id, seller_id, shop_name, category, province, district,
-			ward, detail_address, email, phone, nationality,
+			ward, detail_address, latitude, longitude, email, phone, nationality,
 			national_id_number, full_name, is_verified, is_active,
 			created_at, updated_at
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
 	`
 
 	now := time.Now()
@@ -44,7 +44,7 @@ func (repository *PostgresShopRepository) CreateShop(
 		ctx, query,
 		shop.ID, shop.SellerID, shop.ShopName, shop.Category,
 		shop.Province, shop.District, shop.Ward, shop.DetailAddress,
-		shop.Email, shop.Phone, shop.Nationality,
+		shop.Latitude, shop.Longitude, shop.Email, shop.Phone, shop.Nationality,
 		shop.NationalIDNumber, shop.FullName,
 		shop.IsVerified, shop.IsActive, shop.CreatedAt, shop.UpdatedAt,
 	)
@@ -63,7 +63,7 @@ func (repository *PostgresShopRepository) GetShopByID(
 ) (*model.Shop, error) {
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
-			   ward, detail_address, email, phone, nationality,
+			   ward, detail_address, latitude, longitude, email, phone, nationality,
 			   national_id_number, full_name, is_verified, is_active,
 			   created_at, updated_at
 		FROM shops
@@ -74,7 +74,7 @@ func (repository *PostgresShopRepository) GetShopByID(
 	err := repository.database.QueryRowContext(ctx, query, shopID).Scan(
 		&shop.ID, &shop.SellerID, &shop.ShopName, &shop.Category,
 		&shop.Province, &shop.District, &shop.Ward, &shop.DetailAddress,
-		&shop.Email, &shop.Phone, &shop.Nationality,
+		&shop.Latitude, &shop.Longitude, &shop.Email, &shop.Phone, &shop.Nationality,
 		&shop.NationalIDNumber, &shop.FullName,
 		&shop.IsVerified, &shop.IsActive, &shop.CreatedAt, &shop.UpdatedAt,
 	)
@@ -96,7 +96,7 @@ func (repository *PostgresShopRepository) GetShopBySellerID(
 ) (*model.Shop, error) {
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
-			   ward, detail_address, email, phone, nationality,
+			   ward, detail_address, latitude, longitude, email, phone, nationality,
 			   national_id_number, full_name, is_verified, is_active,
 			   created_at, updated_at
 		FROM shops
@@ -107,7 +107,7 @@ func (repository *PostgresShopRepository) GetShopBySellerID(
 	err := repository.database.QueryRowContext(ctx, query, sellerID).Scan(
 		&shop.ID, &shop.SellerID, &shop.ShopName, &shop.Category,
 		&shop.Province, &shop.District, &shop.Ward, &shop.DetailAddress,
-		&shop.Email, &shop.Phone, &shop.Nationality,
+		&shop.Latitude, &shop.Longitude, &shop.Email, &shop.Phone, &shop.Nationality,
 		&shop.NationalIDNumber, &shop.FullName,
 		&shop.IsVerified, &shop.IsActive, &shop.CreatedAt, &shop.UpdatedAt,
 	)

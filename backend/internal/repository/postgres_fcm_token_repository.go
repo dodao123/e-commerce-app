@@ -46,13 +46,18 @@ func (r *PostgresFcmTokenRepository) GetByUserID(userID string) (string, error) 
 	return token, nil
 }
 
-// GetDriverTokens returns FCM tokens for all users with the driver role.
-func (r *PostgresFcmTokenRepository) GetDriverTokens() ([]string, error) {
+// GetNearbyDriverTokens returns FCM tokens for drivers within radius.
+func (r *PostgresFcmTokenRepository) GetNearbyDriverTokens(shopLat, shopLng float64, orderAddressID string) ([]string, error) {
 	rows, err := r.db.Query(`
 		SELECT f.token
 		FROM fcm_tokens f
 		JOIN users u ON u.id::text = f.user_id
-		WHERE u.role = 'driver'`)
+		JOIN shipper_profiles sp ON sp.user_id = u.id
+		JOIN delivery_addresses da ON da.id = $3
+		WHERE u.role = 'driver' AND u.is_active = TRUE
+		  AND earth_distance(ll_to_earth($1, $2), ll_to_earth(sp.latitude, sp.longitude)) <= (sp.operating_radius_km * 1000)
+		  AND earth_distance(ll_to_earth(da.latitude, da.longitude), ll_to_earth(sp.latitude, sp.longitude)) <= (sp.operating_radius_km * 1000)`,
+		shopLat, shopLng, orderAddressID)
 	if err != nil {
 		return nil, err
 	}

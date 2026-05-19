@@ -25,12 +25,12 @@ func (r *PostgresAddressRepository) Create(
 	err := r.db.QueryRow(`
 		INSERT INTO delivery_addresses
 		(user_id, receiver_name, phone, province,
-		 district, ward, detail_address, is_default)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+		 district, ward, detail_address, latitude, longitude, is_default)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 		RETURNING id, created_at`,
 		addr.UserID, addr.ReceiverName, addr.Phone,
 		addr.Province, addr.District, addr.Ward,
-		addr.DetailAddress, addr.IsDefault,
+		addr.DetailAddress, addr.Latitude, addr.Longitude, addr.IsDefault,
 	).Scan(&addr.ID, &addr.CreatedAt)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (r *PostgresAddressRepository) ListByUser(
 	rows, err := r.db.Query(`
 		SELECT id, user_id, receiver_name, phone,
 		       province, district, ward, detail_address,
-		       is_default, created_at
+		       latitude, longitude, is_default, created_at
 		FROM delivery_addresses
 		WHERE user_id=$1
 		ORDER BY is_default DESC, created_at DESC`,
@@ -61,6 +61,7 @@ func (r *PostgresAddressRepository) ListByUser(
 			&a.ID, &a.UserID, &a.ReceiverName,
 			&a.Phone, &a.Province, &a.District,
 			&a.Ward, &a.DetailAddress,
+			&a.Latitude, &a.Longitude,
 			&a.IsDefault, &a.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -78,11 +79,12 @@ func (r *PostgresAddressRepository) GetByID(
 	err := r.db.QueryRow(`
 		SELECT id, user_id, receiver_name, phone,
 		       province, district, ward, detail_address,
-		       is_default, created_at
+		       latitude, longitude, is_default, created_at
 		FROM delivery_addresses WHERE id=$1`, id,
 	).Scan(&a.ID, &a.UserID, &a.ReceiverName,
 		&a.Phone, &a.Province, &a.District,
 		&a.Ward, &a.DetailAddress,
+		&a.Latitude, &a.Longitude,
 		&a.IsDefault, &a.CreatedAt)
 	if err != nil {
 		return nil, err

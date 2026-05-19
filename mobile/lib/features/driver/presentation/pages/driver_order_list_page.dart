@@ -28,17 +28,27 @@ class _DriverOrderListPageState
   List<Map<String, dynamic>> _orders = [];
   bool _loading = true;
   String _error = '';
+  late AppProvider _appProvider;
 
   @override
   void initState() {
     super.initState();
+    _appProvider = context.read<AppProvider>();
     _tabCtrl = TabController(
         length: 4, vsync: this,
         initialIndex: widget.initialTab);
     _tabCtrl.addListener(() {
       if (!_tabCtrl.indexIsChanging) setState(() {});
     });
+    _appProvider.orderUpdateTrigger.addListener(_fetchOrders);
     _fetchOrders();
+  }
+
+  @override
+  void dispose() {
+    _appProvider.orderUpdateTrigger.removeListener(_fetchOrders);
+    _tabCtrl.dispose();
+    super.dispose();
   }
 
   Future<void> _fetchOrders() async {

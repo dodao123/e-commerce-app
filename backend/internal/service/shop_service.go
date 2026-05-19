@@ -133,6 +133,18 @@ func (service *ShopService) UpdateShop(
 	if request.DetailAddress != nil {
 		shop.DetailAddress = *request.DetailAddress
 	}
+	if request.Email != nil {
+		shop.Email = *request.Email
+	}
+	if request.Phone != nil {
+		shop.Phone = *request.Phone
+	}
+	if request.Latitude != nil {
+		shop.Latitude = *request.Latitude
+	}
+	if request.Longitude != nil {
+		shop.Longitude = *request.Longitude
+	}
 	if request.Nationality != nil {
 		shop.Nationality = *request.Nationality
 	}

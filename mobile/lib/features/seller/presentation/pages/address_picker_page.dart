@@ -33,6 +33,9 @@ class _AddressPickerPageState
 
   LatLng _center = const LatLng(21.0285, 105.8542);
   String _areaText = '';
+  String _province = '';
+  String _district = '';
+  String _ward = '';
   bool _isDefault = false;
   bool _isPickup = true;
   int _typeIndex = 0;
@@ -100,7 +103,12 @@ class _AddressPickerPageState
     final ward = result['ward'] ?? '';
     final display = [province, district, ward]
         .where((s) => s.isNotEmpty).join(', ');
-    setState(() => _areaText = display);
+    setState(() {
+      _areaText = display;
+      _province = province;
+      _district = district;
+      _ward = ward;
+    });
     // Strip VN admin prefixes for Nominatim
     final p = _stripPrefix(province);
     final d = _stripPrefix(district);
@@ -200,6 +208,9 @@ class _AddressPickerPageState
           setState(() {
             _areaText = _fmtArea(addr);
             _streetCtrl.text = _fmtStreet(addr);
+            _province = addr['state'] ?? addr['city'] ?? '';
+            _district = addr['county'] ?? addr['suburb'] ?? addr['district'] ?? '';
+            _ward = addr['quarter'] ?? addr['village'] ?? '';
           });
         }
       }
@@ -235,6 +246,9 @@ class _AddressPickerPageState
       'name': _nameCtrl.text.trim(),
       'phone': _phoneCtrl.text.trim(),
       'area': _areaText,
+      'province': _province,
+      'district': _district,
+      'ward': _ward,
       'street': _streetCtrl.text,
       'lat': _center.latitude,
       'lng': _center.longitude,

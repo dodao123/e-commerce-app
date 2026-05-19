@@ -98,17 +98,24 @@ func (r *PostgresOrderRepository) ListByShop(
 	return scanOrderRows(rows)
 }
 
-// ListByShipper returns orders assigned to a driver.
+// ListByShipper returns orders assigned to a driver or available within radius.
 func (r *PostgresOrderRepository) ListByShipper(
-	shipperID string,
+	shipperID string, radiusKM float64,
 ) ([]model.Order, error) {
 	rows, err := r.db.Query(`
-		SELECT id, user_id, receiver_name, receiver_phone,
-		       subtotal, shipping_fee, total, status,
-		       note, created_at, shipper_id, shipper_name, shipper_phone
-		FROM orders
-		WHERE shipper_id = $1 OR status = 'finding_driver'
-		ORDER BY created_at DESC`, shipperID)
+		SELECT DISTINCT o.id, o.user_id, o.receiver_name, o.receiver_phone,
+		       o.subtotal, o.shipping_fee, o.total, o.status,
+		       o.note, o.created_at, o.shipper_id, o.shipper_name, o.shipper_phone
+		FROM orders o
+		LEFT JOIN order_items oi ON oi.order_id = o.id
+		LEFT JOIN shops s ON s.id = oi.shop_id
+		LEFT JOIN delivery_addresses da ON da.id = o.address_id
+		LEFT JOIN shipper_profiles sp ON sp.user_id = $1
+		WHERE o.shipper_id = $1 
+		   OR (o.status = 'finding_driver' AND sp.user_id IS NOT NULL 
+		       AND earth_distance(ll_to_earth(s.latitude, s.longitude), ll_to_earth(sp.latitude, sp.longitude)) <= (sp.operating_radius_km * 1000)
+		       AND earth_distance(ll_to_earth(da.latitude, da.longitude), ll_to_earth(sp.latitude, sp.longitude)) <= (sp.operating_radius_km * 1000))
+		ORDER BY o.created_at DESC`, shipperID)
 	if err != nil {
 		return nil, err
 	}

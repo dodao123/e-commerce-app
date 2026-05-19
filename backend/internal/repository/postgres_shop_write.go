@@ -17,9 +17,10 @@ func (repository *PostgresShopRepository) UpdateShop(
 	query := `
 		UPDATE shops
 		SET shop_name = $1, category = $2, province = $3, district = $4,
-			ward = $5, detail_address = $6, nationality = $7,
-			national_id_number = $8, full_name = $9, updated_at = $10
-		WHERE id = $11
+			ward = $5, detail_address = $6, latitude = $7, longitude = $8,
+			nationality = $9, national_id_number = $10, full_name = $11, 
+			email = $12, phone = $13, updated_at = $14
+		WHERE id = $15
 	`
 
 	shop.UpdatedAt = time.Now()
@@ -27,8 +28,8 @@ func (repository *PostgresShopRepository) UpdateShop(
 	result, err := repository.database.ExecContext(
 		ctx, query,
 		shop.ShopName, shop.Category, shop.Province, shop.District,
-		shop.Ward, shop.DetailAddress, shop.Nationality,
-		shop.NationalIDNumber, shop.FullName, shop.UpdatedAt, shop.ID,
+		shop.Ward, shop.DetailAddress, shop.Latitude, shop.Longitude, shop.Nationality,
+		shop.NationalIDNumber, shop.FullName, shop.Email, shop.Phone, shop.UpdatedAt, shop.ID,
 	)
 
 	if err != nil {
@@ -86,7 +87,7 @@ func (repository *PostgresShopRepository) ListShops(
 ) ([]*model.Shop, error) {
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
-			   ward, detail_address, nationality, national_id_number,
+			   ward, detail_address, latitude, longitude, nationality, national_id_number,
 			   full_name, is_verified, is_active, created_at, updated_at
 		FROM shops
 		WHERE is_active = true
@@ -112,7 +113,7 @@ func (repository *PostgresShopRepository) ListShopsByCategory(
 ) ([]*model.Shop, error) {
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
-			   ward, detail_address, nationality, national_id_number,
+			   ward, detail_address, latitude, longitude, nationality, national_id_number,
 			   full_name, is_verified, is_active, created_at, updated_at
 		FROM shops
 		WHERE category = $1 AND is_active = true
@@ -140,7 +141,7 @@ func scanShops(rows *sql.Rows) ([]*model.Shop, error) {
 		err := rows.Scan(
 			&shop.ID, &shop.SellerID, &shop.ShopName, &shop.Category,
 			&shop.Province, &shop.District, &shop.Ward, &shop.DetailAddress,
-			&shop.Nationality, &shop.NationalIDNumber, &shop.FullName,
+			&shop.Latitude, &shop.Longitude, &shop.Nationality, &shop.NationalIDNumber, &shop.FullName,
 			&shop.IsVerified, &shop.IsActive, &shop.CreatedAt, &shop.UpdatedAt,
 		)
 		if err != nil {

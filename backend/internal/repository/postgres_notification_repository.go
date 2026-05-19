@@ -30,15 +30,20 @@ func (r *PostgresNotificationRepository) Create(
 	return err
 }
 
-// NotifyAllDrivers creates a notification for all active drivers.
-func (r *PostgresNotificationRepository) NotifyAllDrivers(
-	order *model.Order,
+// NotifyNearbyDrivers creates a notification for active drivers within radius.
+func (r *PostgresNotificationRepository) NotifyNearbyDrivers(
+	order *model.Order, shopLat, shopLng float64,
 ) error {
 	_, err := r.db.Exec(`
 		INSERT INTO notifications (user_id, title, body, type, target_role, ref_id)
-		SELECT id, 'Có đơn hàng mới cần giao!', 'Đơn hàng tới ' || $1, 'driver_pickup', 'driver', $2
-		FROM users WHERE role = 'driver' AND is_active = TRUE`,
-		order.ReceiverName, order.ID)
+		SELECT u.id, 'Có đơn hàng mới cần giao!', 'Đơn hàng tới ' || $1, 'driver_pickup', 'driver', $2
+		FROM users u
+		JOIN shipper_profiles sp ON sp.user_id = u.id
+		JOIN delivery_addresses da ON da.id = $3
+		WHERE u.role = 'driver' AND u.is_active = TRUE
+		  AND earth_distance(ll_to_earth($4, $5), ll_to_earth(sp.latitude, sp.longitude)) <= (sp.operating_radius_km * 1000)
+		  AND earth_distance(ll_to_earth(da.latitude, da.longitude), ll_to_earth(sp.latitude, sp.longitude)) <= (sp.operating_radius_km * 1000)`,
+		order.ReceiverName, order.ID, order.AddressID, shopLat, shopLng)
 	return err
 }
 

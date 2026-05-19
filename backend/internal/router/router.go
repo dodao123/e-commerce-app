@@ -19,6 +19,7 @@ func NewRouter(
 	orderHandler *handler.OrderHandler,
 	notifHandler *handler.NotificationHandler,
 	fcmHandler *handler.FcmHandler,
+	shipperHandler *handler.ShipperHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -57,6 +58,21 @@ func NewRouter(
 
 	// Product routes (public + protected)
 	registerProductRoutes(mux, productHandler, authGuard)
+
+	// Shipper routes (protected, requires JWT)
+	if shipperHandler != nil {
+		mux.Handle("/api/v1/shippers/profile",
+			authGuard(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == http.MethodGet {
+					shipperHandler.HandleGetProfile(w, r)
+				} else if r.Method == http.MethodPut {
+					shipperHandler.HandleUpdateProfile(w, r)
+				} else {
+					http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+				}
+			})),
+		)
+	}
 
 	// Cart routes (protected, requires JWT)
 	registerCartRoutes(mux, cartHandler, authGuard)
