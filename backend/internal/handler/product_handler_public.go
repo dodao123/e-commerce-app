@@ -19,11 +19,12 @@ func (handler *ProductHandler) HandleListPublicProducts(
 		return
 	}
 
+	category := request.URL.Query().Get("category")
 	limit := queryInt(request, "limit", 10)
 	offset := queryInt(request, "offset", 0)
 
 	products, err := handler.productService.ListPublicProducts(
-		request.Context(), limit, offset)
+		request.Context(), category, limit, offset)
 	if err != nil {
 		WriteError(writer, http.StatusInternalServerError,
 			err.Error())

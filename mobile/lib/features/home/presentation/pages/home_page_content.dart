@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../data/models/product_model.dart';
-import '../widgets/hero_banner.dart';
+import '../widgets/hero_banner_carousel.dart';
 import '../widgets/special_section.dart';
 import '../widgets/product_card.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -27,11 +27,9 @@ Widget buildHomeContent({
       // Top spacing
       const SliverToBoxAdapter(child: SizedBox(height: 8)),
 
-      // Hero Banner
-      if (products.isNotEmpty)
-        SliverToBoxAdapter(child: HeroBanner(
-          product: products.first,
-          onBuyNow: () => onProductTap(products.first))),
+      // Hero Banner Carousel
+      SliverToBoxAdapter(child: HeroBannerCarousel(
+        onProductTap: onProductTap)),
 
       const SliverToBoxAdapter(child: SizedBox(height: 24)),
 

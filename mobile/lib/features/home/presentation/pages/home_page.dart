@@ -38,11 +38,25 @@ class _HomePageState extends State<HomePage> {
     if (_scrollCtrl.offset >= max - 300) _loadMore();
   }
 
+  Future<void> _precacheImages(List<ProductModel> items) async {
+    if (!mounted) return;
+    try {
+      await Future.wait(items.map((item) {
+        if (item.imageUrl.isEmpty) return Future.value();
+        final provider = item.isNetworkImage
+            ? NetworkImage(item.imageUrl)
+            : AssetImage(item.imageUrl) as ImageProvider;
+        return precacheImage(provider, context);
+      }));
+    } catch (_) {}
+  }
+
   Future<void> _loadProducts() async {
     try {
       final items = await _datasource.fetchProducts(
           limit: _pageSize, offset: 0);
       if (!mounted) return;
+      await _precacheImages(items);
       setState(() {
         _products..clear()..addAll(items);
         _hasMore = items.length >= _pageSize;
@@ -60,6 +74,7 @@ class _HomePageState extends State<HomePage> {
       final items = await _datasource.fetchProducts(
           limit: _pageSize, offset: _products.length);
       if (!mounted) return;
+      await _precacheImages(items);
       setState(() {
         _products.addAll(items);
         _hasMore = items.length >= _pageSize;

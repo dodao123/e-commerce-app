@@ -32,6 +32,7 @@ type ProductRepository interface {
 	// ListAllPublicProducts retrieves active products from all shops.
 	ListAllPublicProducts(
 		ctx context.Context,
+		category string,
 		limit int,
 		offset int,
 	) ([]*model.PublicProduct, error)

@@ -6,10 +6,11 @@ import (
 	"delivery-app/backend/internal/model"
 )
 
-// ListPublicProducts retrieves active products from all shops.
+// ListPublicProducts retrieves active products from all shops, optionally filtered by category.
 // This is used by the public home page endpoint.
 func (service *ProductService) ListPublicProducts(
 	ctx context.Context,
+	category string,
 	limit int,
 	offset int,
 ) ([]*model.PublicProduct, error) {
@@ -20,7 +21,7 @@ func (service *ProductService) ListPublicProducts(
 		offset = 0
 	}
 	return service.productRepository.ListAllPublicProducts(
-		ctx, limit, offset)
+		ctx, category, limit, offset)
 }
 
 // ListShopProducts retrieves active products for a specific shop.

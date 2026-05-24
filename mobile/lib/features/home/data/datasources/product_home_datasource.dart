@@ -14,11 +14,13 @@ class ProductHomeDatasource {
   Future<List<ProductModel>> fetchProducts({
     int limit = 10,
     int offset = 0,
+    String category = '',
   }) async {
     final url = Uri.parse(
         '${ApiConstants.baseUrl}'
         '${ApiConstants.publicProductsEndpoint}'
-        '?limit=$limit&offset=$offset');
+        '?limit=$limit&offset=$offset'
+        '${category.isNotEmpty ? "&category=$category" : ""}');
 
     final response = await _client.get(url, headers: {
       'Content-Type': 'application/json',
