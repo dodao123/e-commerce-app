@@ -44,14 +44,18 @@ class HeroBanner extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _buildNewLabel(isDark, lang),
-                const SizedBox(height: 6),
-                Text(product.localizedName(lang),
-                    style: TextStyle(
-                        color: isDark
-                            ? Colors.white : Colors.black87,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 4),
+                Flexible(
+                  child: Text(product.localizedName(lang),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: isDark
+                              ? Colors.white : Colors.black87,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold)),
+                ),
+                const SizedBox(height: 8),
                 _buildBuyButton(lang),
               ],
             ),

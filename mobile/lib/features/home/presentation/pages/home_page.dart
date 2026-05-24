@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   bool _loading = true;
   bool _loadingMore = false;
   bool _hasMore = true;
-  static const _pageSize = 10;
+  static const _pageSize = 8;
 
   @override
   void initState() {

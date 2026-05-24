@@ -63,6 +63,8 @@ func (service *ShopService) CreateShop(
 		District:         request.District,
 		Ward:             request.Ward,
 		DetailAddress:    request.DetailAddress,
+		Latitude:         request.Latitude,
+		Longitude:        request.Longitude,
 		Email:            request.Email,
 		Phone:            request.Phone,
 		Nationality:      request.Nationality,

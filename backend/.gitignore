@@ -14,3 +14,5 @@ Thumbs.db
 #image file 
 uploads/shops
 internal/config/firebase/*.json
+test_scripts/
+scripts/shop_templates/
