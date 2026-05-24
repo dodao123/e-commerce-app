@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/product_image.dart';
 import '../../data/models/product_model.dart';
@@ -8,25 +6,25 @@ import 'buy_now_button.dart';
 import 'glowing_aura.dart';
 import 'new_product_ribbon.dart';
 
-/// Dark hero banner card with product image floating outside the box.
-class HeroBanner extends StatelessWidget {
-  /// The featured product to display.
+/// Presentation for product in hero banner carousel.
+class HeroBannerCarouselView extends StatelessWidget {
+  /// The product to display.
   final ProductModel product;
 
-  /// Callback when "Buy Now" is tapped.
-  final VoidCallback? onBuyNow;
+  /// Callback when the product is tapped.
+  final ValueChanged<ProductModel> onProductTap;
 
-  /// Creates a HeroBanner with the given product.
-  const HeroBanner({
+  /// Creates a HeroBannerCarouselView.
+  const HeroBannerCarouselView({
     super.key,
     required this.product,
-    this.onBuyNow,
+    required this.onProductTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final lang = context.watch<AppProvider>().locale.languageCode;
+    final lang = Localizations.localeOf(context).languageCode;
     final textStyle = TextStyle(
       color: isDark ? DarkColors.textPrimary : AppColors.textPrimary,
       fontSize: 16,
@@ -59,18 +57,19 @@ class HeroBanner extends StatelessWidget {
                     children: [
                       const SizedBox(height: 8),
                       Flexible(
-                        child: Text(
-                          product.localizedName(lang),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: textStyle,
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 600),
+                          child: Text(
+                            product.localizedName(lang),
+                            key: ValueKey<String>(product.id),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: textStyle,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
-                      BuyNowButton(
-                        product: product,
-                        onTap: (_) => onBuyNow?.call(),
-                      ),
+                      BuyNowButton(product: product, onTap: onProductTap),
                     ],
                   ),
                 ),
@@ -87,12 +86,19 @@ class HeroBanner extends StatelessWidget {
               alignment: Alignment.bottomCenter,
               children: [
                 GlowingAura(isDark: isDark),
-                ProductImage(
-                  product: product,
-                  errorWidget: Icon(
-                    Icons.headphones,
-                    size: 100,
-                    color: isDark ? Colors.white54 : Colors.black54,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 600),
+                  child: SizedBox(
+                    key: ValueKey<String>(product.imageUrl),
+                    width: 208,
+                    child: ProductImage(
+                      product: product,
+                      errorWidget: Icon(
+                        Icons.headphones,
+                        size: 100,
+                        color: isDark ? Colors.white54 : Colors.black54,
+                      ),
+                    ),
                   ),
                 ),
               ],
