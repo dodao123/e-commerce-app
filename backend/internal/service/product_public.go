@@ -32,8 +32,8 @@ func (service *ProductService) ListShopProducts(
 	excludeID string,
 	limit int,
 ) ([]*model.PublicProduct, error) {
-	if limit <= 0 || limit > 20 {
-		limit = 10
+	if limit <= 0 || limit > 100 {
+		limit = 50
 	}
 	return service.productRepository.ListProductsByShopPublic(
 		ctx, shopID, excludeID, limit)

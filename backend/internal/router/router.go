@@ -54,6 +54,9 @@ func NewRouter(
 		mux.Handle("/api/v1/shops/{id}",
 			authGuard(http.HandlerFunc(shopHandler.HandleUpdateShop)),
 		)
+		// Public shop routes (no auth required)
+		mux.HandleFunc("/api/v1/shops/public", shopHandler.HandleListPublicShops)
+		mux.HandleFunc("/api/v1/shops/{id}/public", shopHandler.HandleGetPublicShop)
 	}
 
 	// Product routes (public + protected)

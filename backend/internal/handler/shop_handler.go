@@ -134,3 +134,50 @@ func (handler *ShopHandler) HandleUpdateShop(
 
 	WriteJSON(writer, http.StatusOK, shop)
 }
+
+// HandleGetPublicShop handles GET /api/v1/shops/{id}/public
+func (handler *ShopHandler) HandleGetPublicShop(
+	writer http.ResponseWriter,
+	request *http.Request,
+) {
+	if request.Method != http.MethodGet {
+		WriteError(writer, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	shopID := request.PathValue("id")
+	if shopID == "" {
+		WriteError(writer, http.StatusBadRequest, "shop ID required")
+		return
+	}
+
+	shop, err := handler.shopService.GetPublicShopByID(request.Context(), shopID)
+	if err != nil {
+		WriteError(writer, http.StatusNotFound, "shop not found")
+		return
+	}
+
+	WriteJSON(writer, http.StatusOK, shop)
+}
+
+// HandleListPublicShops handles GET /api/v1/shops/public
+func (handler *ShopHandler) HandleListPublicShops(
+	writer http.ResponseWriter,
+	request *http.Request,
+) {
+	if request.Method != http.MethodGet {
+		WriteError(writer, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	limit := queryInt(request, "limit", 20)
+	offset := queryInt(request, "offset", 0)
+
+	shops, err := handler.shopService.ListPublicShops(request.Context(), limit, offset)
+	if err != nil {
+		WriteError(writer, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	WriteJSON(writer, http.StatusOK, shops)
+}

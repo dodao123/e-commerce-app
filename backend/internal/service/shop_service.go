@@ -89,6 +89,54 @@ func (service *ShopService) GetShopByID(
 	return service.shopRepository.GetShopByID(ctx, shopID)
 }
 
+// GetPublicShopByID retrieves a public view of a shop by its ID.
+func (service *ShopService) GetPublicShopByID(
+	ctx context.Context,
+	shopID string,
+) (*model.PublicShop, error) {
+	shop, err := service.shopRepository.GetShopByID(ctx, shopID)
+	if err != nil {
+		return nil, err
+	}
+
+	avatar := ""
+	user, err := service.userRepository.FindByID(shop.SellerID)
+	if err == nil && user != nil {
+		avatar = user.AvatarURL
+	}
+
+	return &model.PublicShop{
+		Shop:       *shop,
+		ShopAvatar: avatar,
+	}, nil
+}
+
+// ListPublicShops retrieves active shops with pagination.
+func (service *ShopService) ListPublicShops(
+	ctx context.Context,
+	limit int,
+	offset int,
+) ([]*model.PublicShop, error) {
+	shops, err := service.shopRepository.ListShops(ctx, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	publicShops := make([]*model.PublicShop, 0, len(shops))
+	for _, shop := range shops {
+		avatar := ""
+		user, err := service.userRepository.FindByID(shop.SellerID)
+		if err == nil && user != nil {
+			avatar = user.AvatarURL
+		}
+		publicShops = append(publicShops, &model.PublicShop{
+			Shop:       *shop,
+			ShopAvatar: avatar,
+		})
+	}
+	return publicShops, nil
+}
+
 // GetShopBySellerID retrieves a shop by seller user ID.
 func (service *ShopService) GetShopBySellerID(
 	ctx context.Context,

@@ -7,6 +7,7 @@ import '../home/presentation/pages/home_page.dart';
 import '../home/presentation/widgets/home_app_bar.dart';
 import '../notifications/presentation/pages/notifications_page.dart';
 import '../menu/presentation/pages/menu_page.dart';
+import '../shop/presentation/pages/shop_list_page.dart';
 
 /// Main shell layout with fixed top bar and bottom navigation.
 /// Both bars stay persistent during page scrolling and tab switches.
@@ -25,6 +26,7 @@ class _MainShellState extends State<MainShell> {
   /// Pages corresponding to each bottom nav tab.
   final List<Widget> _pages = const [
     HomePage(),
+    ShopListPage(),
     NotificationsPage(),
     MenuPage(),
   ];
@@ -43,8 +45,16 @@ class _MainShellState extends State<MainShell> {
 
   void _onNavigate() {
     final tab = _polling.navigateToTab.value;
-    if (tab >= 0 && tab < _pages.length) {
-      setState(() => _currentIndex = tab);
+    if (tab >= 0) {
+      int targetTab = tab;
+      if (tab == 1) {
+        targetTab = 2; // Map notifications to index 2
+      } else if (tab == 2) {
+        targetTab = 3; // Map menu to index 3
+      }
+      if (targetTab < _pages.length) {
+        setState(() => _currentIndex = targetTab);
+      }
       _polling.navigateToTab.value = -1;
     }
   }
@@ -97,12 +107,14 @@ class _MainShellState extends State<MainShell> {
             children: [
               _navItem(Icons.home_rounded,
                   isVi ? 'Trang chủ' : 'Home', 0, isDark),
+              _navItem(Icons.storefront_rounded,
+                  isVi ? 'Cửa hàng' : 'Shop', 1, isDark),
               _navItemWithBadge(
                   Icons.notifications_outlined,
                   isVi ? 'Thông báo' : 'Notifications',
-                  1, isDark),
+                  2, isDark),
               _navItem(Icons.menu_rounded,
-                  isVi ? 'Menu' : 'Menu', 2, isDark),
+                  isVi ? 'Menu' : 'Menu', 3, isDark),
             ],
           ),
         ),

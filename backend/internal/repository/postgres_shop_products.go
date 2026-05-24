@@ -3,6 +3,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"delivery-app/backend/internal/model"
 	"fmt"
 )
@@ -15,14 +16,26 @@ func (repository *PostgresProductRepository) ListProductsByShopPublic(
 	excludeID string,
 	limit int,
 ) ([]*model.PublicProduct, error) {
-	query := `SELECT ` + publicProductColumns +
-		publicProductJoin + `
-		WHERE p.shop_id = $1 AND p.status = 'active'
-		AND p.id != $2
-		ORDER BY p.created_at DESC LIMIT $3`
+	var query string
+	var rows *sql.Rows
+	var err error
 
-	rows, err := repository.database.QueryContext(
-		ctx, query, shopID, excludeID, limit)
+	if excludeID == "" {
+		query = `SELECT ` + publicProductColumns +
+			publicProductJoin + `
+			WHERE p.shop_id = $1 AND p.status = 'active'
+			ORDER BY p.created_at DESC LIMIT $2`
+		rows, err = repository.database.QueryContext(
+			ctx, query, shopID, limit)
+	} else {
+		query = `SELECT ` + publicProductColumns +
+			publicProductJoin + `
+			WHERE p.shop_id = $1 AND p.status = 'active'
+			AND p.id != $2
+			ORDER BY p.created_at DESC LIMIT $3`
+		rows, err = repository.database.QueryContext(
+			ctx, query, shopID, excludeID, limit)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("list shop products: %w", err)
 	}

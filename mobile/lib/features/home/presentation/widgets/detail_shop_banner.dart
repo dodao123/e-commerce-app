@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/product_model.dart';
+import '../../../shop/presentation/pages/shop_detail_page.dart';
 
 /// Shop info banner displayed on the product detail page.
 /// Shows shop name, location, and a "View Shop" button.
@@ -14,6 +15,8 @@ class DetailShopBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     if (product.shopName.isEmpty) return const SizedBox.shrink();
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isVi = Localizations.localeOf(context).languageCode == 'vi';
+
     return Container(
       padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.only(bottom: 16),
@@ -28,7 +31,7 @@ class DetailShopBanner extends StatelessWidget {
         _shopIcon(isDark),
         const SizedBox(width: 12),
         Expanded(child: _shopInfo(isDark)),
-        _viewShopButton(context),
+        _viewShopButton(context, isVi),
       ]));
   }
 
@@ -63,8 +66,14 @@ class DetailShopBanner extends StatelessWidget {
                 : Colors.grey.shade600)),
     ]);
 
-  Widget _viewShopButton(BuildContext context) => OutlinedButton(
-    onPressed: () {},
+  Widget _viewShopButton(BuildContext context, bool isVi) => OutlinedButton(
+    onPressed: () {
+      if (product.shopId.isNotEmpty) {
+        Navigator.push(context, MaterialPageRoute(
+          builder: (_) => ShopDetailPage(shopId: product.shopId),
+        ));
+      }
+    },
     style: OutlinedButton.styleFrom(
       side: BorderSide(color: AppColors.primary),
       padding: const EdgeInsets.symmetric(
@@ -73,6 +82,6 @@ class DetailShopBanner extends StatelessWidget {
           borderRadius: BorderRadius.circular(8)),
       minimumSize: Size.zero,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap),
-    child: Text('Xem Shop', style: TextStyle(
+    child: Text(isVi ? 'Xem Shop' : 'View Shop', style: TextStyle(
         color: AppColors.primary, fontSize: 12)));
 }

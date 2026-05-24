@@ -9,7 +9,6 @@ import 'hero_banner_elements.dart';
 /// Animated banner carousel displaying electronic products with smooth cross-fade animation.
 class HeroBannerCarousel extends StatefulWidget {
   final ValueChanged<ProductModel> onProductTap;
-
   const HeroBannerCarousel({super.key, required this.onProductTap});
 
   @override
@@ -36,8 +35,7 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
 
   Future<void> _loadElectronics() async {
     try {
-      final items = await _datasource.fetchProducts(
-          limit: 100, category: 'electronics');
+      final items = await _datasource.fetchProducts(limit: 100, category: 'electronics');
       if (items.isNotEmpty && mounted) {
         items.shuffle();
         for (final item in items) {
@@ -49,22 +47,18 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
           }
         }
         setState(() => _electronics = items);
-        _startTimer();
+        _timer = Timer.periodic(const Duration(seconds: 4), (t) {
+          if (_electronics.isNotEmpty && mounted) {
+            setState(() => _currentIndex = (_currentIndex + 1) % _electronics.length);
+          }
+        });
       }
     } catch (_) {}
   }
 
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (_electronics.isEmpty || !mounted) return;
-      setState(() => _currentIndex = (_currentIndex + 1) % _electronics.length);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_electronics.isEmpty) return const SizedBox(height: 0);
-
+    if (_electronics.isEmpty) return const SizedBox.shrink();
     final product = _electronics[_currentIndex];
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final lang = Localizations.localeOf(context).languageCode;
@@ -77,11 +71,9 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
         children: [
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.only(left: 185, right: 15),
+            padding: const EdgeInsets.only(left: 190, right: 15),
             decoration: BoxDecoration(
-              gradient: isDark
-                  ? DarkColors.darkCardGradient
-                  : AppColors.darkCardGradient,
+              gradient: isDark ? DarkColors.darkCardGradient : AppColors.darkCardGradient,
               borderRadius: BorderRadius.circular(24),
             ),
             child: Column(
@@ -93,17 +85,13 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
                 Flexible(
                   child: AnimatedSwitcher(
                     duration: const Duration(milliseconds: 600),
-                    transitionBuilder: (child, animation) =>
-                        FadeTransition(opacity: animation, child: child),
+                    transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
                     child: Text(
                       product.localizedName(lang),
                       key: ValueKey<String>(product.id),
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          color: isDark ? Colors.white : Colors.black87,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold),
+                      style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 14, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -113,21 +101,24 @@ class _HeroBannerCarouselState extends State<HeroBannerCarousel> {
             ),
           ),
           Positioned(
-            left: -30, top: -45, bottom: 0, width: 220,
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 600),
-              transitionBuilder: (child, animation) =>
-                  FadeTransition(opacity: animation, child: child),
-              child: SizedBox(
-                key: ValueKey<String>(product.imageUrl),
-                width: 220, height: 220,
-                child: ProductImage(
-                  product: product,
-                  errorWidget: Icon(Icons.headphones,
-                      size: 100,
-                      color: isDark ? Colors.white54 : Colors.black54),
+            left: 15, top: -35, bottom: 0, width: 160,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                GlowingAura(isDark: isDark),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 600),
+                  transitionBuilder: (child, animation) => FadeTransition(opacity: animation, child: child),
+                  child: SizedBox(
+                    key: ValueKey<String>(product.imageUrl),
+                    width: 160, height: 220,
+                    child: ProductImage(
+                      product: product,
+                      errorWidget: Icon(Icons.headphones, size: 100, color: isDark ? Colors.white54 : Colors.black54),
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],
