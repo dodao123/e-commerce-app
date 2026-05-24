@@ -16,3 +16,4 @@ uploads/shops
 internal/config/firebase/*.json
 test_scripts/
 scripts/shop_templates/
+backups/
