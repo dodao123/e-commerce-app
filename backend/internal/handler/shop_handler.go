@@ -170,7 +170,7 @@ func (handler *ShopHandler) HandleListPublicShops(
 		return
 	}
 
-	limit := queryInt(request, "limit", 20)
+	limit := queryInt(request, "limit", 50)
 	offset := queryInt(request, "offset", 0)
 
 	shops, err := handler.shopService.ListPublicShops(request.Context(), limit, offset)

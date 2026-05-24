@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/cart_item_model.dart';
 import 'cart_item_tile.dart';
@@ -56,9 +57,10 @@ class CartShopGroup extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    if (shopAvatar.isNotEmpty) {
+    final resolvedUrl = ApiConstants.resolveImageUrl(shopAvatar);
+    if (resolvedUrl.isNotEmpty) {
       return CircleAvatar(radius: 12,
-        backgroundImage: NetworkImage(shopAvatar),
+        backgroundImage: NetworkImage(resolvedUrl),
         onBackgroundImageError: (_, __) {});
     }
     return CircleAvatar(radius: 12,

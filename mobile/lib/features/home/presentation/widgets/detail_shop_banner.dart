@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../data/models/product_model.dart';
 import '../../../shop/presentation/pages/shop_detail_page.dart';
@@ -36,9 +37,10 @@ class DetailShopBanner extends StatelessWidget {
   }
 
   Widget _shopIcon(bool isDark) {
-    if (product.shopAvatar.isNotEmpty) {
+    final resolvedUrl = ApiConstants.resolveImageUrl(product.shopAvatar);
+    if (resolvedUrl.isNotEmpty) {
       return CircleAvatar(radius: 22,
-        backgroundImage: NetworkImage(product.shopAvatar),
+        backgroundImage: NetworkImage(resolvedUrl),
         onBackgroundImageError: (_, __) {},
         backgroundColor:
             AppColors.primary.withValues(alpha: 0.1));

@@ -48,14 +48,14 @@ func (repository *PostgresProductRepository) ListAllPublicProducts(
 			query = `SELECT ` + publicProductColumns +
 				publicProductJoin + `
 				WHERE p.status = 'active' AND p.category IN ('electronics', 'phones', 'computers', 'gaming', 'home_appliances', 'cooling')
-				ORDER BY p.created_at DESC
+				ORDER BY RANDOM()
 				LIMIT $1 OFFSET $2`
 			rows, err = repository.database.QueryContext(ctx, query, limit, offset)
 		} else {
 			query = `SELECT ` + publicProductColumns +
 				publicProductJoin + `
 				WHERE p.status = 'active' AND p.category = $1
-				ORDER BY p.created_at DESC
+				ORDER BY RANDOM()
 				LIMIT $2 OFFSET $3`
 			rows, err = repository.database.QueryContext(ctx, query, category, limit, offset)
 		}
@@ -63,7 +63,7 @@ func (repository *PostgresProductRepository) ListAllPublicProducts(
 		query = `SELECT ` + publicProductColumns +
 			publicProductJoin + `
 			WHERE p.status = 'active'
-			ORDER BY p.created_at DESC
+			ORDER BY RANDOM()
 			LIMIT $1 OFFSET $2`
 		rows, err = repository.database.QueryContext(ctx, query, limit, offset)
 	}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/product_image.dart';
@@ -75,9 +76,10 @@ class _ShopBadge extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    if (product.shopAvatar.isNotEmpty) {
+    final resolvedUrl = ApiConstants.resolveImageUrl(product.shopAvatar);
+    if (resolvedUrl.isNotEmpty) {
       return CircleAvatar(radius: 7,
-        backgroundImage: NetworkImage(product.shopAvatar),
+        backgroundImage: NetworkImage(resolvedUrl),
         onBackgroundImageError: (_, __) {});
     }
     return Icon(Icons.storefront, size: 11,

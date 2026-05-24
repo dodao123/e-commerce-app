@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/indie_folk_theme.dart';
 
 /// Profile header card for the Menu page.
@@ -27,7 +28,8 @@ class MenuProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final hasAvatar = avatarUrl.isNotEmpty;
+    final resolvedUrl = ApiConstants.resolveImageUrl(avatarUrl);
+    final hasAvatar = resolvedUrl.isNotEmpty;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -39,7 +41,7 @@ class MenuProfileHeader extends StatelessWidget {
       child: Row(children: [
         CircleAvatar(radius: 30,
           backgroundColor: Colors.white.withOpacity(0.3),
-          backgroundImage: hasAvatar ? NetworkImage(avatarUrl) : null,
+          backgroundImage: hasAvatar ? NetworkImage(resolvedUrl) : null,
           child: hasAvatar ? null : Text(
             userName.isNotEmpty ? userName[0].toUpperCase() : '?',
             style: IndieFolkTheme.h1(true).copyWith(color: Colors.white,

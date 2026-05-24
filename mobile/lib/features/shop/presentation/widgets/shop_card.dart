@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../pages/shop_detail_page.dart';
+import 'shop_card_details.dart';
 
 /// Card widget to display key shop profile details in a grid.
 class ShopCard extends StatelessWidget {
@@ -90,42 +91,7 @@ class ShopCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 25),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    shop['shop_name'] ?? '',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isDark ? Colors.white : Colors.black87),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${shop['category'] ?? ''} • ${shop['province'] ?? ''}',
-                    style: TextStyle(fontSize: 11, color: isDark ? Colors.white60 : Colors.grey[600]),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, size: 12, color: Colors.amber),
-                      const SizedBox(width: 2),
-                      Text(rating.toStringAsFixed(1), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${shop['detail_address'] ?? ''}, ${shop['ward'] ?? ''}, ${shop['district'] ?? ''}',
-                    style: TextStyle(fontSize: 10, color: isDark ? Colors.white38 : Colors.grey[500]),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
+            ShopCardDetails(shop: shop, rating: rating, isDark: isDark),
           ],
         ),
       ),
