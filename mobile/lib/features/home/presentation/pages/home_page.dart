@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
 
   void _onScroll() {
     if (_loadingMore || !_hasMore) return;
-    if (_scrollCtrl.offset >= _scrollCtrl.position.maxScrollExtent - 300) _loadMore();
+    if (_scrollCtrl.position.pixels >= _scrollCtrl.position.maxScrollExtent - 100) _loadMore();
   }
 
   Future<void> _loadProducts() async {
@@ -43,7 +43,6 @@ class _HomePageState extends State<HomePage> {
       if (!mounted) return;
       setState(() {
         _products..clear()..addAll(items);
-        _products.shuffle();
         _hasMore = items.length >= _pageSize;
         _loading = false;
       });
@@ -59,7 +58,6 @@ class _HomePageState extends State<HomePage> {
       if (!mounted) return;
       setState(() {
         _products.addAll(items);
-        _products.shuffle();
         _hasMore = items.length >= _pageSize;
         _loadingMore = false;
       });
@@ -68,13 +66,8 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _changeCategory(String category) {
-    setState(() {
-      _selectedCategory = category;
-      _loading = true;
-      _products.clear();
-      _hasMore = true;
-    });
+  void _changeCategory(String cat) {
+    setState(() { _selectedCategory = cat; _loading = true; _products.clear(); _hasMore = true; });
     _loadProducts();
   }
 

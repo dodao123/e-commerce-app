@@ -10,18 +10,10 @@ import 'new_product_ribbon.dart';
 
 /// Dark hero banner card with product image floating outside the box.
 class HeroBanner extends StatelessWidget {
-  /// The featured product to display.
   final ProductModel product;
-
-  /// Callback when "Buy Now" is tapped.
   final VoidCallback? onBuyNow;
 
-  /// Creates a HeroBanner with the given product.
-  const HeroBanner({
-    super.key,
-    required this.product,
-    this.onBuyNow,
-  });
+  const HeroBanner({super.key, required this.product, this.onBuyNow});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +30,19 @@ class HeroBanner extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(left: 20, right: 20, top: 35),
       height: 180,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: isDark
+                ? Colors.purple.withOpacity(0.12)
+                : AppColors.primary.withOpacity(0.12),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+            spreadRadius: 2,
+          ),
+        ],
+      ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -47,11 +52,17 @@ class HeroBanner extends StatelessWidget {
               children: [
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.only(left: 208, right: 12),
+                  padding: const EdgeInsets.only(left: 195, right: 10),
                   decoration: BoxDecoration(
                     gradient: isDark
                         ? DarkColors.darkCardGradient
                         : AppColors.darkCardGradient,
+                    border: Border.all(
+                        color: isDark
+                            ? Colors.white.withOpacity(0.08)
+                            : Colors.black.withOpacity(0.04),
+                        width: 1),
+                    borderRadius: BorderRadius.circular(24),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,9 +79,7 @@ class HeroBanner extends StatelessWidget {
                       ),
                       const SizedBox(height: 12),
                       BuyNowButton(
-                        product: product,
-                        onTap: (_) => onBuyNow?.call(),
-                      ),
+                          product: product, onTap: (_) => onBuyNow?.call()),
                     ],
                   ),
                 ),
@@ -79,21 +88,22 @@ class HeroBanner extends StatelessWidget {
             ),
           ),
           Positioned(
-            left: -10,
-            top: -45,
+            left: -50,
+            top: -30,
             bottom: 4,
-            width: 208,
+            width: 288,
             child: Stack(
               alignment: Alignment.bottomCenter,
               children: [
                 GlowingAura(isDark: isDark),
-                ProductImage(
-                  product: product,
-                  errorWidget: Icon(
-                    Icons.headphones,
-                    size: 100,
-                    color: isDark ? Colors.white54 : Colors.black54,
-                  ),
+                SizedBox(
+                  width: 268,
+                  height: 200,
+                  child: ProductImage(
+                      product: product,
+                      errorWidget: Icon(Icons.headphones,
+                          size: 100,
+                          color: isDark ? Colors.white54 : Colors.black54)),
                 ),
               ],
             ),

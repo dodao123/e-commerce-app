@@ -34,4 +34,24 @@ class ProductHomeDatasource {
         .map((json) => ProductModel.fromApiJson(json))
         .toList();
   }
+
+  /// Fetches public products of a specific shop.
+  Future<List<ProductModel>> fetchShopProducts(String shopId, {int limit = 100}) async {
+    final url = Uri.parse(
+        '${ApiConstants.baseUrl}'
+        '${ApiConstants.shopProductsEndpoint}/$shopId/products'
+        '?limit=$limit');
+
+    final response = await _client.get(url, headers: {
+      'Content-Type': 'application/json',
+    }).timeout(
+        const Duration(seconds: ApiConstants.timeoutSeconds));
+
+    if (response.statusCode != 200) return [];
+
+    final List<dynamic> data = jsonDecode(response.body);
+    return data
+        .map((json) => ProductModel.fromApiJson(json))
+        .toList();
+  }
 }
