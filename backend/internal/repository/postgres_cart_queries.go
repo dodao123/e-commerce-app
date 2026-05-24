@@ -17,7 +17,7 @@ func (repo *PostgresCartRepository) GetCartByUser(
 	query := `
 		SELECT ci.id, ci.user_id, ci.product_id, ci.quantity,
 			ci.created_at, ci.updated_at,
-			p.name, p.images, p.price,
+			p.name, p.images, p.price, p.options,
 			s.id, s.shop_name,
 			COALESCE(u.avatar_url, '')
 		FROM cart_items ci
@@ -47,11 +47,13 @@ func scanCartDetails(
 	for rows.Next() {
 		item := &model.CartItemDetail{}
 		var images []string
+		var optionsRaw []byte
 		if err := rows.Scan(
 			&item.ID, &item.UserID, &item.ProductID,
 			&item.Quantity, &item.CreatedAt, &item.UpdatedAt,
 			&item.ProductName, pq.Array(&images),
-			&item.Price, &item.ShopID, &item.ShopName,
+			&item.Price, &optionsRaw,
+			&item.ShopID, &item.ShopName,
 			&item.ShopAvatar,
 		); err != nil {
 			return nil, err
@@ -59,6 +61,7 @@ func scanCartDetails(
 		if len(images) > 0 {
 			item.ProductImage = images[0]
 		}
+		item.ProductOptions = model.ParseProductOptions(optionsRaw)
 		items = append(items, item)
 	}
 	return items, nil

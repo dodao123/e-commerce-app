@@ -1,5 +1,7 @@
 /// Model representing a single cart item with product/shop info.
 /// Mapped from the backend GET /api/v1/cart response.
+import '../../../home/data/models/product_option_group.dart';
+
 class CartItemModel {
   /// Unique cart item ID.
   final String id;
@@ -28,6 +30,9 @@ class CartItemModel {
   /// Seller's avatar URL.
   final String shopAvatar;
 
+  /// Product variant option groups from the product.
+  final List<ProductOptionGroup> productOptions;
+
   /// Creates a CartItemModel instance.
   CartItemModel({
     required this.id,
@@ -39,6 +44,7 @@ class CartItemModel {
     required this.shopId,
     required this.shopName,
     this.shopAvatar = '',
+    this.productOptions = const [],
   });
 
   /// Creates from API JSON response.
@@ -53,8 +59,21 @@ class CartItemModel {
       shopId: json['shop_id'] ?? '',
       shopName: json['shop_name'] ?? '',
       shopAvatar: json['shop_avatar'] ?? '',
+      productOptions: _parseOptions(json['product_options']),
     );
   }
+
+  /// Parses product options from JSON.
+  static List<ProductOptionGroup> _parseOptions(dynamic raw) {
+    if (raw == null || raw is! List) return [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .map(ProductOptionGroup.fromJson)
+        .toList();
+  }
+
+  /// Whether this cart item's product has options.
+  bool get hasOptions => productOptions.isNotEmpty;
 
   /// Total price for this line item.
   double get lineTotal => price * quantity;

@@ -54,6 +54,7 @@ func (service *ProductService) CreateProduct(
 		BaseShippingFee: request.BaseShippingFee,
 		Condition:       model.ProductCondition(request.Condition),
 		ConditionNote:   request.ConditionNote,
+		Options:         request.Options,
 		Images:          request.Images,
 		VideoURL:        request.VideoURL,
 		Status:          "active",

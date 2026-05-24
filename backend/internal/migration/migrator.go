@@ -31,6 +31,7 @@ func allMigrations() []migrationEntry {
 		{Name: "012_add_coordinates", SQL: AddCoordinatesToShopsAndAddressesSQL},
 		{Name: "013_create_shipper_profiles", SQL: CreateShipperProfilesSQL},
 		{Name: "014_alter_shipper_profiles_add_location", SQL: AlterShipperProfilesAddLocationSQL},
+		{Name: "015_add_product_options", SQL: AddProductOptionsSQL},
 	}
 }
 

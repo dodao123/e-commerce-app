@@ -88,6 +88,9 @@ type Product struct {
 	// ConditionNote is optional detail (e.g. "99% new").
 	ConditionNote string `json:"condition_note"`
 
+	// Options is a list of variant option groups.
+	Options []ProductOption `json:"options"`
+
 	// Images is a list of image URLs (max 10).
 	Images []string `json:"images"`
 

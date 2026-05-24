@@ -72,6 +72,14 @@ class CheckoutProductsSection extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 13)),
+              if ((item['selected_options'] ?? '').toString().isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(item['selected_options'],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 11,
+                          color: Colors.grey.shade600))),
               const SizedBox(height: 6),
               Text('${PriceFormatter.formatFull(price)}đ',
                   style: const TextStyle(

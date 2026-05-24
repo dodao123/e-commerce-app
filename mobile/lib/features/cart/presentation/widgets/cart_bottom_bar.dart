@@ -98,17 +98,25 @@ class CartBottomBar extends StatelessWidget {
               : 'Please select items')));
       return;
     }
-    final items = selected.map((i) => {
-      'product_id': i.productId,
-      'product_name': i.productName,
-      'product_image': i.productImage.startsWith('http')
-          ? i.productImage
-          : '${ApiConstants.baseUrl}/${i.productImage}',
-      'price': i.price,
-      'quantity': i.quantity,
-      'shop_id': i.shopId,
-      'shop_name': i.shopName,
-      'shipping_fee': 32700,
+    final items = selected.map((i) {
+      final optionLabel = i.hasOptions
+          ? i.productOptions
+              .map((g) => '${g.name}: ${g.values.join(", ")}')
+              .join(' · ')
+          : '';
+      return <String, dynamic>{
+        'product_id': i.productId,
+        'product_name': i.productName,
+        'product_image': i.productImage.startsWith('http')
+            ? i.productImage
+            : '${ApiConstants.baseUrl}/${i.productImage}',
+        'price': i.price,
+        'quantity': i.quantity,
+        'shop_id': i.shopId,
+        'shop_name': i.shopName,
+        'shipping_fee': 32700,
+        if (optionLabel.isNotEmpty) 'selected_options': optionLabel,
+      };
     }).toList();
     final result = await Navigator.push(ctx, MaterialPageRoute(
         builder: (_) => CheckoutPage(items: items)));

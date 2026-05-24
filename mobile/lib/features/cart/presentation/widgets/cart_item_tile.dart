@@ -50,6 +50,19 @@ class CartItemTile extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: isDark
                         ? Colors.white : Colors.black87)),
+            if (item.hasOptions) ...[
+              const SizedBox(height: 2),
+              Text(
+                item.productOptions
+                    .map((g) => '${g.name}: ${g.values.join(", ")}')
+                    .join(' · '),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11,
+                    color: isDark
+                        ? Colors.grey.shade400
+                        : Colors.grey.shade600)),
+            ],
             const SizedBox(height: 4),
             Text(PriceFormatter.format(item.price),
                 style: TextStyle(fontSize: 14,

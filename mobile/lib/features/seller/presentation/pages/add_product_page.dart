@@ -11,6 +11,8 @@ import '../widgets/product_category_picker.dart';
 import '../widgets/product_condition_picker.dart';
 import 'add_product_form_fields.dart';
 import 'add_product_helpers.dart';
+import '../../../../features/home/data/models/product_option_group.dart';
+import '../widgets/product_options_editor.dart';
 
 /// Page for adding a new product to the seller's shop.
 /// Contains image picker, text fields, category, price,
@@ -36,6 +38,7 @@ class _AddProductPageState extends State<AddProductPage> {
   String _category = '';
   bool _isNew = true;
   bool _saving = false;
+  List<ProductOptionGroup> _options = [];
 
   @override
   void dispose() {
@@ -79,6 +82,11 @@ class _AddProductPageState extends State<AddProductPage> {
           isNew: _isNew,
           onChanged: (v) => setState(() => _isNew = v),
           noteController: _conditionNoteCtrl,
+          isDark: isDark, isVi: isVi),
+        const SizedBox(height: 8),
+        ProductOptionsEditor(
+          options: _options,
+          onChanged: (opts) => setState(() => _options = opts),
           isDark: isDark, isVi: isVi),
         const SizedBox(height: 24),
       ])),
@@ -168,6 +176,10 @@ class _AddProductPageState extends State<AddProductPage> {
               double.tryParse(_shippingCtrl.text) ?? 0,
           'condition': _isNew ? 'new' : 'used',
           'condition_note': _conditionNoteCtrl.text,
+          'options': _options
+              .where((o) => o.name.isNotEmpty && o.values.isNotEmpty)
+              .map((o) => o.toJson())
+              .toList(),
           'images': <String>[],
           'video_url': _videoUrl,
         });

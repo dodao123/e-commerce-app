@@ -94,6 +94,10 @@ Map<String, dynamic> _buildUpdatePayload(
         double.tryParse(state.shippingCtrl.text) ?? 0,
     'condition': state.isNew ? 'new' : 'used',
     'condition_note': state.conditionNoteCtrl.text,
+    'options': state.options
+        .where((o) => o.name.isNotEmpty && o.values.isNotEmpty)
+        .map((o) => o.toJson())
+        .toList(),
     'video_url': state.videoUrl,
   };
 }

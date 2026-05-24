@@ -1,4 +1,5 @@
 import '../../../../core/constants/api_constants.dart';
+import 'product_option_group.dart';
 
 /// Product model representing an item in the store.
 class ProductModel {
@@ -15,6 +16,7 @@ class ProductModel {
   final String descriptionVi;
   final double rating;
   final int reviewCount;
+  final int stock;
   final bool isNew;
   final String shopName;
   final String shopProvince;
@@ -25,6 +27,9 @@ class ProductModel {
   /// Base shipping fee for this product.
   final double baseShippingFee;
 
+  /// Product variant option groups (e.g. Color, Size).
+  final List<ProductOptionGroup> options;
+
   /// Creates a ProductModel instance.
   const ProductModel({
     required this.id, this.shopId = '',
@@ -34,10 +39,11 @@ class ProductModel {
     this.imageDetail = const [], this.category = 'All',
     this.description = '', this.descriptionVi = '',
     this.rating = 0.0, this.reviewCount = 0,
-    this.isNew = false,
+    this.stock = 0, this.isNew = false,
     this.shopName = '', this.shopProvince = '',
     this.shopAvatar = '',
     this.baseShippingFee = 0,
+    this.options = const [],
   });
 
   /// Creates a ProductModel from public API JSON response.
@@ -55,12 +61,14 @@ class ProductModel {
           .map((i) => '${ApiConstants.baseUrl}/$i').toList(),
       category: json['category'] ?? 'All',
       description: json['description'] ?? '',
+      stock: (json['stock'] as num?)?.toInt() ?? 0,
       isNew: json['condition'] == 'new',
       shopName: json['shop_name'] ?? '',
       shopProvince: json['shop_province'] ?? '',
       shopAvatar: json['shop_avatar'] ?? '',
       baseShippingFee:
           (json['base_shipping_fee'] as num?)?.toDouble() ?? 0,
+      options: _parseOptions(json['options']),
     );
   }
 
@@ -74,5 +82,17 @@ class ProductModel {
   String localizedDescription(String lang) {
     if (lang == 'vi' && descriptionVi.isNotEmpty) return descriptionVi;
     return description;
+  }
+
+  /// Whether this product has selectable options.
+  bool get hasOptions => options.isNotEmpty;
+
+  /// Parses options from API JSON (list of maps).
+  static List<ProductOptionGroup> _parseOptions(dynamic raw) {
+    if (raw == null || raw is! List) return [];
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .map(ProductOptionGroup.fromJson)
+        .toList();
   }
 }

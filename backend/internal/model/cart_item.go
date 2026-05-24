@@ -48,4 +48,7 @@ type CartItemDetail struct {
 
 	// ShopAvatar is the seller's profile picture URL.
 	ShopAvatar string `json:"shop_avatar"`
+
+	// ProductOptions contains the product variant option groups.
+	ProductOptions []ProductOption `json:"product_options"`
 }

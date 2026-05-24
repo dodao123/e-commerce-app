@@ -141,6 +141,9 @@ func applyProductUpdates(
 	if req.ConditionNote != nil {
 		product.ConditionNote = *req.ConditionNote
 	}
+	if req.Options != nil {
+		product.Options = *req.Options
+	}
 	if req.Images != nil {
 		product.Images = *req.Images
 	}

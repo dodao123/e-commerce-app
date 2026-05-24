@@ -28,6 +28,9 @@ type CreateProductRequest struct {
 	// ConditionNote is an optional detail (e.g. "99% new").
 	ConditionNote string `json:"condition_note,omitempty" validate:"max=200"`
 
+	// Options is a list of variant option groups.
+	Options []ProductOption `json:"options,omitempty"`
+
 	// Images is a list of image URLs (max 10).
 	Images []string `json:"images" validate:"max=10"`
 
@@ -61,6 +64,9 @@ type UpdateProductRequest struct {
 
 	// ConditionNote is an optional detail.
 	ConditionNote *string `json:"condition_note,omitempty" validate:"omitempty,max=200"`
+
+	// Options is a list of variant option groups.
+	Options *[]ProductOption `json:"options,omitempty"`
 
 	// Images is a list of image URLs (max 10).
 	Images *[]string `json:"images,omitempty" validate:"omitempty,max=10"`

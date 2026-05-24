@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/app_provider.dart';
 import '../../../../core/theme/indie_folk_theme.dart';
+import '../../../home/data/models/product_option_group.dart';
 import '../widgets/product_category_picker.dart';
+import '../widgets/product_condition_picker.dart';
+import '../widgets/product_options_editor.dart';
 import 'edit_product_actions.dart';
 import 'edit_product_handler.dart';
 import 'edit_product_submit.dart';
@@ -30,6 +33,7 @@ class EditProductPageState extends State<EditProductPage> {
   String category = '';
   bool isNew = true;
   bool saving = false;
+  List<ProductOptionGroup> options = [];
 
   @override
   void initState() { super.initState(); _prefillForm(); }
@@ -47,12 +51,21 @@ class EditProductPageState extends State<EditProductPage> {
     videoUrl = p['video_url'] ?? '';
     final imgs = p['images'] as List? ?? [];
     existingImages.addAll(imgs.cast<String>());
+    _prefillOptions(p['options']);
   }
 
   String _fmt(dynamic v) {
     if (v == null) return '0';
     final d = (v is int) ? v.toDouble() : v as double;
     return d == d.truncateToDouble() ? '${d.toInt()}' : d.toStringAsFixed(0);
+  }
+
+  void _prefillOptions(dynamic raw) {
+    if (raw == null || raw is! List) return;
+    options = raw
+        .whereType<Map<String, dynamic>>()
+        .map(ProductOptionGroup.fromJson)
+        .toList();
   }
 
   @override
@@ -89,7 +102,20 @@ class EditProductPageState extends State<EditProductPage> {
         },
         isNew: isNew,
         onConditionChanged: (v) => setState(() => isNew = v),
-        conditionNoteCtrl: conditionNoteCtrl),
+        conditionNoteCtrl: conditionNoteCtrl,
+        extraFields: [
+          const SizedBox(height: 8),
+          ProductConditionPicker(
+            isNew: isNew,
+            onChanged: (v) => setState(() => isNew = v),
+            noteController: conditionNoteCtrl,
+            isDark: isDark, isVi: isVi),
+          const SizedBox(height: 8),
+          ProductOptionsEditor(
+            options: options,
+            onChanged: (o) => setState(() => options = o),
+            isDark: isDark, isVi: isVi),
+        ]),
       bottomNavigationBar: buildEditBottomBar(
         isDark: isDark, isVi: isVi, saving: saving,
         onSave: () => submitEditProduct(context, this),

@@ -33,12 +33,12 @@ func (repository *PostgresProductRepository) CreateProduct(
 		INSERT INTO products (
 			id, shop_id, name, description, category,
 			price, stock, base_shipping_fee,
-			condition, condition_note,
+			condition, condition_note, options,
 			images, video_url, status,
 			created_at, updated_at
 		) VALUES (
 			$1, $2, $3, $4, $5, $6, $7, $8,
-			$9, $10, $11, $12, $13, $14, $15
+			$9, $10, $11, $12, $13, $14, $15, $16
 		)
 	`
 
@@ -51,12 +51,14 @@ func (repository *PostgresProductRepository) CreateProduct(
 		product.Status = "active"
 	}
 
+	optionsJSON := model.EncodeProductOptions(product.Options)
+
 	_, err := repository.database.ExecContext(
 		ctx, query,
 		product.ID, product.ShopID,
 		product.Name, product.Description, product.Category,
 		product.Price, product.Stock, product.BaseShippingFee,
-		product.Condition, product.ConditionNote,
+		product.Condition, product.ConditionNote, optionsJSON,
 		pq.Array(product.Images), product.VideoURL,
 		product.Status, product.CreatedAt, product.UpdatedAt,
 	)
@@ -70,17 +72,20 @@ func (repository *PostgresProductRepository) CreateProduct(
 // scanProduct scans a single product row into a Product struct.
 func scanProduct(row scannable) (*model.Product, error) {
 	product := &model.Product{}
+	var optionsRaw []byte
 	err := row.Scan(
 		&product.ID, &product.ShopID,
 		&product.Name, &product.Description, &product.Category,
 		&product.Price, &product.Stock, &product.BaseShippingFee,
 		&product.Condition, &product.ConditionNote,
+		&optionsRaw,
 		pq.Array(&product.Images), &product.VideoURL,
 		&product.Status, &product.CreatedAt, &product.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
+	product.Options = model.ParseProductOptions(optionsRaw)
 	return product, nil
 }
 
