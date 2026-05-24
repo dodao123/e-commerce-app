@@ -65,7 +65,7 @@ class ProductModel {
       isNew: json['condition'] == 'new',
       shopName: json['shop_name'] ?? '',
       shopProvince: json['shop_province'] ?? '',
-      shopAvatar: json['shop_avatar'] ?? '',
+      shopAvatar: ApiConstants.resolveImageUrl(json['shop_avatar'] ?? ''),
       baseShippingFee:
           (json['base_shipping_fee'] as num?)?.toDouble() ?? 0,
       options: _parseOptions(json['options']),

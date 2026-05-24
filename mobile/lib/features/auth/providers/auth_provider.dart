@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../data/datasources/auth_remote_datasource.dart';
 import '../data/datasources/email_auth_datasource.dart';
 import '../../../core/storage/token_manager.dart';
+import '../../../core/constants/api_constants.dart';
 import '../../../core/services/notification_polling_service.dart';
 import '../../../core/services/fcm_token_service.dart';
 
@@ -37,7 +38,7 @@ class AuthProvider extends ChangeNotifier {
   String get userName => _userProfile['full_name'] ?? '';
   String get userEmail => _userProfile['email'] ?? '';
   String get userRole => _userProfile['role'] ?? '';
-  String get avatarUrl => _userProfile['avatar_url'] ?? '';
+  String get avatarUrl => ApiConstants.resolveImageUrl(_userProfile['avatar_url'] ?? '');
 
   /// Checks stored token on app startup.
   Future<void> checkAuthStatus() async {

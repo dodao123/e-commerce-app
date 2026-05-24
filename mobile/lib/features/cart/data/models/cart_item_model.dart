@@ -1,5 +1,4 @@
-/// Model representing a single cart item with product/shop info.
-/// Mapped from the backend GET /api/v1/cart response.
+import '../../../../core/constants/api_constants.dart';
 import '../../../home/data/models/product_option_group.dart';
 
 class CartItemModel {
@@ -58,7 +57,7 @@ class CartItemModel {
       quantity: json['quantity'] ?? 1,
       shopId: json['shop_id'] ?? '',
       shopName: json['shop_name'] ?? '',
-      shopAvatar: json['shop_avatar'] ?? '',
+      shopAvatar: ApiConstants.resolveImageUrl(json['shop_avatar'] ?? ''),
       productOptions: _parseOptions(json['product_options']),
     );
   }
