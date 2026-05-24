@@ -33,6 +33,7 @@ type ProductRepository interface {
 	ListAllPublicProducts(
 		ctx context.Context,
 		category string,
+		search string,
 		limit int,
 		offset int,
 	) ([]*model.PublicProduct, error)
@@ -44,6 +45,12 @@ type ProductRepository interface {
 		excludeID string,
 		limit int,
 	) ([]*model.PublicProduct, error)
+
+	// GetPublicProductByID retrieves a single public product by ID.
+	GetPublicProductByID(
+		ctx context.Context,
+		productID string,
+	) (*model.PublicProduct, error)
 
 	// UpdateProduct updates product information.
 	UpdateProduct(

@@ -12,8 +12,9 @@ import 'core/services/notification_polling_service.dart';
 import 'core/services/fcm_token_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
+import 'features/search/providers/search_provider.dart';
 import 'features/shell/main_shell.dart';
-
+ 
 /// Background FCM message handler (must be top-level function).
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(
@@ -39,6 +40,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CartIconKeyProvider()),
         ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => SearchProvider()),
       ],
       child: const DeliveryApp(),
     ),

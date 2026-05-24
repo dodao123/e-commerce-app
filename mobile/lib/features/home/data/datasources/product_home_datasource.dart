@@ -15,12 +15,14 @@ class ProductHomeDatasource {
     int limit = 10,
     int offset = 0,
     String category = '',
+    String search = '',
   }) async {
     final url = Uri.parse(
         '${ApiConstants.baseUrl}'
         '${ApiConstants.publicProductsEndpoint}'
         '?limit=$limit&offset=$offset'
-        '${category.isNotEmpty ? "&category=$category" : ""}');
+        '${category.isNotEmpty ? "&category=$category" : ""}'
+        '${search.isNotEmpty ? "&q=${Uri.encodeComponent(search)}" : ""}');
 
     final response = await _client.get(url, headers: {
       'Content-Type': 'application/json',

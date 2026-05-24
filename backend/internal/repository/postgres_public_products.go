@@ -31,6 +31,7 @@ const publicProductJoin = `
 func (repository *PostgresProductRepository) ListAllPublicProducts(
 	ctx context.Context,
 	category string,
+	search string,
 	limit int,
 	offset int,
 ) ([]*model.PublicProduct, error) {
@@ -43,30 +44,32 @@ func (repository *PostgresProductRepository) ListAllPublicProducts(
 		Scan(dest ...interface{}) error
 	}
 
+	whereClause := "WHERE p.status = 'active'"
+	var args []interface{}
+	paramCount := 1
+
 	if category != "" {
 		if category == "electronics" {
-			query = `SELECT ` + publicProductColumns +
-				publicProductJoin + `
-				WHERE p.status = 'active' AND p.category IN ('electronics', 'phones', 'computers', 'gaming', 'home_appliances', 'cooling')
-				ORDER BY RANDOM()
-				LIMIT $1 OFFSET $2`
-			rows, err = repository.database.QueryContext(ctx, query, limit, offset)
+			whereClause += " AND p.category IN ('electronics', 'phones', 'computers', 'gaming', 'home_appliances', 'cooling')"
 		} else {
-			query = `SELECT ` + publicProductColumns +
-				publicProductJoin + `
-				WHERE p.status = 'active' AND p.category = $1
-				ORDER BY RANDOM()
-				LIMIT $2 OFFSET $3`
-			rows, err = repository.database.QueryContext(ctx, query, category, limit, offset)
+			whereClause += fmt.Sprintf(" AND p.category = $%d", paramCount)
+			args = append(args, category)
+			paramCount++
 		}
-	} else {
-		query = `SELECT ` + publicProductColumns +
-			publicProductJoin + `
-			WHERE p.status = 'active'
-			ORDER BY RANDOM()
-			LIMIT $1 OFFSET $2`
-		rows, err = repository.database.QueryContext(ctx, query, limit, offset)
 	}
+
+	if search != "" {
+		whereClause += fmt.Sprintf(" AND (p.name ILIKE $%d OR p.description ILIKE $%d)", paramCount, paramCount+1)
+		searchTerm := "%" + search + "%"
+		args = append(args, searchTerm, searchTerm)
+		paramCount += 2
+	}
+
+	query = fmt.Sprintf(`SELECT %s %s %s ORDER BY RANDOM() LIMIT $%d OFFSET $%d`,
+		publicProductColumns, publicProductJoin, whereClause, paramCount, paramCount+1)
+	args = append(args, limit, offset)
+
+	rows, err = repository.database.QueryContext(ctx, query, args...)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed to list public products: %w", err)
@@ -82,6 +85,16 @@ func (repository *PostgresProductRepository) ListAllPublicProducts(
 		products = append(products, pp)
 	}
 	return products, rows.Err()
+}
+
+// GetPublicProductByID retrieves a single public product by its ID.
+func (repository *PostgresProductRepository) GetPublicProductByID(
+	ctx context.Context, productID string,
+) (*model.PublicProduct, error) {
+	query := fmt.Sprintf(`SELECT %s %s WHERE p.id = $1`,
+		publicProductColumns, publicProductJoin)
+	row := repository.database.QueryRowContext(ctx, query, productID)
+	return scanPublicProduct(row)
 }
 
 // scanPublicProduct scans a row into a PublicProduct.

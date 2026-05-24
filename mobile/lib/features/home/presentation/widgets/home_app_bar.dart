@@ -9,6 +9,7 @@ import '../../../../core/utils/role_guard.dart';
 import '../../../auth/presentation/pages/login_page.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../../cart/presentation/pages/cart_page.dart';
+import '../../../search/presentation/pages/search_results_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
 
 /// Custom app bar with settings, search, cart, and login/profile.
@@ -43,7 +44,10 @@ class HomeAppBar extends StatelessWidget {
         ),
         const Spacer(),
         // Search
-        IconButton(onPressed: () {},
+        IconButton(
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SearchResultsPage())),
             icon: const Icon(Icons.search, size: 26)),
         // Cart — GlobalKey for fly-to-cart animation target
         Stack(key: cartKey, children: [

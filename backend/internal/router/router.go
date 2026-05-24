@@ -20,6 +20,7 @@ func NewRouter(
 	notifHandler *handler.NotificationHandler,
 	fcmHandler *handler.FcmHandler,
 	shipperHandler *handler.ShipperHandler,
+	searchHandler *handler.SearchHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -96,6 +97,9 @@ func NewRouter(
 				fcmHandler.HandleRegisterToken)),
 		)
 	}
+
+	// Semantic search routes (public)
+	registerSearchRoutes(mux, searchHandler)
 
 	// Static file server for product images
 	mux.Handle("/uploads/",

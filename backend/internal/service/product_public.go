@@ -11,6 +11,7 @@ import (
 func (service *ProductService) ListPublicProducts(
 	ctx context.Context,
 	category string,
+	search string,
 	limit int,
 	offset int,
 ) ([]*model.PublicProduct, error) {
@@ -21,7 +22,7 @@ func (service *ProductService) ListPublicProducts(
 		offset = 0
 	}
 	return service.productRepository.ListAllPublicProducts(
-		ctx, category, limit, offset)
+		ctx, category, search, limit, offset)
 }
 
 // ListShopProducts retrieves active products for a specific shop.

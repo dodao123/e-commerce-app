@@ -85,3 +85,4 @@ node_modules/
 # Python
 # ========================
 /bg_remover/venv
+/artifacts
