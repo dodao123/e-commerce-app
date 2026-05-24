@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
-/// A diagonal "New Product" ribbon widget for the top-right corner of cards.
+/// A diagonal ribbon that wraps the card corner without covering the corner tip.
 class NewProductRibbon extends StatelessWidget {
-  /// Creates a NewProductRibbon.
+  /// Creates a NewProductRibbon widget.
   const NewProductRibbon({super.key});
 
   @override
@@ -12,14 +12,14 @@ class NewProductRibbon extends StatelessWidget {
     final text = lang == 'vi' ? 'MỚI' : 'NEW';
 
     return Positioned(
-      top: -6,
-      right: -28,
+      top: 16,
+      right: -24,
       child: Transform.rotate(
         angle: math.pi / 4,
         child: Container(
-          width: 100,
-          height: 38,
-          padding: const EdgeInsets.only(top: 18),
+          width: 90,
+          height: 20,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [
@@ -29,18 +29,17 @@ class NewProductRibbon extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.black.withOpacity(0.15),
                 blurRadius: 4,
-                offset: const Offset(0, 2),
+                offset: const Offset(0, 1.5),
               ),
             ],
           ),
-          alignment: Alignment.center,
           child: Text(
             text,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 9,
+              fontSize: 8.5,
               fontWeight: FontWeight.w900,
               letterSpacing: 1.0,
             ),
