@@ -46,8 +46,8 @@ class _EditShopInfoPageState extends State<EditShopInfoPage> {
       'district': widget.shopData['district'] ?? '',
       'ward': widget.shopData['ward'] ?? '',
       'street': widget.shopData['detail_address'] ?? '',
-      'lat': widget.shopData['latitude'] ?? 0.0,
-      'lng': widget.shopData['longitude'] ?? 0.0,
+      'lat': (widget.shopData['lat'] ?? widget.shopData['latitude'] ?? 0.0).toDouble(),
+      'lng': (widget.shopData['lng'] ?? widget.shopData['longitude'] ?? 0.0).toDouble(),
     };
   }
 

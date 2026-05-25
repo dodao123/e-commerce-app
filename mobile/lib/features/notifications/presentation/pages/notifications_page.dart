@@ -5,6 +5,7 @@ import '../../../../core/services/notification_polling_service.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../seller/presentation/pages/seller_order_detail_page.dart';
 import '../../../driver/presentation/pages/driver_order_detail_page.dart';
+import '../../../chat/presentation/pages/chat_detail_page.dart';
 import '../../data/notification_datasource.dart';
 import '../../../auth/providers/auth_provider.dart';
 
@@ -160,15 +161,29 @@ class _NotificationsPageState
     }
     final refId = n['ref_id']?.toString() ?? '';
     if (!mounted || refId.isEmpty) return;
-    final role = context.read<AuthProvider>().userRole;
-    if (role == 'driver') {
+    final type = n['type']?.toString() ?? '';
+    if (type == 'chat') {
+      final title = n['title']?.toString() ?? '';
+      String partnerName = title
+          .replaceAll('Tin nhắn mới từ ', '')
+          .replaceAll('New message from ', '');
+      if (partnerName.isEmpty) partnerName = 'Trò chuyện';
       await Navigator.push(context, MaterialPageRoute(
-          builder: (_) => DriverOrderDetailPage(
-              orderId: refId)));
+          builder: (_) => ChatDetailPage(
+              roomId: refId,
+              partnerName: partnerName,
+              partnerAvatar: '')));
     } else {
-      await Navigator.push(context, MaterialPageRoute(
-          builder: (_) => SellerOrderDetailPage(
-              orderId: refId)));
+      final role = context.read<AuthProvider>().userRole;
+      if (role == 'driver') {
+        await Navigator.push(context, MaterialPageRoute(
+            builder: (_) => DriverOrderDetailPage(
+                orderId: refId)));
+      } else {
+        await Navigator.push(context, MaterialPageRoute(
+            builder: (_) => SellerOrderDetailPage(
+                orderId: refId)));
+      }
     }
     _fetch();
   }

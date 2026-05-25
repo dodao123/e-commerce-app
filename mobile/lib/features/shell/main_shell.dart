@@ -8,6 +8,7 @@ import '../home/presentation/widgets/home_app_bar.dart';
 import '../notifications/presentation/pages/notifications_page.dart';
 import '../menu/presentation/pages/menu_page.dart';
 import '../shop/presentation/pages/shop_list_page.dart';
+import '../chat/presentation/pages/chat_rooms_page.dart';
 
 /// Main shell layout with fixed top bar and bottom navigation.
 /// Both bars stay persistent during page scrolling and tab switches.
@@ -27,6 +28,7 @@ class _MainShellState extends State<MainShell> {
   final List<Widget> _pages = const [
     HomePage(),
     ShopListPage(),
+    ChatRoomsPage(),
     NotificationsPage(),
     MenuPage(),
   ];
@@ -48,9 +50,9 @@ class _MainShellState extends State<MainShell> {
     if (tab >= 0) {
       int targetTab = tab;
       if (tab == 1) {
-        targetTab = 2; // Map notifications to index 2
+        targetTab = 3; // Map notifications to index 3
       } else if (tab == 2) {
-        targetTab = 3; // Map menu to index 3
+        targetTab = 4; // Map menu to index 4
       }
       if (targetTab < _pages.length) {
         setState(() => _currentIndex = targetTab);
@@ -109,12 +111,14 @@ class _MainShellState extends State<MainShell> {
                   isVi ? 'Trang chủ' : 'Home', 0, isDark),
               _navItem(Icons.storefront_rounded,
                   isVi ? 'Cửa hàng' : 'Shop', 1, isDark),
+              _navItem(Icons.chat_bubble_outline_rounded,
+                  isVi ? 'Chat' : 'Chat', 2, isDark),
               _navItemWithBadge(
                   Icons.notifications_outlined,
                   isVi ? 'Thông báo' : 'Notifications',
-                  2, isDark),
+                  3, isDark),
               _navItem(Icons.menu_rounded,
-                  isVi ? 'Menu' : 'Menu', 3, isDark),
+                  isVi ? 'Menu' : 'Menu', 4, isDark),
             ],
           ),
         ),
@@ -127,16 +131,20 @@ class _MainShellState extends State<MainShell> {
     final color = active ? AppColors.primary
         : (isDark ? DarkColors.textSecondary : AppColors.textSecondary);
 
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = idx),
-      behavior: HitTestBehavior.opaque,
-      child: SizedBox(width: 80,
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Icon(icon, size: 26, color: color),
-          const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontSize: 11, color: color,
-              fontWeight: active ? FontWeight.w600 : FontWeight.w400)),
-        ])),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => _currentIndex = idx),
+        behavior: HitTestBehavior.opaque,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 24, color: color),
+            const SizedBox(height: 4),
+            Text(label, style: TextStyle(fontSize: 10, color: color,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w400)),
+          ],
+        ),
+      ),
     );
   }
 
@@ -147,16 +155,16 @@ class _MainShellState extends State<MainShell> {
       valueListenable:
           NotificationPollingService().unreadCount,
       builder: (_, count, __) {
-        return GestureDetector(
-          onTap: () => setState(() => _currentIndex = idx),
-          behavior: HitTestBehavior.opaque,
-          child: SizedBox(width: 80,
+        return Expanded(
+          child: GestureDetector(
+            onTap: () => setState(() => _currentIndex = idx),
+            behavior: HitTestBehavior.opaque,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Stack(clipBehavior: Clip.none,
                   children: [
-                    Icon(icon, size: 26,
+                    Icon(icon, size: 24,
                         color: _currentIndex == idx
                             ? AppColors.primary
                             : (isDark
@@ -185,7 +193,7 @@ class _MainShellState extends State<MainShell> {
                   ]),
                 const SizedBox(height: 4),
                 Text(label, style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 10,
                     color: _currentIndex == idx
                         ? AppColors.primary
                         : (isDark
@@ -194,7 +202,10 @@ class _MainShellState extends State<MainShell> {
                     fontWeight: _currentIndex == idx
                         ? FontWeight.w600
                         : FontWeight.w400)),
-              ])));
+              ],
+            ),
+          ),
+        );
       });
   }
 }

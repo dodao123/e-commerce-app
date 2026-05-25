@@ -74,7 +74,8 @@ class _ShopDashboardPageState extends State<ShopDashboardPage> {
           const SizedBox(height: 24),
           ShopQuickActions(
             isVi: isVi, isDark: isDark,
-            shopId: _shopData['id']?.toString() ?? ''),
+            shopData: _shopData,
+            onRefresh: _refreshShopInfo),
         ])));
   }
 

@@ -83,6 +83,9 @@ type Shop struct {
 	// IsActive indicates if the shop is currently active.
 	IsActive bool `json:"is_active"`
 
+	// AIAssistantEnabled indicates if the AI seller assistant is enabled.
+	AIAssistantEnabled bool `json:"ai_assistant_enabled"`
+
 	// CreatedAt is when the shop was registered.
 	CreatedAt time.Time `json:"created_at"`
 

@@ -41,8 +41,8 @@ class MenuProfileHeader extends StatelessWidget {
       child: Row(children: [
         CircleAvatar(radius: 30,
           backgroundColor: Colors.white.withOpacity(0.3),
-          backgroundImage: hasAvatar ? NetworkImage(resolvedUrl) : null,
-          child: hasAvatar ? null : Text(
+          backgroundImage: (hasAvatar && !resolvedUrl.toLowerCase().endsWith('.svg')) ? NetworkImage(resolvedUrl) : null,
+          child: (hasAvatar && !resolvedUrl.toLowerCase().endsWith('.svg')) ? null : Text(
             userName.isNotEmpty ? userName[0].toUpperCase() : '?',
             style: IndieFolkTheme.h1(true).copyWith(color: Colors.white,
                 fontSize: 24, fontWeight: FontWeight.bold))),

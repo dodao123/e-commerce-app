@@ -4,6 +4,9 @@ package repository
 import (
 	"context"
 	"delivery-app/backend/internal/model"
+	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/lib/pq"
 )
@@ -62,6 +65,15 @@ func scanCartDetails(
 			item.ProductImage = images[0]
 		}
 		item.ProductOptions = model.ParseProductOptions(optionsRaw)
+
+		// Dynamically resolve ShopAvatar if logo file exists and current avatar is not a Google/external URL
+		if !(len(item.ShopAvatar) >= 4 && item.ShopAvatar[:4] == "http") {
+			logoPath := filepath.Join("uploads", "logos", fmt.Sprintf("shop_%s.png", item.ShopID))
+			if _, err := os.Stat(logoPath); err == nil {
+				item.ShopAvatar = fmt.Sprintf("/uploads/logos/shop_%s.png", item.ShopID)
+			}
+		}
+
 		items = append(items, item)
 	}
 	return items, nil

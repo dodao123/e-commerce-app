@@ -62,6 +62,7 @@ func main() {
 	var fcmHandler *handler.FcmHandler
 	var shipperHandler *handler.ShipperHandler
 	var searchHandler *handler.SearchHandler
+	var chatHandler *handler.ChatHandler
 
 	// Image service (for bg removal + uploads)
 	uploadRoot := filepath.Join(".", "uploads")
@@ -118,17 +119,23 @@ func main() {
 		shipperHandler = handler.NewShipperHandler(shipperService)
 
 		// Semantic search + Embedding DI chain
+		var searchSvc *service.SearchService
 		geminiKey := os.Getenv("GEMINI_API_KEY")
 		if geminiKey != "" {
 			embSvc := service.NewEmbeddingService(geminiKey)
 			embRepo := repository.NewPostgresEmbeddingRepository(db.Pool)
-			searchSvc := service.NewSearchService(embSvc, embRepo, productRepo)
+			searchSvc = service.NewSearchService(embSvc, embRepo, productRepo)
 			syncSvc := service.NewEmbeddingSyncService(embSvc, embRepo, productRepo)
 			searchHandler = handler.NewSearchHandler(searchSvc, syncSvc)
 			log.Println("🧠 Semantic search enabled (Gemini)")
 		} else {
 			log.Println("⚠️ GEMINI_API_KEY not set, semantic search disabled")
 		}
+
+		// Chat DI chain
+		chatRepo := repository.NewPostgresChatRepository(db.Pool)
+		chatService := service.NewChatService(chatRepo, shopRepo)
+		chatHandler = handler.NewChatHandler(chatService, shopService, searchSvc, jwtService, notifService, userRepo)
 	}
 
 	// Setup router and middleware
@@ -136,7 +143,7 @@ func main() {
 		authHandler, emailAuthHandler,
 		shopHandler, productHandler, cartHandler,
 		addressHandler, orderHandler, notifHandler,
-		fcmHandler, shipperHandler, searchHandler, jwtService)
+		fcmHandler, shipperHandler, searchHandler, chatHandler, jwtService)
 	httpHandler := middleware.ApplyCORS(middleware.ApplyLogger(mux))
 
 	// Start HTTP server

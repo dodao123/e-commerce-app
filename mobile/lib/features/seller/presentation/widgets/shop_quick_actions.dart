@@ -3,6 +3,9 @@ import '../../../../core/theme/indie_folk_theme.dart';
 import '../../data/shop_order_datasource.dart';
 import '../pages/product_management_page.dart';
 import '../pages/seller_order_list_page.dart';
+import '../pages/shop_settings_page.dart';
+
+import '../../../chat/presentation/pages/chat_rooms_page.dart';
 
 /// Grid of quick action buttons for the shop dashboard.
 class ShopQuickActions extends StatefulWidget {
@@ -12,15 +15,19 @@ class ShopQuickActions extends StatefulWidget {
   /// Whether the theme is dark.
   final bool isDark;
 
-  /// Shop ID for order queries.
-  final String shopId;
+  /// Shop data map from API.
+  final Map<String, dynamic> shopData;
+
+  /// Callback when settings/data gets updated and needs refresh.
+  final VoidCallback onRefresh;
 
   /// Creates a ShopQuickActions widget.
   const ShopQuickActions({
     super.key,
     required this.isVi,
     required this.isDark,
-    required this.shopId,
+    required this.shopData,
+    required this.onRefresh,
   });
 
   @override
@@ -39,14 +46,16 @@ class _ShopQuickActionsState
   }
 
   Future<void> _fetchPendingCount() async {
-    if (widget.shopId.isEmpty) return;
+    final shopId = widget.shopData['id']?.toString() ?? '';
+    if (shopId.isEmpty) return;
     final count = await ShopOrderDatasource()
-        .fetchPendingCount(widget.shopId);
+        .fetchPendingCount(shopId);
     if (mounted) setState(() => _pendingCount = count);
   }
 
   @override
   Widget build(BuildContext context) {
+    final shopId = widget.shopData['id']?.toString() ?? '';
     final actions = [
       _Action(Icons.inventory_2_outlined,
           widget.isVi ? 'Sản phẩm' : 'Products',
@@ -61,13 +70,25 @@ class _ShopQuickActionsState
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (_) =>
                   SellerOrderListPage(
-                      shopId: widget.shopId)))),
+                      shopId: shopId)))),
+      _Action(Icons.chat_outlined,
+          widget.isVi ? 'Tin nhắn' : 'Messages',
+          IndieFolkTheme.tertiary(widget.isDark),
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (_) =>
+                  const ChatRoomsPage()))),
       _Action(Icons.bar_chart_outlined,
           widget.isVi ? 'Thống kê' : 'Analytics',
           IndieFolkTheme.tertiary(widget.isDark)),
       _Action(Icons.settings_outlined,
           widget.isVi ? 'Cài đặt' : 'Settings',
-          IndieFolkTheme.secondary(widget.isDark)),
+          IndieFolkTheme.secondary(widget.isDark),
+          onTap: () async {
+            await Navigator.push(context,
+                MaterialPageRoute(builder: (_) =>
+                    ShopSettingsPage(shopData: widget.shopData)));
+            widget.onRefresh();
+          }),
     ];
 
     return GridView.count(

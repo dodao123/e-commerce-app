@@ -82,8 +82,8 @@ class ShopCard extends StatelessWidget {
                       child: CircleAvatar(
                         radius: 20,
                         backgroundColor: isDark ? Colors.white10 : Colors.grey[100],
-                        backgroundImage: avatar.isNotEmpty ? NetworkImage(avatar) : null,
-                        child: avatar.isEmpty ? const Icon(Icons.store, size: 18, color: AppColors.primary) : null,
+                        backgroundImage: (avatar.isNotEmpty && !avatar.toLowerCase().endsWith('.svg')) ? NetworkImage(avatar) : null,
+                        child: (avatar.isEmpty || avatar.toLowerCase().endsWith('.svg')) ? const Icon(Icons.store, size: 18, color: AppColors.primary) : null,
                       ),
                     ),
                   ),

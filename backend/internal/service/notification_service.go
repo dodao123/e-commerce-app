@@ -45,6 +45,11 @@ func (s *NotificationService) pushToUser(
 	go globalFcm.SendToToken(token, title, body) //nolint:errcheck
 }
 
+// PushToUser sends FCM push to a specific user (public wrapper).
+func (s *NotificationService) PushToUser(userID, title, body string) {
+	s.pushToUser(userID, title, body)
+}
+
 // dbAndPush creates a DB notification and sends an FCM push.
 func (s *NotificationService) dbAndPush(
 	n model.Notification, title, body string,
@@ -99,4 +104,18 @@ func (s *NotificationService) CountUnread(
 	userID string, role string,
 ) (int, error) {
 	return s.notifRepo.CountUnread(userID, role)
+}
+
+// SendChatNotification stores a chat message notification in DB and sends a push notification.
+func (s *NotificationService) SendChatNotification(
+	userID, targetRole, roomID, title, body string,
+) {
+	s.dbAndPush(model.Notification{
+		UserID:     userID,
+		Title:      title,
+		Body:       body,
+		Type:       "chat",
+		TargetRole: targetRole,
+		RefID:      roomID,
+	}, title, body)
 }

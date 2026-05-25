@@ -16,7 +16,6 @@ class AuthProvider extends ChangeNotifier {
 
   bool _isLoading = false;
   bool _isLoggedIn = false;
-  bool _hasSelectedRole = false;
   String? _accessToken;
   String? _errorMessage;
   Map<String, String?> _userProfile = {};
@@ -32,9 +31,13 @@ class AuthProvider extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
   bool get isLoggedIn => _isLoggedIn;
-  bool get hasSelectedRole => _hasSelectedRole;
+  bool get hasSelectedRole {
+    final role = _userProfile['role'];
+    return role != null && role.isNotEmpty && role != 'unselected';
+  }
   String? get errorMessage => _errorMessage;
   String? get accessToken => _accessToken;
+  String get userId => _userProfile['id'] ?? '';
   String get userName => _userProfile['full_name'] ?? '';
   String get userEmail => _userProfile['email'] ?? '';
   String get userRole => _userProfile['role'] ?? '';
@@ -46,8 +49,6 @@ class AuthProvider extends ChangeNotifier {
     if (_isLoggedIn) {
       _accessToken = await _tokenManager.getToken();
       _userProfile = await _tokenManager.getUserProfile();
-      _hasSelectedRole = await _tokenManager.hasSelectedRole(
-          _userProfile['email'] ?? '');
     }
     notifyListeners();
   }
@@ -85,7 +86,6 @@ class AuthProvider extends ChangeNotifier {
         fullName: _userProfile['full_name'] ?? '',
         role: role, avatarUrl: _userProfile['avatar_url'] ?? '');
       await _tokenManager.markRoleSelected(_userProfile['email'] ?? '');
-      _hasSelectedRole = true;
       _isLoading = false; notifyListeners();
       return true;
     } on Exception catch (e) {
@@ -98,7 +98,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> signOut() async {
     await _socialAuth.signOut();
     await _tokenManager.clearAll();
-    _isLoggedIn = false; _hasSelectedRole = false;
+    _isLoggedIn = false;
     _accessToken = null; _userProfile = {};
     NotificationPollingService().stopPolling();
     NotificationPollingService().reset();
@@ -120,8 +120,6 @@ class AuthProvider extends ChangeNotifier {
         fullName: u['full_name'] ?? '', role: u['role'] ?? '',
         avatarUrl: (u['avatar_url'] as String?) ?? '');
       _userProfile = await _tokenManager.getUserProfile();
-      _hasSelectedRole = await _tokenManager.hasSelectedRole(
-          _userProfile['email'] ?? '');
       _isLoggedIn = true; _isLoading = false; notifyListeners();
       
       final notifSvc = NotificationPollingService();

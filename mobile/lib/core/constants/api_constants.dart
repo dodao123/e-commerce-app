@@ -13,11 +13,16 @@ class ApiConstants {
   /// Falls back to `10.0.2.2` (Android emulator alias for localhost).
   static const String _apiHost = String.fromEnvironment(
     'API_HOST',
-    defaultValue: '192.168.44.159',
+    defaultValue: '192.168.44.207',
   );
 
   /// Base URL for the backend API server (auto-resolved).
   static const String baseUrl = 'http://$_apiHost:$_serverPort';
+
+  /// Base WebSocket URL for chat connections.
+  static String websocketUrl(String token) {
+    return 'ws://$_apiHost:$_serverPort/api/v1/chat/ws?token=$token';
+  }
 
   /// Resolves an image URL, replacing any stale IP address with the current [baseUrl].
   static String resolveImageUrl(String url) {

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/role_guard.dart';
+import '../../../auth/presentation/pages/login_page.dart';
+import '../../../auth/providers/auth_provider.dart';
+import '../../../chat/data/datasources/chat_remote_datasource.dart';
+import '../../../chat/presentation/pages/chat_detail_page.dart';
 import '../../../home/data/models/product_model.dart';
 import 'shop_detail_header.dart';
 import 'shop_detail_products.dart';
@@ -59,7 +65,56 @@ class ShopDetailScaffold extends StatelessWidget {
                       Shadow(color: Colors.white.withOpacity(0.6), blurRadius: 4),
                     ],
                   ),
-                  onPressed: () {},
+                  onPressed: () async {
+                    final auth = context.read<AuthProvider>();
+                    if (!auth.isLoggedIn || auth.accessToken == null) {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginPage()));
+                      return;
+                    }
+                    if (!RoleGuard.checkBuyerRole(context)) return;
+
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => const Center(child: CircularProgressIndicator()),
+                    );
+
+                    try {
+                      final shopId = shop['id']?.toString() ?? '';
+                      final shopName = shop['shop_name']?.toString() ?? '';
+                      final token = auth.accessToken!;
+
+                      final room = await ChatRemoteDatasource().getOrCreateRoom(
+                        token: token,
+                        roomType: 'customer_shop',
+                        shopId: shopId,
+                      );
+
+                      if (context.mounted) {
+                        Navigator.pop(context); // Close progress dialog
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ChatDetailPage(
+                              roomId: room.id,
+                              partnerName: shopName,
+                              partnerAvatar: room.partnerAvatar.isNotEmpty
+                                  ? room.partnerAvatar
+                                  : 'https://api.dicebear.com/7.x/adventurer/svg?seed=$shopId',
+                            ),
+                          ),
+                        );
+                      }
+                    } catch (_) {
+                      if (context.mounted) {
+                        Navigator.pop(context); // Close progress dialog
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Không thể kết nối trò chuyện lúc này'),
+                          behavior: SnackBarBehavior.floating,
+                        ));
+                      }
+                    }
+                  },
                 ),
                 IconButton(
                   icon: Icon(

@@ -17,7 +17,8 @@ class ShopDetailHeader extends StatelessWidget {
   });
 
   String _getDistance() {
-    final lat = shop['lat'] as double?;
+    final latVal = shop['lat'];
+    final double? lat = latVal is num ? latVal.toDouble() : null;
     if (lat == null) return '2.5 km';
     return '${((lat - 21.01).abs() * 3.5 + 0.5).toStringAsFixed(1)} km';
   }

@@ -47,4 +47,7 @@ type EmbeddingRepository interface {
 
 	// CountEmbeddings returns total stored embeddings.
 	CountEmbeddings(ctx context.Context) (int, error)
+
+	// HasEmbedding checks if a product already has a vector embedding.
+	HasEmbedding(ctx context.Context, productID string) (bool, error)
 }

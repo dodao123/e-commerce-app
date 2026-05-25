@@ -18,6 +18,9 @@ const (
 
 	// RoleAdmin is a system administrator.
 	RoleAdmin UserRole = "admin"
+
+	// RoleUnselected represents a user who has not selected a role yet.
+	RoleUnselected UserRole = "unselected"
 )
 
 // User represents a registered user in the system.

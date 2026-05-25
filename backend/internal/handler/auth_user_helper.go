@@ -28,7 +28,7 @@ func (handler *AuthHandler) findOrCreateUser(
 			FullName:      profile.FullName,
 			AvatarURL:     profile.AvatarURL,
 			Locale:        profile.Locale,
-			Role:          model.RoleBuyer,
+			Role:          model.RoleUnselected,
 		}
 
 		user, err = handler.userRepository.Create(user)

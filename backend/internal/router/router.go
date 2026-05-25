@@ -21,6 +21,7 @@ func NewRouter(
 	fcmHandler *handler.FcmHandler,
 	shipperHandler *handler.ShipperHandler,
 	searchHandler *handler.SearchHandler,
+	chatHandler *handler.ChatHandler,
 	jwtService *service.JWTService,
 ) *http.ServeMux {
 	mux := http.NewServeMux()
@@ -96,6 +97,28 @@ func NewRouter(
 			authGuard(http.HandlerFunc(
 				fcmHandler.HandleRegisterToken)),
 		)
+	}
+
+	// Chat routes (protected + WebSocket)
+	if chatHandler != nil {
+		mux.Handle("/api/v1/chat/rooms",
+			authGuard(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if r.Method == http.MethodPost {
+					chatHandler.HandleGetOrCreateRoom(w, r)
+				} else if r.Method == http.MethodGet {
+					chatHandler.HandleListRooms(w, r)
+				} else {
+					w.WriteHeader(http.StatusMethodNotAllowed)
+				}
+			})),
+		)
+		mux.Handle("/api/v1/chat/rooms/{id}/messages",
+			authGuard(http.HandlerFunc(chatHandler.HandleListMessages)),
+		)
+		mux.Handle("/api/v1/chat/rooms/{id}/read",
+			authGuard(http.HandlerFunc(chatHandler.HandleMarkAsRead)),
+		)
+		mux.HandleFunc("/api/v1/chat/ws", chatHandler.HandleWebSocket)
 	}
 
 	// Semantic search routes (public)

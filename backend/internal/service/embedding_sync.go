@@ -41,6 +41,12 @@ func (s *EmbeddingSyncService) SyncAllProducts(
 
 	synced := 0
 	for _, p := range products {
+		// Skip if already embedded
+		if exists, _ := s.embeddingRepo.HasEmbedding(ctx, p.ID); exists {
+			synced++
+			continue
+		}
+
 		text := buildProductText(
 			p.Name, p.Description,
 			string(p.Category), p.ShopName)

@@ -19,8 +19,8 @@ func (repository *PostgresShopRepository) UpdateShop(
 		SET shop_name = $1, category = $2, province = $3, district = $4,
 			ward = $5, detail_address = $6, latitude = $7, longitude = $8,
 			nationality = $9, national_id_number = $10, full_name = $11, 
-			email = $12, phone = $13, updated_at = $14
-		WHERE id = $15
+			email = $12, phone = $13, ai_assistant_enabled = $14, updated_at = $15
+		WHERE id = $16
 	`
 
 	shop.UpdatedAt = time.Now()
@@ -29,7 +29,8 @@ func (repository *PostgresShopRepository) UpdateShop(
 		ctx, query,
 		shop.ShopName, shop.Category, shop.Province, shop.District,
 		shop.Ward, shop.DetailAddress, shop.Latitude, shop.Longitude, shop.Nationality,
-		shop.NationalIDNumber, shop.FullName, shop.Email, shop.Phone, shop.UpdatedAt, shop.ID,
+		shop.NationalIDNumber, shop.FullName, shop.Email, shop.Phone,
+		shop.AIAssistantEnabled, shop.UpdatedAt, shop.ID,
 	)
 
 	if err != nil {
@@ -88,7 +89,7 @@ func (repository *PostgresShopRepository) ListShops(
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
 			   ward, detail_address, latitude, longitude, nationality, national_id_number,
-			   full_name, is_verified, is_active, created_at, updated_at
+			   full_name, is_verified, is_active, ai_assistant_enabled, created_at, updated_at
 		FROM shops
 		WHERE is_active = true
 		ORDER BY created_at DESC
@@ -114,7 +115,7 @@ func (repository *PostgresShopRepository) ListShopsByCategory(
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
 			   ward, detail_address, latitude, longitude, nationality, national_id_number,
-			   full_name, is_verified, is_active, created_at, updated_at
+			   full_name, is_verified, is_active, ai_assistant_enabled, created_at, updated_at
 		FROM shops
 		WHERE category = $1 AND is_active = true
 		ORDER BY created_at DESC
@@ -142,7 +143,7 @@ func scanShops(rows *sql.Rows) ([]*model.Shop, error) {
 			&shop.ID, &shop.SellerID, &shop.ShopName, &shop.Category,
 			&shop.Province, &shop.District, &shop.Ward, &shop.DetailAddress,
 			&shop.Latitude, &shop.Longitude, &shop.Nationality, &shop.NationalIDNumber, &shop.FullName,
-			&shop.IsVerified, &shop.IsActive, &shop.CreatedAt, &shop.UpdatedAt,
+			&shop.IsVerified, &shop.IsActive, &shop.AIAssistantEnabled, &shop.CreatedAt, &shop.UpdatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan shop: %w", err)

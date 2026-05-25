@@ -4,6 +4,7 @@ package repository
 import (
 	"database/sql"
 	"delivery-app/backend/internal/model"
+	"strings"
 )
 
 // PostgresNotificationRepository handles notification CRUD.
@@ -70,6 +71,13 @@ func (r *PostgresNotificationRepository) ListByUser(
 			&n.Type, &n.TargetRole, &n.RefID, &n.IsRead, &n.CreatedAt,
 		); err != nil {
 			return nil, err
+		}
+		if n.Type == "chat" {
+			if strings.Contains(n.Body, "sticker") {
+				n.Body = "Đã gửi bạn 1 sticker"
+			} else if strings.Contains(n.Body, "uploads/") {
+				n.Body = "Đã gửi bạn 1 ảnh"
+			}
 		}
 		list = append(list, n)
 	}

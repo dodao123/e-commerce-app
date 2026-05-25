@@ -61,7 +61,7 @@ func (handler *EmailAuthHandler) processRegistration(
 		Email:        req.Email,
 		FullName:     req.FullName,
 		PasswordHash: hash,
-		Role:         model.RoleBuyer,
+		Role:         model.RoleUnselected,
 	}
 
 	created, err := handler.userRepository.CreateWithPassword(user)

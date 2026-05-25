@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     full_name      VARCHAR(255) NOT NULL,
     avatar_url     TEXT DEFAULT '',
     locale         VARCHAR(10) DEFAULT '',
-    role           VARCHAR(20) NOT NULL DEFAULT 'buyer',
+    role           VARCHAR(20) NOT NULL DEFAULT 'unselected',
     is_active      BOOLEAN NOT NULL DEFAULT TRUE,
     last_login_at  TIMESTAMPTZ,
     created_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),

@@ -48,6 +48,7 @@ class SellerProfileHeader extends StatelessWidget {
   }
 
   Widget _avatar(bool hasAvatar, String resolvedUrl) {
+    final bool isSvg = resolvedUrl.toLowerCase().endsWith('.svg');
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
@@ -55,8 +56,8 @@ class SellerProfileHeader extends StatelessWidget {
         border: Border.all(color: const Color(0xFF00D2FF), width: 2)),
       child: CircleAvatar(radius: 28,
         backgroundColor: const Color(0xFF0F3460),
-        backgroundImage: hasAvatar ? NetworkImage(resolvedUrl) : null,
-        child: hasAvatar ? null : Text(
+        backgroundImage: (hasAvatar && !isSvg) ? NetworkImage(resolvedUrl) : null,
+        child: (hasAvatar && !isSvg) ? null : Text(
           shopName.isNotEmpty ? shopName[0].toUpperCase() : '?',
           style: IndieFolkTheme.h1(true).copyWith(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold))));
   }

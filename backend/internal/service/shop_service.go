@@ -6,6 +6,8 @@ import (
 	"delivery-app/backend/internal/model"
 	"delivery-app/backend/internal/repository"
 	"fmt"
+	"os"
+	"path/filepath"
 )
 
 // ShopService handles business logic for shop operations.
@@ -101,8 +103,15 @@ func (service *ShopService) GetPublicShopByID(
 
 	avatar := ""
 	user, err := service.userRepository.FindByID(shop.SellerID)
-	if err == nil && user != nil {
+	if err == nil && user != nil && len(user.AvatarURL) >= 4 && user.AvatarURL[:4] == "http" {
 		avatar = user.AvatarURL
+	} else {
+		logoPath := filepath.Join("uploads", "logos", fmt.Sprintf("shop_%s.png", shop.ID))
+		if _, err := os.Stat(logoPath); err == nil {
+			avatar = fmt.Sprintf("/uploads/logos/shop_%s.png", shop.ID)
+		} else if err == nil && user != nil {
+			avatar = user.AvatarURL
+		}
 	}
 
 	return &model.PublicShop{
@@ -126,8 +135,15 @@ func (service *ShopService) ListPublicShops(
 	for _, shop := range shops {
 		avatar := ""
 		user, err := service.userRepository.FindByID(shop.SellerID)
-		if err == nil && user != nil {
+		if err == nil && user != nil && len(user.AvatarURL) >= 4 && user.AvatarURL[:4] == "http" {
 			avatar = user.AvatarURL
+		} else {
+			logoPath := filepath.Join("uploads", "logos", fmt.Sprintf("shop_%s.png", shop.ID))
+			if _, err := os.Stat(logoPath); err == nil {
+				avatar = fmt.Sprintf("/uploads/logos/shop_%s.png", shop.ID)
+			} else if err == nil && user != nil {
+				avatar = user.AvatarURL
+			}
 		}
 		publicShops = append(publicShops, &model.PublicShop{
 			Shop:       *shop,
@@ -203,6 +219,9 @@ func (service *ShopService) UpdateShop(
 	}
 	if request.FullName != nil {
 		shop.FullName = *request.FullName
+	}
+	if request.AIAssistantEnabled != nil {
+		shop.AIAssistantEnabled = *request.AIAssistantEnabled
 	}
 
 	if err := service.shopRepository.UpdateShop(ctx, shop); err != nil {

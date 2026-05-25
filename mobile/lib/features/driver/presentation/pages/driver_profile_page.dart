@@ -55,8 +55,8 @@ class _DriverProfilePageState extends State<DriverProfilePage> {
           _radius = (profile['operating_radius_km'] ?? 10.0).toDouble();
           if (profile['lat'] != null && profile['lng'] != null) {
             _addressData = {
-              'lat': profile['lat'],
-              'lng': profile['lng'],
+              'lat': (profile['lat'] as num).toDouble(),
+              'lng': (profile['lng'] as num).toDouble(),
               'province': profile['province'],
               'district': profile['district'],
               'ward': profile['ward'],

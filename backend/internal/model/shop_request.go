@@ -84,4 +84,7 @@ type UpdateShopRequest struct {
 
 	// FullName is the legal name of the shop owner.
 	FullName *string `json:"full_name,omitempty" validate:"omitempty,min=2"`
+
+	// AIAssistantEnabled indicates if the AI seller assistant is enabled.
+	AIAssistantEnabled *bool `json:"ai_assistant_enabled,omitempty"`
 }

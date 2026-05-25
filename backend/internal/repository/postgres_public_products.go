@@ -5,6 +5,8 @@ import (
 	"context"
 	"delivery-app/backend/internal/model"
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/lib/pq"
 )
@@ -115,5 +117,14 @@ func scanPublicProduct(scanner scannable) (*model.PublicProduct, error) {
 		return nil, err
 	}
 	pp.Options = model.ParseProductOptions(optionsRaw)
+
+	// Dynamically resolve ShopAvatar if logo file exists and current avatar is not a Google/external URL
+	if !(len(pp.ShopAvatar) >= 4 && pp.ShopAvatar[:4] == "http") {
+		logoPath := filepath.Join("uploads", "logos", fmt.Sprintf("shop_%s.png", pp.ShopID))
+		if _, err := os.Stat(logoPath); err == nil {
+			pp.ShopAvatar = fmt.Sprintf("/uploads/logos/shop_%s.png", pp.ShopID)
+		}
+	}
+
 	return &pp, nil
 }

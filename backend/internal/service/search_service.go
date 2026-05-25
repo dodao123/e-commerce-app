@@ -105,3 +105,10 @@ func (s *SearchService) semanticSearch(
 	}
 	return products, nil
 }
+
+// ListProductsByShopPublic retrieves public products of a specific shop.
+func (s *SearchService) ListProductsByShopPublic(
+	ctx context.Context, shopID string, excludeID string, limit int,
+) ([]*model.PublicProduct, error) {
+	return s.productRepo.ListProductsByShopPublic(ctx, shopID, excludeID, limit)
+}

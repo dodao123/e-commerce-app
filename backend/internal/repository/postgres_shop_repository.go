@@ -64,7 +64,7 @@ func (repository *PostgresShopRepository) GetShopByID(
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
 			   ward, detail_address, latitude, longitude, email, phone, nationality,
-			   national_id_number, full_name, is_verified, is_active,
+			   national_id_number, full_name, is_verified, is_active, ai_assistant_enabled,
 			   created_at, updated_at
 		FROM shops
 		WHERE id = $1
@@ -76,7 +76,7 @@ func (repository *PostgresShopRepository) GetShopByID(
 		&shop.Province, &shop.District, &shop.Ward, &shop.DetailAddress,
 		&shop.Latitude, &shop.Longitude, &shop.Email, &shop.Phone, &shop.Nationality,
 		&shop.NationalIDNumber, &shop.FullName,
-		&shop.IsVerified, &shop.IsActive, &shop.CreatedAt, &shop.UpdatedAt,
+		&shop.IsVerified, &shop.IsActive, &shop.AIAssistantEnabled, &shop.CreatedAt, &shop.UpdatedAt,
 	)
 
 	if err == sql.ErrNoRows {
@@ -97,7 +97,7 @@ func (repository *PostgresShopRepository) GetShopBySellerID(
 	query := `
 		SELECT id, seller_id, shop_name, category, province, district,
 			   ward, detail_address, latitude, longitude, email, phone, nationality,
-			   national_id_number, full_name, is_verified, is_active,
+			   national_id_number, full_name, is_verified, is_active, ai_assistant_enabled,
 			   created_at, updated_at
 		FROM shops
 		WHERE seller_id = $1
@@ -109,7 +109,7 @@ func (repository *PostgresShopRepository) GetShopBySellerID(
 		&shop.Province, &shop.District, &shop.Ward, &shop.DetailAddress,
 		&shop.Latitude, &shop.Longitude, &shop.Email, &shop.Phone, &shop.Nationality,
 		&shop.NationalIDNumber, &shop.FullName,
-		&shop.IsVerified, &shop.IsActive, &shop.CreatedAt, &shop.UpdatedAt,
+		&shop.IsVerified, &shop.IsActive, &shop.AIAssistantEnabled, &shop.CreatedAt, &shop.UpdatedAt,
 	)
 
 	if err == sql.ErrNoRows {

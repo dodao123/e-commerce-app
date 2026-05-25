@@ -2,7 +2,10 @@
 package middleware
 
 import (
+	"bufio"
+	"errors"
 	"log"
+	"net"
 	"net/http"
 	"time"
 )
@@ -17,6 +20,15 @@ type responseRecorder struct {
 func (recorder *responseRecorder) WriteHeader(code int) {
 	recorder.statusCode = code
 	recorder.ResponseWriter.WriteHeader(code)
+}
+
+// Hijack delegates connection hijacking to the underlying response writer if supported.
+func (recorder *responseRecorder) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	hijacker, ok := recorder.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, errors.New("underlying ResponseWriter does not implement http.Hijacker")
+	}
+	return hijacker.Hijack()
 }
 
 // ApplyLogger wraps an HTTP handler with request logging.
