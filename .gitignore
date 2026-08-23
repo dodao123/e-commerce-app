@@ -25,11 +25,18 @@ Desktop.ini
 # ========================
 backend/bin/
 backend/tmp/
+backend/uploads/
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+*.backup
+*.dump
+*.sql
+*.zip
+*.tar.gz
+backend/backups/
 
 # ========================
 # Flutter / Dart Mobile

@@ -73,6 +73,7 @@ Widget buildDetailImageHeader({
                               partnerAvatar: room.partnerAvatar.isNotEmpty
                                   ? room.partnerAvatar
                                   : 'https://api.dicebear.com/7.x/adventurer/svg?seed=${product.shopId}',
+                              initialProduct: product,
                             ),
                           ),
                         );

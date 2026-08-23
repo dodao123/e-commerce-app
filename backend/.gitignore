@@ -11,9 +11,16 @@ bin/
 .DS_Store
 Thumbs.db
 
-#image file 
-uploads/shops
+# Backups and archives
+*.backup
+*.dump
+*.sql
+*.zip
+*.tar.gz
+backups/
+
+# image file 
+uploads/
 internal/config/firebase/*.json
 test_scripts/
 scripts/
-backups/

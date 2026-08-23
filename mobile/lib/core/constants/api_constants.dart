@@ -10,10 +10,10 @@ class ApiConstants {
   static const String _serverPort = '8081';
 
   /// Host injected via `--dart-define=API_HOST=<ip>`.
-  /// Falls back to `10.0.2.2` (Android emulator alias for localhost).
+  /// Falls back to current Wi-Fi IP or emulator alias.
   static const String _apiHost = String.fromEnvironment(
     'API_HOST',
-    defaultValue: '192.168.44.207',
+    defaultValue: '192.168.38.103',
   );
 
   /// Base URL for the backend API server (auto-resolved).
@@ -101,16 +101,13 @@ class ApiConstants {
   static const String shopOrdersEndpoint = '/api/v1/shop/orders';
 
   /// Shop orders count endpoint (GET pending count).
-  static const String shopOrdersCountEndpoint =
-      '/api/v1/shop/orders/count';
+  static const String shopOrdersCountEndpoint = '/api/v1/shop/orders/count';
 
   /// Notifications endpoint (GET list).
-  static const String notificationsEndpoint =
-      '/api/v1/notifications';
+  static const String notificationsEndpoint = '/api/v1/notifications';
 
   /// Unread notifications count endpoint.
-  static const String notifUnreadEndpoint =
-      '/api/v1/notifications/unread';
+  static const String notifUnreadEndpoint = '/api/v1/notifications/unread';
 
   /// FCM device token registration endpoint.
   static const String fcmTokenEndpoint = '/api/v1/fcm/token';

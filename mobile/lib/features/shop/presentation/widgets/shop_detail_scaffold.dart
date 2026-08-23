@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/constants/api_constants.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/role_guard.dart';
-import '../../../auth/presentation/pages/login_page.dart';
 import '../../../auth/providers/auth_provider.dart';
 import '../../../chat/data/datasources/chat_remote_datasource.dart';
 import '../../../chat/presentation/pages/chat_detail_page.dart';
@@ -66,12 +64,8 @@ class ShopDetailScaffold extends StatelessWidget {
                     ],
                   ),
                   onPressed: () async {
-                    final auth = context.read<AuthProvider>();
-                    if (!auth.isLoggedIn || auth.accessToken == null) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginPage()));
-                      return;
-                    }
                     if (!RoleGuard.checkBuyerRole(context)) return;
+                    final auth = context.read<AuthProvider>();
 
                     showDialog(
                       context: context,
